@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><title>{{ __('admin.create_user') }}</title></head>
-<body>
-<h1>{{ __('admin.create_user') }}</h1>
-<form method="POST" action="{{ route('admin.users.store') }}">
-    @include('admin.users._form')
+@extends('layouts.app')
+@section('title', __('admin.create_user'))
+@section('page-title', __('admin.create_user'))
+
+@section('content')
+<x-page-header :title="__('admin.create_user')" :back="route('admin.users.index')" />
+<form method="POST" action="{{ route('admin.users.store') }}" class="max-w-4xl">
+    <x-card>@include('admin.users._form')</x-card>
 </form>
-</body>
-</html>
+@endsection

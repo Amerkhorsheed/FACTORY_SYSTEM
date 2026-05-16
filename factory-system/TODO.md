@@ -261,11 +261,14 @@
 - [x] Update `PROGRESS.md` and `TODO.md` after Admin module
 
 ## PHASE 08 - FRONTEND ENHANCEMENTS
-- [ ] Replace minimal Blade placeholders with shared RTL app layout
-- [ ] Add reusable form/table/status/pagination components
-- [ ] Implement responsive dashboard and module navigation
-- [ ] Implement customer portal routes/controllers/views
-- [ ] Add frontend/portal feature tests
+- [x] Add Tailwind/PostCSS configuration and RTL frontend asset pipeline
+- [x] Add shared RTL app layout with responsive sidebar, topbar, and alerts
+- [x] Add reusable form/card/button/status/pagination/metric/empty-state components
+- [x] Replace Admin and ERP dashboard pages with shared layout patterns
+- [x] Implement customer portal repository/service/controller/routes/views
+- [x] Add frontend/portal feature tests
+- [ ] Replace remaining module placeholder Blade pages with shared layout patterns
+- [ ] Add richer responsive CRUD screens for inventory, customers, orders, shipments, invoices, payments, expenses, and reports
 
 ## DONE
 - [x] Initial workspace discovery

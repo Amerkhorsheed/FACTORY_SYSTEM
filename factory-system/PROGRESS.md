@@ -24,6 +24,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 013 | 2026-05-16 | Payments & ERP module: expenses, dashboard, reports, policies, tests | 138/138 | Phase 07 Module 06 complete |
 | 014 | 2026-05-16 | Quality audit, DOCS source sync, controller query refactor, report cleanup | 138/138 | PART6 indexed; 81 routes registered |
 | 015 | 2026-05-16 | Admin module: users, settings, audit log, routes, views, policies, tests | 146/146 | Phase 07 Module 07 complete; 90 routes registered |
+| 016 | 2026-05-16 | Frontend foundation: RTL shell, components, Tailwind/Alpine assets, customer portal, tests | 153/153 | Phase 08 foundation complete; 97 routes registered |
 
 ## Module Status
 | Module | Status | % Done | Blockers |
@@ -42,7 +43,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 07.05 Invoicing | [x] | 100% | - |
 | 07.06 Payments & ERP | [x] | 100% | - |
 | 07.07 Admin | [x] | 100% | - |
-| 08 Frontend | [ ] | 0% | Minimal Blade placeholders remain in completed modules |
+| 08 Frontend | [~] | 45% | Remaining module CRUD/report Blade placeholders still need full layout replacement |
 | 09 PDF | [ ] | 0% | `PdfService` is currently an HTML stub |
 | 10 Notifications | [ ] | 0% | - |
 | 11 Deployment | [ ] | 0% | - |
@@ -62,6 +63,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Phase 07.05 Invoicing: invoice list/show/issue/void/download, payment record/delete, recalculation logic, routes, views, tests completed.
 - Phase 07.06 Payments & ERP: payment listing/details/deletion, expenses, dashboard KPIs, sales/receivables/stock/profit-loss reports, routes, views, tests completed.
 - Phase 07.07 Admin: user management, settings management, audit log listing/details, routes, views, translations, policies, requests, notification, tests completed.
+- Phase 08 Frontend foundation: shared RTL layout, navigation, components, Tailwind/PostCSS pipeline, Admin/ERP dashboard layout upgrade, customer portal screens, and tests completed.
 
 ## Session 014 Audit Changes
 - Added `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md` to `TASKS.md`.
@@ -82,10 +84,21 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Added Arabic admin translations, minimal RTL Blade views, and temporary password notification.
 - Added `AdminModuleTest` covering user CRUD, self-delete guard, password reset notification, settings update, audit log, and unauthorized access.
 
+## Session 016 Frontend Foundation Changes
+- Added Tailwind and PostCSS configuration plus production `resources/css/app.css` and Alpine/Tom Select/Flatpickr `resources/js/app.js` setup.
+- Added `layouts/app.blade.php` with responsive RTL shell, permission-aware sidebar, topbar, and flash/error alerts.
+- Added reusable Blade components for buttons, cards, page headers, metric cards, status badges, empty states, pagination, and form fields.
+- Replaced Admin views and ERP dashboard with shared layout/components.
+- Added `CustomerPortalRepository` and `CustomerPortalService` so portal query/write logic stays out of controllers.
+- Added `CustomerPortalController`, portal form requests, `routes/portal.php`, and portal views for dashboard, orders, invoices, order creation, and profile.
+- Extended `CustomerPolicy` with own-profile portal abilities.
+- Added `PortalFrontendTest` covering portal dashboard, scoped lists, unauthorized record access, details pages, profile update, secure server-side order pricing, and staff blocking.
+
 ## Latest Verification
-- `php artisan test` -> 146 passed, 377 assertions.
+- `php artisan test` -> 153 passed, 395 assertions.
 - `vendor\\bin\\pint` -> passed.
-- `php artisan route:list --except-vendor` -> 90 routes registered.
+- `php artisan route:list --except-vendor` -> 97 routes registered.
+- `npm run build` -> passed.
 - Authored project file count check -> no non-generated project-managed file exceeds 400 lines.
 - Generated `package-lock.json` exceeds 400 lines and is treated as an external lockfile artifact.
 
@@ -93,11 +106,10 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Local PHP is 8.2.12; blueprint target is PHP 8.3.
 - Local MySQL credentials are unavailable; tests use SQLite in-memory via `phpunit.xml`.
 - Redis is unavailable locally; `.env` uses file/sync fallbacks.
-- Portal routes still contain placeholders and are upcoming frontend/portal work.
+- Remaining module CRUD/report pages still include minimal placeholder Blade views outside the Admin, ERP dashboard, and Portal screens.
 - Full PDF generation is upcoming; `PdfService` currently stores HTML output.
 
 ## Next Session Plan
-- Start Phase 08 Frontend Enhancements.
-- Replace minimal Blade placeholders with a shared RTL app layout and reusable components.
-- Implement responsive module navigation and customer portal screens.
-- Add frontend/portal feature tests.
+- Continue Phase 08 by replacing remaining module placeholder views with shared layout patterns.
+- Prioritize inventory, customers, orders, shipments, invoices, payments, expenses, and reports index/show screens.
+- Keep page files under 400 lines and add feature coverage where behavior changes.

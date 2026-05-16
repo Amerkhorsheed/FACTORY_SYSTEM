@@ -1,0 +1,56 @@
+@import '@fontsource/cairo/400.css';
+@import '@fontsource/cairo/600.css';
+@import '@fontsource/cairo/700.css';
+@import '@fontsource/noto-naskh-arabic/400.css';
+@import 'flatpickr/dist/flatpickr.min.css';
+@import 'tom-select/dist/css/tom-select.default.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html { font-family: Cairo, sans-serif; }
+    body { @apply bg-slate-50 text-ink-900 antialiased; }
+    input, select, textarea { text-align: right; }
+    [dir="ltr"] { direction: ltr; text-align: left; }
+}
+
+@layer components {
+    .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60; }
+    .btn-primary { @apply bg-brand-600 text-white shadow-sm hover:bg-brand-700 focus:ring-brand-500; }
+    .btn-secondary { @apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:ring-brand-500; }
+    .btn-danger { @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500; }
+    .btn-ghost { @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-300; }
+    .btn-sm { @apply px-3 py-1.5 text-xs; }
+    .btn-lg { @apply px-5 py-3 text-base; }
+
+    .card { @apply rounded-2xl border border-slate-200 bg-white shadow-sm; }
+    .card-header { @apply border-b border-slate-100 px-5 py-4 text-sm font-bold text-slate-800; }
+    .card-body { @apply p-5; }
+
+    .form-label { @apply mb-1 block text-sm font-semibold text-slate-700; }
+    .form-input { @apply block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500; }
+    .form-error { @apply mt-1 text-xs font-medium text-red-600; }
+    .form-helper { @apply mt-1 text-xs text-slate-500; }
+
+    .table-wrapper { @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm; }
+    .table-scroll { @apply overflow-x-auto; }
+    .table { @apply min-w-full divide-y divide-slate-200; }
+    .table thead { @apply bg-slate-50; }
+    .table th { @apply px-4 py-3 text-right text-xs font-bold uppercase tracking-wide text-slate-500; }
+    .table td { @apply px-4 py-3 text-sm text-slate-700; }
+    .table tbody tr { @apply border-b border-slate-100 last:border-b-0 hover:bg-slate-50; }
+
+    .nav-item { @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-brand-50 hover:text-brand-700; }
+    .nav-item.active { @apply bg-brand-50 text-brand-700 ring-1 ring-brand-100; }
+    .nav-group-label { @apply px-3 pb-1 pt-4 text-xs font-bold uppercase tracking-wide text-slate-400; }
+}
+
+.flatpickr-calendar, .ts-control, .ts-dropdown { direction: rtl; font-family: Cairo, sans-serif; text-align: right; }
+
+@media print {
+    .no-print { display: none !important; }
+    body { background: white; }
+    .card, .table-wrapper { box-shadow: none; }
+}

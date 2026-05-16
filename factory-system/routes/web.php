@@ -29,20 +29,6 @@ Route::middleware(['auth', 'active', 'portal', 'role:super_admin|accountant|ship
 
 /*
 |--------------------------------------------------------------------------
-| Customer Portal Routes
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('portal')->name('portal.')
-    ->middleware(['auth', 'active', 'portal'])
-    ->group(function () {
-        Route::get('/dashboard', fn () => 'Portal Dashboard')->name('dashboard');
-        Route::get('/orders', fn () => 'Portal Orders')->name('orders');
-        Route::get('/invoices', fn () => 'Portal Invoices')->name('invoices');
-    });
-
-/*
-|--------------------------------------------------------------------------
 | Logout
 |--------------------------------------------------------------------------
 */
@@ -59,3 +45,4 @@ require __DIR__.'/invoices.php';
 require __DIR__.'/payments.php';
 require __DIR__.'/erp.php';
 require __DIR__.'/admin.php';
+require __DIR__.'/portal.php';

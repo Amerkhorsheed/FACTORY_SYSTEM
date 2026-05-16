@@ -23,6 +23,11 @@ class CustomerPolicy
         return $user->hasPermissionTo('customers.view');
     }
 
+    public function viewPortal(User $user, Customer $customer): bool
+    {
+        return $user->hasRole('customer') && $user->customer?->id === $customer->id;
+    }
+
     public function create(User $user): bool
     {
         return $user->hasPermissionTo('customers.create');
@@ -31,6 +36,11 @@ class CustomerPolicy
     public function update(User $user, Customer $customer): bool
     {
         return $user->hasPermissionTo('customers.edit');
+    }
+
+    public function updatePortal(User $user, Customer $customer): bool
+    {
+        return $this->viewPortal($user, $customer);
     }
 
     public function delete(User $user, Customer $customer): bool

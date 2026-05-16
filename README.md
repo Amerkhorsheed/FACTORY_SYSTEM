@@ -10,7 +10,7 @@ This repository contains the complete management suite and Laravel 11 source cod
 - `PROGRESS.md` - Real-time build progress tracker.
 - `TODO.md` - Active sprint board and task list.
 - `DECISIONS.md` - Architectural Decision Records (ADR).
-- `SKILLS.md` - Design patterns and implementation catalog.
+- `SKILLS.md` - Design patterns \and implementation catalog.
 - `factory-system/` - Laravel 11 backend and Alpine/Livewire frontend.
 
 ## 🚀 Quick Start

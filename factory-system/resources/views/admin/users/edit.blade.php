@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><title>{{ __('admin.edit_user') }}</title></head>
-<body>
-<h1>{{ __('admin.edit_user') }}</h1>
-<form method="POST" action="{{ route('admin.users.update', $user) }}">
+@extends('layouts.app')
+@section('title', __('admin.edit_user'))
+@section('page-title', __('admin.edit_user'))
+
+@section('content')
+<x-page-header :title="__('admin.edit_user')" :description="$user->name" :back="route('admin.users.index')" />
+<form method="POST" action="{{ route('admin.users.update', $user) }}" class="max-w-4xl">
     @method('PUT')
-    @include('admin.users._form')
+    <x-card>@include('admin.users._form')</x-card>
 </form>
-</body>
-</html>
+@endsection
