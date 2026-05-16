@@ -23,14 +23,23 @@ if ($remotes -notcontains "origin") {
 Write-Host "Staging all changes..."
 git add .
 
-# 4. Professional Commit Message
-$commitMsg = "feat: initialize enterprise management docs and Laravel scaffold"
-$commitDesc = "Integrated 6 core management files (AGENT.md, PROGRESS.md, etc.) and bootstrapped Laravel 11 project structure with enterprise standards."
+# 4. Professional Commit (Only if there are changes)
+$status = git status --porcelain
+if ($status) {
+    $commitMsg = "feat: initialize enterprise management docs and Laravel scaffold"
+    $commitDesc = "Integrated 6 core management files (AGENT.md, PROGRESS.md, etc.) and bootstrapped Laravel 11 project structure with enterprise standards."
 
-Write-Host "Committing changes..."
-git commit -m "$commitMsg" -m "$commitDesc"
+    Write-Host "Committing changes..."
+    git commit -m "$commitMsg" -m "$commitDesc"
+} else {
+    Write-Host "No new changes to commit."
+}
 
-# 5. Push
+# 5. Ensure branch is 'main'
+Write-Host "Setting branch to main..."
+git branch -M main
+
+# 6. Push
 Write-Host "Pushing to GitHub..."
 git push -u origin main
 
