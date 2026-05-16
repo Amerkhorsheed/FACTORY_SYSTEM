@@ -6,29 +6,25 @@ use InvalidArgumentException;
 
 /**
  * Immutable money value object backed by integer storage units.
- *
- * @package App\ValueObjects
  */
 final class Money
 {
     /**
      * Create a money object.
      *
-     * @param int $amount Amount in the smallest currency unit.
-     * @param string $currency ISO-style currency code.
+     * @param  int  $amount  Amount in the smallest currency unit.
+     * @param  string  $currency  ISO-style currency code.
      */
     public function __construct(
         private readonly int $amount,
         private readonly string $currency = 'SYP'
-    ) {
-    }
+    ) {}
 
     /**
      * Create a money object from an integer amount.
      *
-     * @param int $amount Amount in the smallest currency unit.
-     * @param string $currency ISO-style currency code.
-     * @return self
+     * @param  int  $amount  Amount in the smallest currency unit.
+     * @param  string  $currency  ISO-style currency code.
      */
     public static function of(int $amount, string $currency = 'SYP'): self
     {
@@ -37,8 +33,6 @@ final class Money
 
     /**
      * Get the integer amount.
-     *
-     * @return int
      */
     public function amount(): int
     {
@@ -47,8 +41,6 @@ final class Money
 
     /**
      * Get the currency code.
-     *
-     * @return string
      */
     public function currency(): string
     {
@@ -58,8 +50,8 @@ final class Money
     /**
      * Add another money object with the same currency.
      *
-     * @param self $other Money object to add.
-     * @return self
+     * @param  self  $other  Money object to add.
+     *
      * @throws InvalidArgumentException
      */
     public function add(self $other): self
@@ -72,8 +64,8 @@ final class Money
     /**
      * Subtract another money object with the same currency.
      *
-     * @param self $other Money object to subtract.
-     * @return self
+     * @param  self  $other  Money object to subtract.
+     *
      * @throws InvalidArgumentException
      */
     public function subtract(self $other): self
@@ -86,8 +78,7 @@ final class Money
     /**
      * Multiply the amount by a numeric factor.
      *
-     * @param int|float $factor Multiplication factor.
-     * @return self
+     * @param  int|float  $factor  Multiplication factor.
      */
     public function multiply(int|float $factor): self
     {
@@ -97,8 +88,8 @@ final class Money
     /**
      * Determine whether this amount is greater than another amount.
      *
-     * @param self $other Money object to compare.
-     * @return bool
+     * @param  self  $other  Money object to compare.
+     *
      * @throws InvalidArgumentException
      */
     public function isGreaterThan(self $other): bool
@@ -110,8 +101,6 @@ final class Money
 
     /**
      * Determine whether this amount is zero.
-     *
-     * @return bool
      */
     public function isZero(): bool
     {
@@ -120,21 +109,19 @@ final class Money
 
     /**
      * Format the amount for display.
-     *
-     * @return string
      */
     public function format(): string
     {
         $symbol = $this->currency === 'SYP' ? 'ل.س' : $this->currency;
 
-        return number_format($this->amount) . ' ' . $symbol;
+        return number_format($this->amount).' '.$symbol;
     }
 
     /**
      * Ensure currency matches before arithmetic or comparisons.
      *
-     * @param self $other Money object to validate.
-     * @return void
+     * @param  self  $other  Money object to validate.
+     *
      * @throws InvalidArgumentException
      */
     private function assertSameCurrency(self $other): void

@@ -15,7 +15,7 @@ class OrderStateMachineTest extends TestCase
     {
         parent::setUp();
 
-        $this->stateMachine = new OrderStateMachine();
+        $this->stateMachine = new OrderStateMachine;
     }
 
     /**

@@ -2,8 +2,6 @@
 
 /**
  * Factory System - Business Configuration.
- *
- * @package FactorySystem\Config
  */
 return [
     'name' => env('FACTORY_NAME', 'المعمل'),

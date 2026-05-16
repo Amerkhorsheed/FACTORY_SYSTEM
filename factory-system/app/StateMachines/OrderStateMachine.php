@@ -6,8 +6,6 @@ use App\Exceptions\InvalidStatusTransitionException;
 
 /**
  * Validates order lifecycle status transitions.
- *
- * @package App\StateMachines
  */
 final class OrderStateMachine
 {
@@ -26,9 +24,9 @@ final class OrderStateMachine
     /**
      * Validate and return the requested new status.
      *
-     * @param string $currentStatus Current order status.
-     * @param string $newStatus Requested order status.
-     * @return string
+     * @param  string  $currentStatus  Current order status.
+     * @param  string  $newStatus  Requested order status.
+     *
      * @throws InvalidStatusTransitionException
      */
     public function transition(string $currentStatus, string $newStatus): string
@@ -37,7 +35,7 @@ final class OrderStateMachine
 
         if (! in_array($newStatus, $allowed, true)) {
             throw new InvalidStatusTransitionException(
-                "Cannot transition order from [{$currentStatus}] to [{$newStatus}]. Allowed: " . implode(', ', $allowed)
+                "Cannot transition order from [{$currentStatus}] to [{$newStatus}]. Allowed: ".implode(', ', $allowed)
             );
         }
 
@@ -47,9 +45,8 @@ final class OrderStateMachine
     /**
      * Determine whether a transition is allowed.
      *
-     * @param string $from Current status.
-     * @param string $to Requested status.
-     * @return bool
+     * @param  string  $from  Current status.
+     * @param  string  $to  Requested status.
      */
     public function canTransition(string $from, string $to): bool
     {
@@ -59,7 +56,7 @@ final class OrderStateMachine
     /**
      * Get allowed transitions for a status.
      *
-     * @param string $from Current status.
+     * @param  string  $from  Current status.
      * @return array<int, string>
      */
     public function allowedTransitions(string $from): array
@@ -70,8 +67,7 @@ final class OrderStateMachine
     /**
      * Determine whether a status is final.
      *
-     * @param string $status Order status.
-     * @return bool
+     * @param  string  $status  Order status.
      */
     public function isFinal(string $status): bool
     {
@@ -81,8 +77,7 @@ final class OrderStateMachine
     /**
      * Determine whether an order can be cancelled from the status.
      *
-     * @param string $status Order status.
-     * @return bool
+     * @param  string  $status  Order status.
      */
     public function canBeCancelled(string $status): bool
     {

@@ -10,7 +10,7 @@ This file is the session-start entry point required by `AGENT.md`.
 - `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART5.md`
 
 ## Current Phase
-Phase 05 - Seeders & Roles
+Phase 07 - Module 02: Customers
 
 ## Non-Negotiable Rules
 1. No file exceeds 400 lines.

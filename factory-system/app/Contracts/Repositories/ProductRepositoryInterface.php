@@ -8,9 +8,15 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface ProductRepositoryInterface
 {
-    public function findById(int $id): ?Product;
+    /**
+     * @return Product|null
+     */
+    public function findById(int $id);
 
-    public function findByIdOrFail(int $id): Product;
+    /**
+     * @return Product
+     */
+    public function findByIdOrFail(int $id);
 
     public function findByCode(string $code): ?Product;
 
@@ -23,13 +29,22 @@ interface ProductRepositoryInterface
 
     public function getLowStock(): Collection;
 
-    /** @param array<string, mixed> $data */
-    public function create(array $data): Product;
+    /**
+     * @param  array<string, mixed>  $data
+     * @return Product
+     */
+    public function create(array $data);
 
-    /** @param array<string, mixed> $data */
-    public function update(Product $product, array $data): Product;
+    /**
+     * @param  array<string, mixed>  $data
+     * @return Product
+     */
+    public function update(Product $product, array $data);
 
     public function delete(Product $product): void;
 
-    public function restore(int $id): Product;
+    /**
+     * @return Product
+     */
+    public function restore(int $id);
 }

@@ -7,6 +7,9 @@
 | 003 | 2026-05-16 | Money value object, transition exception, order and shipment state machines | 32/32 | Phase 02 complete |
 | 004 | 2026-05-16 | Base service/repository infrastructure, contracts, provider bindings, and tests | 40/40 | Phase 03 complete; test DB now uses SQLite in-memory via phpunit.xml |
 | 005 | 2026-05-16 | Model traits, code generator, 13 domain models, observers, translations, and tests | 46/46 | Phase 04 complete |
+| 006 | 2026-05-16 | Seeders for roles, permissions, system settings, admin users, and product categories | 53/53 | Phase 05 complete; 47 permissions, 4 roles, 3 users, 16 settings seeded |
+| 007 | 2026-05-16 | Auth controller, 4 middleware classes, route structure, middleware registration, auth tests | 65/65 | Phase 06 complete; middleware reordered so portal runs before role |
+| 008 | 2026-05-16 | Inventory module: StockService, ProductService, repositories, controllers, policies, requests, events, exceptions, views, routes, tests | 78/78 | Phase 07 Module 01 complete; removed placeholder routes from web.php; fixed BaseRepository restore for newQueryWithoutScopes |
 
 ## Module Status
 | Module | Status | % Done | Blockers |
@@ -16,8 +19,9 @@
 | 02 Value Objects | [x] | 100% | - |
 | 03 Base Classes | [x] | 100% | Concrete repositories/services are scheduled for later model/module phases |
 | 04 Models & Observers | [x] | 100% | - |
-| 01 Auth | [ ] | 0% | - |
-| 02 Inventory | [ ] | 0% | - |
+| 05 Seeders & Roles | [x] | 100% | - |
+| 01 Auth | [x] | 100% | - |
+| 02 Inventory | [x] | 100% | - |
 | 03 Customers | [ ] | 0% | - |
 | 04 Orders | [ ] | 0% | - |
 | 05 Distribution | [ ] | 0% | - |
@@ -249,3 +253,149 @@
 
 ### Next Session Plan:
 - PHASE 05: Seed roles, permissions, system settings, and default admin user.
+
+## Session 006 - Seeders & Roles
+**Date:** 2026-05-16
+**Phase:** 05 - Seeders & Roles
+
+### Completed:
+- [x] Created `RolesAndPermissionsSeeder` with 47 permissions and 4 roles (super_admin, accountant, shipping_staff, customer)
+- [x] `super_admin` receives all permissions via `givePermissionTo(Permission::all())`
+- [x] Created `SystemSettingsSeeder` with 16 default settings across factory, invoices, stock, customers, and UI groups
+- [x] Created `AdminUserSeeder` with 3 default accounts (admin, accountant, shipping_staff)
+- [x] Created `ProductCategorySeeder` with 8 default Arabic product categories
+- [x] Updated `DatabaseSeeder` as master orchestrator with strict run order
+- [x] Added `SeedersTest` covering roles, permissions, super_admin coverage, shipping_staff exact permissions, settings, admin users, categories, and full DatabaseSeeder run
+
+### Files Created (5):
+- `database/seeders/RolesAndPermissionsSeeder.php`
+- `database/seeders/SystemSettingsSeeder.php`
+- `database/seeders/AdminUserSeeder.php`
+- `database/seeders/ProductCategorySeeder.php`
+- `tests/Feature/SeedersTest.php`
+
+### Files Updated (1):
+- `database/seeders/DatabaseSeeder.php`
+
+### Verification:
+- Focused Phase 05 tests -> 7 passed, 24 assertions
+- `php artisan migrate:fresh --seed` with SQLite override -> all 17 migrations + 4 seeders succeeded
+- Pint formatting pass -> fixed minor style issues
+- Full suite -> 53 passed, 133 assertions
+
+### Notes:
+- MySQL `migrate:fresh --seed` not available locally; SQLite verification confirms zero errors.
+- Permission count is 47 (not 34 as initially estimated) — validated against the explicit PERMISSIONS array.
+
+### Next Session Plan:
+- PHASE 06: Authentication & Middleware (login controller, active check, portal guard, locale, activity tracking).
+
+## Session 007 - Authentication & Middleware
+**Date:** 2026-05-16
+**Phase:** 06 - Authentication & Middleware
+
+### Completed:
+- [x] Created `LoginController` with email/phone login, rate limiting (5 attempts / 15 min), active-user check, login metadata tracking, and role-based redirect
+- [x] Created `SetLocale` middleware — forces Arabic locale on every request
+- [x] Created `CheckUserIsActive` middleware — logs out deactivated users and redirects to login with Arabic error
+- [x] Created `CustomerPortalMiddleware` — redirects customer-role users away from admin routes to portal
+- [x] Created `LastActivityMiddleware` — updates `last_seen_at` every 5 minutes using cache
+- [x] Registered all middleware in `bootstrap/app.php` with global web stack and named aliases
+- [x] Restructured `routes/web.php` with guest login, authenticated admin/staff groups, customer portal prefix, and logout
+- [x] Added Arabic auth translation strings in `lang/ar/auth.php`
+- [x] Created minimal `resources/views/auth/login.blade.php` with Arabic text
+- [x] Updated `UserFactory` to include `is_active` and `phone` defaults (fixes `MissingAttributeException` under strict mode)
+- [x] Created `AuthTest` with 12 tests covering login page, email login, phone login, wrong password, inactive user, customer redirect, rate limiting, login metadata, ERP access control, customer redirect from admin, logout, and deactivated user middleware block
+
+### Files Created (8):
+- `app/Http/Controllers/Auth/LoginController.php`
+- `app/Http/Middleware/SetLocale.php`
+- `app/Http/Middleware/CheckUserIsActive.php`
+- `app/Http/Middleware/CustomerPortalMiddleware.php`
+- `app/Http/Middleware/LastActivityMiddleware.php`
+- `lang/ar/auth.php`
+- `resources/views/auth/login.blade.php`
+- `tests/Feature/AuthTest.php`
+
+### Files Updated (4):
+- `bootstrap/app.php`
+- `routes/web.php`
+- `database/factories/UserFactory.php`
+- `tests/Feature/ExampleTest.php`
+
+### Verification:
+- Focused Phase 06 tests -> 12 passed, 37 assertions
+- `php artisan clear-compiled` -> passed
+- Pint formatting pass -> fixed minor style issues
+- Full suite -> 65 passed, 171 assertions
+
+### Notes:
+- Middleware order matters: `portal` must run before `role` so customer redirection happens before role-based 403 rejection.
+- `LastActivityMiddleware` updates `last_seen_at` (not `last_login_at` which is only updated on login).
+
+### Next Session Plan:
+- PHASE 07: Module 01 — Inventory (StockService, ProductService, ProductRepository, ProductController, form requests, and tests).
+
+## Session 008 - Inventory Module (Phase 07 Module 01)
+**Date:** 2026-05-16
+**Phase:** 07 - Module 01: Inventory
+
+### Completed:
+- [x] Created `StockService` with transaction-safe stock movements, low-stock event firing, and absolute stock adjustments
+- [x] Created `ProductService` for product CRUD with optional image upload and soft-delete support
+- [x] Created `ProductRepository` with search, filters, low-stock query, lock-for-update, and auto code generation
+- [x] Created `StockMovementRepository` with product-scoped and date-range queries
+- [x] Created `ProductController` with `authorizeResource`, full CRUD, and restore action
+- [x] Created `StockController` for movement index, adjustment, and low-stock alert
+- [x] Created `StoreProductRequest` and `UpdateProductRequest` with validation rules and authorization
+- [x] Created `StockAdjustmentRequest` for stock adjustment authorization and validation
+- [x] Created `ProductPolicy` with permission-based authorization for all product actions
+- [x] Created `InsufficientStockException` and `LowStockDetected` event
+- [x] Created minimal Blade views for product CRUD and stock movement pages
+- [x] Created `routes/products.php` and required it in `routes/web.php`
+- [x] Added Arabic translations for products and stock_movements
+- [x] Created `ProductFactory` and `ProductCategoryFactory`
+- [x] Created `StockServiceTest` (6 tests, 12 assertions)
+- [x] Created `ProductCrudTest` (8 tests, 23 assertions)
+
+### Files Created (17):
+- `app/Services/Products/StockService.php`
+- `app/Services/Products/ProductService.php`
+- `app/Repositories/ProductRepository.php`
+- `app/Repositories/StockMovementRepository.php`
+- `app/Http/Controllers/Products/ProductController.php`
+- `app/Http/Controllers/Products/StockController.php`
+- `app/Http/Requests/Products/StoreProductRequest.php`
+- `app/Http/Requests/Products/UpdateProductRequest.php`
+- `app/Http/Requests/Products/StockAdjustmentRequest.php`
+- `app/Policies/ProductPolicy.php`
+- `app/Exceptions/InsufficientStockException.php`
+- `app/Events/Stock/LowStockDetected.php`
+- `database/factories/ProductFactory.php`
+- `database/factories/ProductCategoryFactory.php`
+- `tests/Unit/StockServiceTest.php`
+- `tests/Feature/ProductCrudTest.php`
+- `routes/products.php`
+
+### Files Updated (8):
+- `app/Repositories/BaseRepository.php` (removed return types to avoid PHP variance conflicts with interfaces; fixed `restore` to not call `withTrashed()` on `newQueryWithoutScopes()`)
+- `app/Http/Controllers/Controller.php` (added `AuthorizesRequests` and `ValidatesRequests` traits, extended Laravel base `Controller`)
+- `app/Contracts/Repositories/*` (removed return types from shared CRUD methods to allow `BaseRepository` inheritance)
+- `routes/web.php` (removed placeholder product routes that conflicted with real routes)
+- `app/Http/Requests/Products/StoreProductRequest.php` (made `code` nullable to allow auto-generation)
+- `app/Http/Controllers/Products/ProductController.php` (added `DomainException` catch in `destroy`)
+- `tests/Feature/BaseRepositoryTest.php` (removed obsolete non-soft-delete restore test)
+- `lang/ar/products.php`
+
+### Verification:
+- Focused Phase 07 tests -> 14 passed, 35 assertions
+- `php artisan clear-compiled` -> passed
+- Pint formatting pass -> fixed minor style issues across 26 files
+- Full suite -> 78 passed, 205 assertions
+
+### Notes:
+- `BaseRepository` cannot declare return types for shared CRUD methods when concrete repositories implement interfaces with narrower return types. PHP variance rules require the interface methods to omit return types so inherited implementations remain compatible.
+- All placeholder product routes in `web.php` were removed because they shadowed real controller routes.
+
+### Next Session Plan:
+- PHASE 07: Module 02 — Customers (CustomerService, CustomerRepository, CustomerController, form requests, policy, and tests).

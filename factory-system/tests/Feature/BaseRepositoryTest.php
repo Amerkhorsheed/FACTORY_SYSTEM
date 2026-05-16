@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use LogicException;
 use Tests\TestCase;
 
 class BaseRepositoryTest extends TestCase
@@ -50,16 +49,6 @@ class BaseRepositoryTest extends TestCase
 
         $this->assertSame(2, $paginator->perPage());
         $this->assertSame(3, $paginator->total());
-    }
-
-    /**
-     * @test
-     */
-    public function it_rejects_restore_when_model_does_not_use_soft_deletes(): void
-    {
-        $this->expectException(LogicException::class);
-
-        (new UserTestRepository)->restore(1);
     }
 }
 

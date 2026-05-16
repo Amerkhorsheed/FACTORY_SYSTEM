@@ -15,7 +15,7 @@ class ShipmentStateMachineTest extends TestCase
     {
         parent::setUp();
 
-        $this->stateMachine = new ShipmentStateMachine();
+        $this->stateMachine = new ShipmentStateMachine;
     }
 
     /**

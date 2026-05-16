@@ -15,28 +15,36 @@ abstract class BaseRepository
 {
     public function __construct(protected readonly Model $model) {}
 
-    public function findById(int $id): ?Model
+    /**
+     * @return Model|null
+     */
+    public function findById(int $id)
     {
         return $this->query()->find($id);
     }
 
-    public function findByIdOrFail(int $id): Model
+    /**
+     * @return Model
+     */
+    public function findByIdOrFail(int $id)
     {
         return $this->query()->findOrFail($id);
     }
 
     /**
      * @param  array<string, mixed>  $data
+     * @return Model
      */
-    public function create(array $data): Model
+    public function create(array $data)
     {
         return $this->query()->create($data);
     }
 
     /**
      * @param  array<string, mixed>  $data
+     * @return Model
      */
-    public function update(Model $model, array $data): Model
+    public function update(Model $model, array $data)
     {
         $model->fill($data);
         $model->save();
@@ -49,14 +57,16 @@ abstract class BaseRepository
         $model->delete();
     }
 
-    public function restore(int $id): Model
+    /**
+     * @return Model
+     */
+    public function restore(int $id)
     {
         if (! $this->supportsSoftDeletes()) {
             throw new LogicException('Repository model does not support soft deletes.');
         }
 
         $model = $this->model->newQueryWithoutScopes()
-            ->withTrashed()
             ->whereKey($id)
             ->firstOrFail();
 

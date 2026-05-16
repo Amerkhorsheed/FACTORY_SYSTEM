@@ -6,8 +6,6 @@ use App\Exceptions\InvalidStatusTransitionException;
 
 /**
  * Validates shipment lifecycle status transitions.
- *
- * @package App\StateMachines
  */
 final class ShipmentStateMachine
 {
@@ -23,9 +21,9 @@ final class ShipmentStateMachine
     /**
      * Validate and return the requested new status.
      *
-     * @param string $currentStatus Current shipment status.
-     * @param string $newStatus Requested shipment status.
-     * @return string
+     * @param  string  $currentStatus  Current shipment status.
+     * @param  string  $newStatus  Requested shipment status.
+     *
      * @throws InvalidStatusTransitionException
      */
     public function transition(string $currentStatus, string $newStatus): string
@@ -34,7 +32,7 @@ final class ShipmentStateMachine
 
         if (! in_array($newStatus, $allowed, true)) {
             throw new InvalidStatusTransitionException(
-                "Cannot transition shipment from [{$currentStatus}] to [{$newStatus}]. Allowed: " . implode(', ', $allowed)
+                "Cannot transition shipment from [{$currentStatus}] to [{$newStatus}]. Allowed: ".implode(', ', $allowed)
             );
         }
 
@@ -44,9 +42,8 @@ final class ShipmentStateMachine
     /**
      * Determine whether a transition is allowed.
      *
-     * @param string $from Current status.
-     * @param string $to Requested status.
-     * @return bool
+     * @param  string  $from  Current status.
+     * @param  string  $to  Requested status.
      */
     public function canTransition(string $from, string $to): bool
     {
@@ -56,7 +53,7 @@ final class ShipmentStateMachine
     /**
      * Get allowed transitions for a status.
      *
-     * @param string $from Current status.
+     * @param  string  $from  Current status.
      * @return array<int, string>
      */
     public function allowedTransitions(string $from): array
@@ -67,8 +64,7 @@ final class ShipmentStateMachine
     /**
      * Determine whether a status is final.
      *
-     * @param string $status Shipment status.
-     * @return bool
+     * @param  string  $status  Shipment status.
      */
     public function isFinal(string $status): bool
     {

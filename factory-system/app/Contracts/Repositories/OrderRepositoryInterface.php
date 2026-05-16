@@ -9,9 +9,15 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface OrderRepositoryInterface
 {
-    public function findById(int $id): ?Order;
+    /**
+     * @return Order|null
+     */
+    public function findById(int $id);
 
-    public function findByIdOrFail(int $id): Order;
+    /**
+     * @return Order
+     */
+    public function findByIdOrFail(int $id);
 
     public function findByNumber(string $number): ?Order;
 
@@ -24,11 +30,17 @@ interface OrderRepositoryInterface
 
     public function getReadyOrders(): Collection;
 
-    /** @param array<string, mixed> $data */
-    public function create(array $data): Order;
+    /**
+     * @param  array<string, mixed>  $data
+     * @return Order
+     */
+    public function create(array $data);
 
-    /** @param array<string, mixed> $data */
-    public function update(Order $order, array $data): Order;
+    /**
+     * @param  array<string, mixed>  $data
+     * @return Order
+     */
+    public function update(Order $order, array $data);
 
     public function delete(Order $order): void;
 }

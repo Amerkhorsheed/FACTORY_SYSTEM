@@ -7,14 +7,23 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface StockMovementRepositoryInterface
 {
-    public function findById(int $id): ?StockMovement;
+    /**
+     * @return StockMovement|null
+     */
+    public function findById(int $id);
 
-    public function findByIdOrFail(int $id): StockMovement;
+    /**
+     * @return StockMovement
+     */
+    public function findByIdOrFail(int $id);
 
     public function getForProduct(int $productId, int $limit = 50): Collection;
 
     public function getForDateRange(int $productId, string $from, string $to): Collection;
 
-    /** @param array<string, mixed> $data */
-    public function create(array $data): StockMovement;
+    /**
+     * @param  array<string, mixed>  $data
+     * @return StockMovement
+     */
+    public function create(array $data);
 }
