@@ -14,7 +14,7 @@ final class OrderStateMachine
         'pending' => ['accepted', 'cancelled'],
         'accepted' => ['preparing', 'cancelled'],
         'preparing' => ['ready', 'cancelled'],
-        'ready' => ['shipped', 'cancelled'],
+        'ready' => ['shipped', 'delivered', 'cancelled'],
         'shipped' => ['delivered', 'returned'],
         'delivered' => [],
         'cancelled' => [],

@@ -156,6 +156,31 @@
 - [x] Views and translations for customers
 - [x] routes/customers.php
 
+## PHASE 07 - MODULE 03: ORDERS
+- [x] app/DTOs/Orders/CreateOrderDTO.php + OrderItemDTO.php
+- [x] app/Pipelines/Order/ValidateCustomerCreditPipe.php
+- [x] app/Pipelines/Order/ValidateStockAvailabilityPipe.php
+- [x] app/Pipelines/Order/CalculateOrderTotalsPipe.php
+- [x] app/Services/Orders/OrderFinancialsService.php
+- [x] app/Services/Orders/OrderService.php
+- [x] app/Services/Orders/OrderStatusService.php
+- [x] app/Repositories/OrderRepository.php
+- [x] app/Http/Controllers/Orders/OrderController.php
+- [x] app/Http/Controllers/Orders/OrderStatusController.php
+- [x] app/Http/Requests/Orders/StoreOrderRequest.php
+- [x] app/Http/Requests/Orders/UpdateOrderRequest.php
+- [x] app/Http/Requests/Orders/CancelOrderRequest.php
+- [x] app/Policies/OrderPolicy.php
+- [x] app/Providers/AuthServiceProvider.php
+- [x] app/Events/Orders/OrderCreated.php, OrderAccepted.php, OrderCancelled.php, OrderDelivered.php
+- [x] app/Exceptions/CreditLimitExceededException.php
+- [x] app/Services/SettingService.php
+- [x] app/Services/Invoices/InvoiceService.php (minimal stub)
+- [x] app/DTOs/Invoices/RecordPaymentDTO.php
+- [x] database/factories/OrderFactory.php + OrderItemFactory.php
+- [x] Order CRUD tests (OrderCrudTest)
+- [x] Views, routes, translations for orders
+
 ## DONE
 - [x] Initial workspace discovery
 - [x] Management files created

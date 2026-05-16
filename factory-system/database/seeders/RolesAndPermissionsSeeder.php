@@ -34,6 +34,7 @@ class RolesAndPermissionsSeeder extends Seeder
         'orders.view',
         'orders.create',
         'orders.edit',
+        'orders.delete',
         'orders.cancel',
         'orders.view_all',
         'orders.assign_shipment',

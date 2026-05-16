@@ -30,7 +30,7 @@ class SeedersTest extends TestCase
         $this->assertDatabaseHas('roles', ['name' => 'shipping_staff']);
         $this->assertDatabaseHas('roles', ['name' => 'customer']);
 
-        $this->assertSame(47, Permission::count());
+        $this->assertSame(48, Permission::count());
     }
 
     /**
@@ -123,7 +123,7 @@ class SeedersTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $this->assertSame(4, Role::count());
-        $this->assertSame(47, Permission::count());
+        $this->assertSame(48, Permission::count());
         $this->assertSame(3, User::count());
         $this->assertSame(16, SystemSetting::count());
     }
