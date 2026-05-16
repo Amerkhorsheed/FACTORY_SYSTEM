@@ -10,6 +10,7 @@
 | 006 | 2026-05-16 | Seeders for roles, permissions, system settings, admin users, and product categories | 53/53 | Phase 05 complete; 47 permissions, 4 roles, 3 users, 16 settings seeded |
 | 007 | 2026-05-16 | Auth controller, 4 middleware classes, route structure, middleware registration, auth tests | 65/65 | Phase 06 complete; middleware reordered so portal runs before role |
 | 008 | 2026-05-16 | Inventory module: StockService, ProductService, repositories, controllers, policies, requests, events, exceptions, views, routes, tests | 78/78 | Phase 07 Module 01 complete; removed placeholder routes from web.php; fixed BaseRepository restore for newQueryWithoutScopes |
+| 009 | 2026-05-16 | Customer module: DTO, repository, service, controller, policy, requests, factory, views, routes, translations, tests | 89/89 | Phase 07 Module 02 complete; removed placeholder customer routes; created ReportService stub; fixed CustomerRepository variance issue |
 
 ## Module Status
 | Module | Status | % Done | Blockers |
@@ -22,7 +23,7 @@
 | 05 Seeders & Roles | [x] | 100% | - |
 | 01 Auth | [x] | 100% | - |
 | 02 Inventory | [x] | 100% | - |
-| 03 Customers | [ ] | 0% | - |
+| 03 Customers | [x] | 100% | - |
 | 04 Orders | [ ] | 0% | - |
 | 05 Distribution | [ ] | 0% | - |
 | 06 Invoicing | [ ] | 0% | - |
@@ -399,3 +400,58 @@
 
 ### Next Session Plan:
 - PHASE 07: Module 02 — Customers (CustomerService, CustomerRepository, CustomerController, form requests, policy, and tests).
+
+## Session 009 - Customer Module (Phase 07 Module 02)
+**Date:** 2026-05-16
+**Phase:** 07 - Module 02: Customers
+
+### Completed:
+- [x] Created `CreateCustomerDTO` immutable data transfer object with `fromArray` factory
+- [x] Created `CustomerRepository` with search, filters, pagination, and order-search query
+- [x] Created `CustomerService` implementing `CustomerServiceInterface` — CRUD, portal access enable/disable, balance recalculation, order history
+- [x] Created `CustomerController` with `authorizeResource`, CRUD, activation toggle, portal access toggle, and statement view
+- [x] Created `StoreCustomerRequest` and `UpdateCustomerRequest` with full validation and permission-based authorization
+- [x] Created `CustomerPolicy` with permission checks for view, create, update, delete, manageCredit, and viewBalance
+- [x] Created minimal `ReportService` stub in `app/Services/Erp/` to satisfy controller statement action
+- [x] Created `CustomerFactory` with proper `User::factory()` relation for `created_by`
+- [x] Created minimal Blade views for customer pages
+- [x] Created `routes/customers.php` and required it in `routes/web.php`
+- [x] Updated `lang/ar/customers.php` with full Arabic translation strings
+- [x] Created `CustomerCrudTest` with 11 tests covering creation, uniqueness, portal access, credit calculation, update, soft delete, active-order guard, activation toggle, and statement view
+
+### Files Created (14):
+- `app/DTOs/Customers/CreateCustomerDTO.php`
+- `app/Repositories/CustomerRepository.php`
+- `app/Services/Customers/CustomerService.php`
+- `app/Services/Erp/ReportService.php`
+- `app/Http/Controllers/Customers/CustomerController.php`
+- `app/Http/Requests/Customers/StoreCustomerRequest.php`
+- `app/Http/Requests/Customers/UpdateCustomerRequest.php`
+- `app/Policies/CustomerPolicy.php`
+- `database/factories/CustomerFactory.php`
+- `tests/Feature/CustomerCrudTest.php`
+- `routes/customers.php`
+- `resources/views/customers/index.blade.php`
+- `resources/views/customers/create.blade.php`
+- `resources/views/customers/show.blade.php`
+- `resources/views/customers/edit.blade.php`
+- `resources/views/customers/statement.blade.php`
+
+### Files Updated (3):
+- `routes/web.php` (removed placeholder customer routes, added `require customers.php`)
+- `lang/ar/customers.php`
+- `database/factories/CustomerFactory.php` (fixed `created_by` relation and Faker `state()` call)
+
+### Verification:
+- Focused Phase 07 Module 02 tests -> 11 passed, 31 assertions
+- `php artisan clear-compiled` -> passed
+- Pint formatting pass -> fixed minor style issues across 9 files
+- Full suite -> 89 passed, 236 assertions
+
+### Notes:
+- `CustomerRepository` does NOT override `create`/`update`/`delete` from `BaseRepository` to avoid PHP parameter variance errors. `BaseRepository`'s broader `Model` parameter types naturally satisfy the interface's narrower `Customer` parameter types via contravariance.
+- `ReportService` is a minimal stub; full ERP reporting engine will be built in a later phase.
+- `CustomerFactory` uses `User::factory()` for `created_by` to satisfy the foreign key constraint in strict test environments.
+
+### Next Session Plan:
+- PHASE 07: Module 03 — Orders (OrderService, OrderRepository, OrderController, form requests, policy, DTOs, and tests).

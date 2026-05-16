@@ -28,16 +28,6 @@ Route::middleware(['auth', 'active', 'portal', 'role:super_admin|accountant|ship
 
         Route::get('/erp', fn () => 'ERP Dashboard')->name('erp.dashboard');
 
-        Route::prefix('customers')->name('customers.')->group(function () {
-            Route::get('/', fn () => 'Customers Index')->name('index');
-            Route::get('/create', fn () => 'Customers Create')->name('create');
-            Route::post('/', fn () => 'Customers Store')->name('store');
-            Route::get('/{customer}', fn () => 'Customers Show')->name('show');
-            Route::get('/{customer}/edit', fn () => 'Customers Edit')->name('edit');
-            Route::put('/{customer}', fn () => 'Customers Update')->name('update');
-            Route::delete('/{customer}', fn () => 'Customers Destroy')->name('destroy');
-        });
-
         Route::prefix('orders')->name('orders.')->group(function () {
             Route::get('/', fn () => 'Orders Index')->name('index');
             Route::get('/create', fn () => 'Orders Create')->name('create');
@@ -105,3 +95,4 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout');
 
 require __DIR__.'/products.php';
+require __DIR__.'/customers.php';

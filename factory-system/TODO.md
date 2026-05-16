@@ -142,6 +142,20 @@
 - [x] Views and translations for products/stock
 - [x] routes/products.php
 
+## PHASE 07 - MODULE 02: CUSTOMERS
+- [x] app/DTOs/Customers/CreateCustomerDTO.php
+- [x] app/Repositories/CustomerRepository.php
+- [x] app/Services/Customers/CustomerService.php
+- [x] app/Services/Erp/ReportService.php (minimal stub)
+- [x] app/Http/Controllers/Customers/CustomerController.php
+- [x] app/Http/Requests/Customers/StoreCustomerRequest.php
+- [x] app/Http/Requests/Customers/UpdateCustomerRequest.php
+- [x] app/Policies/CustomerPolicy.php
+- [x] database/factories/CustomerFactory.php
+- [x] Customer CRUD tests (CustomerCrudTest)
+- [x] Views and translations for customers
+- [x] routes/customers.php
+
 ## DONE
 - [x] Initial workspace discovery
 - [x] Management files created
