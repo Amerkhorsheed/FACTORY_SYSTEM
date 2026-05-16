@@ -25,6 +25,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 014 | 2026-05-16 | Quality audit, DOCS source sync, controller query refactor, report cleanup | 138/138 | PART6 indexed; 81 routes registered |
 | 015 | 2026-05-16 | Admin module: users, settings, audit log, routes, views, policies, tests | 146/146 | Phase 07 Module 07 complete; 90 routes registered |
 | 016 | 2026-05-16 | Frontend foundation: RTL shell, components, Tailwind/Alpine assets, customer portal, tests | 153/153 | Phase 08 foundation complete; 97 routes registered |
+| 017 | 2026-05-17 | Frontend module view replacement: inventory, customers, orders, shipments, invoices, payments, expenses, and reports | 153/153 | Non-PDF module placeholders replaced with shared RTL layout patterns |
 
 ## Module Status
 | Module | Status | % Done | Blockers |
@@ -43,7 +44,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 07.05 Invoicing | [x] | 100% | - |
 | 07.06 Payments & ERP | [x] | 100% | - |
 | 07.07 Admin | [x] | 100% | - |
-| 08 Frontend | [~] | 45% | Remaining module CRUD/report Blade placeholders still need full layout replacement |
+| 08 Frontend | [~] | 85% | Auth/welcome polish remains optional; PDF output is tracked separately in Phase 09 |
 | 09 PDF | [ ] | 0% | `PdfService` is currently an HTML stub |
 | 10 Notifications | [ ] | 0% | - |
 | 11 Deployment | [ ] | 0% | - |
@@ -64,6 +65,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Phase 07.06 Payments & ERP: payment listing/details/deletion, expenses, dashboard KPIs, sales/receivables/stock/profit-loss reports, routes, views, tests completed.
 - Phase 07.07 Admin: user management, settings management, audit log listing/details, routes, views, translations, policies, requests, notification, tests completed.
 - Phase 08 Frontend foundation: shared RTL layout, navigation, components, Tailwind/PostCSS pipeline, Admin/ERP dashboard layout upgrade, customer portal screens, and tests completed.
+- Phase 08 Module views: non-PDF inventory, customer, order, shipment, invoice, payment, expense, and report pages replaced with shared RTL layout/component patterns.
 
 ## Session 014 Audit Changes
 - Added `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md` to `TASKS.md`.
@@ -94,9 +96,17 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Extended `CustomerPolicy` with own-profile portal abilities.
 - Added `PortalFrontendTest` covering portal dashboard, scoped lists, unauthorized record access, details pages, profile update, secure server-side order pricing, and staff blocking.
 
+## Session 017 Frontend View Replacement Changes
+- Replaced remaining non-PDF placeholder Blade pages for products, stock movements, low-stock alerts, customers, statements, orders, daily orders, shipments, invoices, payments, expenses, and ERP reports.
+- Added richer responsive index, create, edit, show, and report screens using the shared RTL layout/components.
+- Expanded Arabic UI/product/customer/order translations needed by the upgraded pages.
+- Added shipment helper repository/service methods for available trucks, available drivers, and ready orders so controllers stay thin.
+- Updated payment listing data to eager-load customer relationships required by the upgraded payment screens.
+- Confirmed only PDF stub views, auth login, welcome, and the shared layout remain as standalone full-page Blade files.
+
 ## Latest Verification
 - `php artisan test` -> 153 passed, 395 assertions.
-- `vendor\\bin\\pint` -> passed.
+- `vendor\\bin\\pint --test` -> passed.
 - `php artisan route:list --except-vendor` -> 97 routes registered.
 - `npm run build` -> passed.
 - Authored project file count check -> no non-generated project-managed file exceeds 400 lines.
@@ -106,10 +116,10 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Local PHP is 8.2.12; blueprint target is PHP 8.3.
 - Local MySQL credentials are unavailable; tests use SQLite in-memory via `phpunit.xml`.
 - Redis is unavailable locally; `.env` uses file/sync fallbacks.
-- Remaining module CRUD/report pages still include minimal placeholder Blade views outside the Admin, ERP dashboard, and Portal screens.
+- Non-PDF module CRUD/report placeholder views have been replaced; auth/welcome polish is still available as optional frontend work.
 - Full PDF generation is upcoming; `PdfService` currently stores HTML output.
 
 ## Next Session Plan
-- Continue Phase 08 by replacing remaining module placeholder views with shared layout patterns.
-- Prioritize inventory, customers, orders, shipments, invoices, payments, expenses, and reports index/show screens.
+- Finish Phase 08 polish if desired by upgrading auth and welcome screens to the final visual standard.
+- Begin Phase 09 PDF generation when ready, replacing the current HTML/PDF stubs with production output.
 - Keep page files under 400 lines and add feature coverage where behavior changes.

@@ -14,7 +14,7 @@
 
 ## 📚 Source Documents
 
-The complete system specification is contained in 5 detailed prompt files totaling **~548 KB**. These are the **single authoritative source of truth** for all requirements, code patterns, and implementation details.
+The complete system specification is contained in **6 detailed prompt files** totaling **~663 KB**. These are the **single authoritative source of truth** for all requirements, code patterns, and implementation details.
 
 | Part | File                                            | Lines  | Size    | Specification Coverage                                                                                   |
 |------|-------------------------------------------------|--------|---------|----------------------------------------------------------------------------------------------------------|
@@ -23,6 +23,7 @@ The complete system specification is contained in 5 detailed prompt files totali
 | 3    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART3.md`     | 3,387  | ~113 KB | Model Traits (HasMoneyFormatting, HasSoftDeleteGuard, GeneratesSequentialCode) · Full Models (Product, Customer, Invoice, Shipment) · 4 Observers · 5 Notifications · PdfService · ReportService · Frontend CSS/JS setup · Deployment (Docker, Nginx, Supervisor) · Seeders · README.md · CHANGELOG.md |
 | 4    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART4.md`     | 3,526  | ~117 KB | 7 Policies (Order, Invoice, Payment, Product, Customer, Shipment, Expense) · AuthServiceProvider · 4 Middleware · LoginController · ShipmentService · CustomerService · CustomerPortalController · Livewire (ShipmentOrderAssignment, NotificationBell) · Email templates · Error pages · 3 Export strategies · `config/money.php` · `config/pdf.php` · `bootstrap/app.php` |
 | 5    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART5.md`     | 3,411  | ~109 KB | Models (Truck, Driver, OrderItem, StockMovement, Expense, SystemSetting, ProductCategory, Payment, User, Order) · Repositories (Invoice, Shipment, Customer, StockMovement) · Services (ProductService, StockService, CustomerService, ExpenseService) · Events · Listeners · Model Factories (9) · Seeders (6) · Unit Tests (7) · Feature Tests (10) |
+| 6    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md`     | ~3,000 | ~115 KB | Additional specifications, extended requirements, supplementary patterns and implementation details        |
 
 **Cross-reference guide — which Part to read for each module:**
 
@@ -238,10 +239,11 @@ These rules apply to **every line of code** in the project. Violations must be c
 ```
 ╔═══════════════════════════════════════════════════════════════════╗
 ║                                                                   ║
-║   CURRENT PHASE:  00 — Project Bootstrap                         ║
-║   STATUS:         🟡 In Progress (10%)                            ║
-║   NEXT PHASE:     01 — Database & Migrations                     ║
-║   ESTIMATED:      ~270 files total across 19 phases               ║
+║   CURRENT PHASE:  Frontend Completion (Stream 2)                 ║
+║   STATUS:         🟡 In Progress (70% overall)                    ║
+║   COMPLETED:      Phases 00–07 + Frontend Foundation (153 tests) ║
+║   REMAINING:      Frontend views, PDF, Notifications, Deploy     ║
+║   ESTIMATED:      ~270 files total · ~200 built · ~85 remaining  ║
 ║                                                                   ║
 ╚═══════════════════════════════════════════════════════════════════╝
 ```

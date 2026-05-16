@@ -267,8 +267,10 @@
 - [x] Replace Admin and ERP dashboard pages with shared layout patterns
 - [x] Implement customer portal repository/service/controller/routes/views
 - [x] Add frontend/portal feature tests
-- [ ] Replace remaining module placeholder Blade pages with shared layout patterns
-- [ ] Add richer responsive CRUD screens for inventory, customers, orders, shipments, invoices, payments, expenses, and reports
+- [x] Replace remaining module placeholder Blade pages with shared layout patterns
+- [x] Add richer responsive CRUD screens for inventory, customers, orders, shipments, invoices, payments, expenses, and reports
+- [ ] Optional polish: upgrade auth login and welcome pages to the final visual standard
+- [ ] Keep PDF-specific Blade output for Phase 09 production PDF work
 
 ## DONE
 - [x] Initial workspace discovery
@@ -291,3 +293,4 @@
 - [x] Phase 07 Module 05 invoicing completed
 - [x] Phase 07 Module 06 payments and ERP completed
 - [x] Phase 07 Module 07 admin completed
+- [x] Phase 08 frontend foundation and module view replacement completed

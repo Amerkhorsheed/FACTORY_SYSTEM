@@ -279,6 +279,7 @@ LAYER RULES:
 | `DOCS/Part 3`    | Models, Observers, PDF, Reports       | 🔒 Read-Only  | Phase 04, 12–13                  |
 | `DOCS/Part 4`    | Policies, Middleware, Auth, Livewire  | 🔒 Read-Only  | Phase 06, 14–16                  |
 | `DOCS/Part 5`    | Remaining Models, Tests, Seeders      | 🔒 Read-Only  | Phase 04–05, 17                  |
+| `DOCS/Part 6`    | Extended specs, supplementary patterns | 🔒 Read-Only  | All phases (supplementary)       |
 
 ---
 

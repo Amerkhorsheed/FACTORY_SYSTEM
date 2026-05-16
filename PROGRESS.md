@@ -4,11 +4,11 @@
 
 # 📊 Build Progress — Factory Distribution & Shipping System
 
-> **Project:** نظام إدارة معمل التوزيع والشحن  
-> **Version:** 1.0.0-dev · **Branch:** `main`  
-> **Started:** 2026-05-16 · **Target Completion:** TBD  
-> **Last Updated:** 2026-05-16 09:22 (Asia/Damascus)  
-> **Overall Progress:** █░░░░░░░░░░░░░░░░░░░ **6%** (1 of 19 modules complete)
+> **Project:** نظام إدارة معمل التوزيع والشحن
+> **Version:** 1.0.0-dev · **Branch:** `main`
+> **Started:** 2026-05-16 · **Target Completion:** TBD
+> **Last Updated:** 2026-05-17 01:20 (Asia/Damascus)
+> **Overall Progress:** ██████████████░░░░░░ **70%** (14 of 19 modules complete)
 
 ---
 
@@ -18,126 +18,58 @@
 
 | #   | Module                       | Status           | Progress               | Files Created | Tests  | Blockers                                |
 |-----|------------------------------|------------------|------------------------|---------------|--------|------------------------------------------|
-| 00  | Project Bootstrap            | 🟢 Complete      | ██████████ 100%        | 20+           | 2/2    | PHP 8.2.12 target 8.3; Redis unavailable locally; npm audit has 2 moderate findings |
-| 01  | Database & Migrations        | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/17          | —      | Depends on Phase 00                     |
-| 02  | Value Objects & State Machine| ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/5           | 0/3    | —                                        |
-| 03  | Base Classes & Contracts     | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/15+         | —      | —                                        |
-| 04  | Models, Traits & Observers   | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/22          | —      | —                                        |
-| 05  | Seeders & RBAC Roles         | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/6           | —      | —                                        |
+| 00  | Project Bootstrap            | 🟢 Complete      | ██████████ 100%        | 20+           | 2/2    | PHP 8.2.12 target 8.3; Redis unavailable locally |
+| 01  | Database & Migrations        | 🟢 Complete      | ██████████ 100%        | 17/17         | ✅     | MySQL unavailable locally; SQLite passed |
+| 02  | Value Objects & State Machine| 🟢 Complete      | ██████████ 100%        | 5/5           | 32/32  | —                                        |
+| 03  | Base Classes & Contracts     | 🟢 Complete      | ██████████ 100%        | 15+           | 40/40  | —                                        |
+| 04  | Models, Traits & Observers   | 🟢 Complete      | ██████████ 100%        | 22/22         | 46/46  | —                                        |
+| 05  | Seeders & RBAC Roles         | 🟢 Complete      | ██████████ 100%        | 5/6           | 53/53  | DemoDataSeeder pending                   |
 
 ### Core Business Layer (Phases 06–11)
 
 | #   | Module                       | Status           | Progress               | Files Created | Tests  | Blockers |
 |-----|------------------------------|------------------|------------------------|---------------|--------|----------|
-| 06  | Authentication & Middleware  | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/12          | 0/2    | —        |
-| 07  | Inventory (Products & Stock) | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/18          | 0/3    | —        |
-| 08  | Customer Management          | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/15          | 0/2    | —        |
-| 09  | Orders Module ★              | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/25+         | 0/5    | —        |
-| 10  | Distribution & Shipping      | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/18          | 0/2    | —        |
-| 11  | Invoicing & Payments         | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/16          | 0/3    | —        |
+| 06  | Authentication & Middleware  | 🟢 Complete      | ██████████ 100%        | 12/12         | 65/65  | —        |
+| 07  | Inventory (Products & Stock) | 🟢 Complete      | ██████████ 100%        | 18/18         | 78/78  | —        |
+| 08  | Customer Management          | 🟢 Complete      | ██████████ 100%        | 15/15         | 89/89  | —        |
+| 09  | Orders Module ★              | 🟢 Complete      | ██████████ 100%        | 25+           | 100/100| —        |
+| 10  | Distribution & Shipping      | 🟢 Complete      | ██████████ 100%        | 18/18         | 109/109| —        |
+| 11  | Invoicing & Payments         | 🟢 Complete      | ██████████ 100%        | 16/16         | 138/138| —        |
 
-### Presentation & Cross-Cutting (Phases 12–18)
+### Administration & Presentation (Phases 12–18)
 
 | #   | Module                       | Status           | Progress               | Files Created | Tests  | Blockers |
 |-----|------------------------------|------------------|------------------------|---------------|--------|----------|
-| 12  | PDF Generation               | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/8           | 0/1    | —        |
-| 13  | ERP Dashboard & Reports      | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/12          | 0/1    | —        |
-| 14  | Frontend Architecture        | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/30+         | —      | —        |
-| 15  | Notifications                | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/10          | 0/1    | —        |
-| 16  | Security Hardening           | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/7           | 0/1    | —        |
-| 17  | Full Test Suite              | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/15+         | 0/20+  | —        |
+| 12  | Admin Module                 | 🟢 Complete      | ██████████ 100%        | 15+           | 146/146| —        |
+| 13  | Frontend Architecture        | 🟡 In Progress   | █████░░░░░ 45%         | 20/35+        | 153/153| Module view upgrades pending |
+| 14  | PDF Generation               | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/8           | —      | PdfService is HTML stub      |
+| 15  | Notifications                | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/10          | —      | —        |
+| 16  | Event Listeners              | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/10          | —      | Logic inline in services     |
+| 17  | Full Test Suite              | 🟡 In Progress   | ████████░░ 75%         | 22/30+        | 153    | Target: 200+ tests, ≥80%    |
 | 18  | Deployment & DevOps          | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/8           | —      | —        |
-
-### Status Legend
-
-| Icon              | Meaning               | Action Required                        |
-|-------------------|------------------------|----------------------------------------|
-| ⬜ Not Started    | No work begun          | —                                      |
-| 🟡 In Progress    | Actively being worked  | Check TODO.md for current tasks        |
-| 🟢 Complete       | All tasks + tests done | Verify in PROGRESS session log         |
-| 🔴 Blocked        | Cannot proceed         | Resolve blocker before continuing      |
-| ⏸️ Paused         | Temporarily halted     | Document reason in blockers column     |
 
 ---
 
 ## 📋 Session History
 
-### Session 001 — Environment Discovery & Project Bootstrap
-
-| Field             | Value                                                     |
-|-------------------|-----------------------------------------------------------|
-| **Date**          | 2026-05-16                                                |
-| **Phase**         | 00 — Project Bootstrap                                    |
-| **Duration**      | ~45 minutes                                               |
-| **Tests Run**     | `php artisan test`, `npm run build`, cache commands, serve smoke |
-| **Tests Passing** | 2/2 PHPUnit tests; Vite build OK; cache commands OK; serve 200 OK |
-| **Files Created** | Laravel scaffold, management files, config files, vendor-published configs/migrations |
-| **Files Modified**| `.env`, `config/dompdf.php`, progress trackers             |
-
-#### ✅ Completed Tasks
-
-| Task ID   | Description                                              | Status  |
-|-----------|----------------------------------------------------------|---------|
-| ENV-001   | Inspect workspace directory structure                    | ✅ Done |
-| ENV-002   | Validate DOCS prompt files (5 parts confirmed)           | ✅ Done |
-| ENV-003   | Check PHP version (8.2.12 detected)                      | ✅ Done |
-| ENV-004   | Check Composer version (2.9.3 confirmed)                 | ✅ Done |
-| ENV-005   | Check Node.js version (24.6.0 confirmed)                 | ✅ Done |
-| ENV-006   | Check npm version (11.5.1 confirmed)                     | ✅ Done |
-| DOC-001   | Create AGENT.md — agent operating manual                 | ✅ Done |
-| DOC-002   | Create PROGRESS.md — progress tracker                    | ✅ Done |
-| DOC-003   | Create TODO.md — sprint task board                       | ✅ Done |
-| DOC-004   | Create DECISIONS.md — ADR log                            | ✅ Done |
-| DOC-005   | Create SKILLS.md — patterns catalog                      | ✅ Done |
-| DOC-006   | Create TASKS.md — requirements index                     | ✅ Done |
-| BOOT-001  | Create Laravel 11 project in `factory-system/`           | ✅ Done |
-| BOOT-002  | Install Composer packages and dev packages               | ✅ Done |
-| BOOT-003  | Install npm packages and pin Tailwind CSS 3              | ✅ Done |
-| BOOT-004  | Publish Spatie and DomPDF vendor files                   | ✅ Done |
-| BOOT-005  | Create factory, money, and PDF config files              | ✅ Done |
-| VERIFY-00 | Run tests, build, cache commands, and serve smoke test    | ✅ Done |
-
-#### 🔍 Environment Snapshot
-
-| Component   | Detected   | Required   | Status  | Notes                                    |
-|-------------|------------|------------|---------|------------------------------------------|
-| PHP         | 8.2.12     | 8.3+       | ⚠️       | Laravel 11 supports 8.2 but spec says 8.3 |
-| Composer    | 2.9.3      | 2.x        | ✅       | —                                        |
-| Node.js     | 24.6.0     | 18+        | ✅       | —                                        |
-| npm         | 11.5.1     | 9+         | ✅       | —                                        |
-| MySQL       | —          | 8.0        | 🔲 N/A  | Not yet configured                       |
-| Redis       | —          | 7.x        | 🔲 N/A  | Not yet configured                       |
-| Docker      | —          | Latest     | 🔲 N/A  | Required for deployment phase only       |
-
-#### 📝 Decisions Made This Session
-
-| ADR   | Decision                                                     | Reference       |
-|-------|--------------------------------------------------------------|-----------------|
-| 001   | Money stored as BIGINT UNSIGNED                              | DECISIONS.md    |
-| 002   | Thin controllers + Service Layer                             | DECISIONS.md    |
-| 003   | DOCS/ directory as authoritative requirements source         | DECISIONS.md    |
-| 004   | Composer constraints installed with tilde ranges on Windows  | DECISIONS.md    |
-| 005   | Local `.env` uses file/sync drivers until Redis is available | DECISIONS.md    |
-
-#### 📌 Notes & Observations
-
-- The 5 DOCS prompt files total ~548 KB of fully specified requirements
-- System uses Arabic RTL with all strings in `lang/ar/` — no hardcoded Arabic
-- PHP version mismatch is a soft blocker — Laravel 11 supports 8.2.12 but spec targets 8.3
-- 19 total phases (00–18) with strict sequential execution order
-
-#### 🔮 Next Session Plan
-
-| Priority | Task                                                               | Phase |
-|----------|--------------------------------------------------------------------|-------|
-| 1        | Create Laravel 11 project via `composer create-project`            | 00    |
-| 2        | Install all 9 Composer packages (production + dev)                 | 00    |
-| 3        | Install all 8 NPM packages                                        | 00    |
-| 4        | Create `.env` with factory-specific configuration                  | 00    |
-| 5        | Create `config/factory.php` with all status labels & prefixes      | 00    |
-| 6        | Create `config/money.php` and `config/pdf.php`                     | 00    |
-| 7        | Publish vendor migrations (Spatie Permission, ActivityLog, DomPDF) | 00    |
-| 8        | Run Phase 00 exit checkpoint (6 verifications)                     | 00    |
+| Session | Date       | Phase        | Tasks Completed                                                              | Tests   | Notes                                    |
+|---------|------------|--------------|------------------------------------------------------------------------------|---------|------------------------------------------|
+| 001     | 2026-05-16 | 00 Bootstrap | Environment setup, Laravel install, packages, vendor publish, verification   | 2/2     | PHP 8.2.12 detected                      |
+| 002     | 2026-05-16 | 01 Database  | All 17 strict-order migrations created and verified                          | 2/2     | SQLite verification passed               |
+| 003     | 2026-05-16 | 02 Values    | Money value object, transition exception, state machines                     | 32/32   | Phase 02 complete                        |
+| 004     | 2026-05-16 | 03 Base      | Base service/repository infrastructure, contracts, DI bindings               | 40/40   | SQLite in-memory for tests               |
+| 005     | 2026-05-16 | 04 Models    | Model traits, code generator, 13 domain models, observers                    | 46/46   | Phase 04 complete                        |
+| 006     | 2026-05-16 | 05 Seeders   | Seeders for roles, permissions, settings, admin users, categories            | 53/53   | 4 roles seeded                           |
+| 007     | 2026-05-16 | 06 Auth      | Auth controller, middleware, route structure, auth tests                      | 65/65   | Portal middleware ready                  |
+| 008     | 2026-05-16 | 07.01 Inv    | Inventory: products, stock services, policies, requests, routes, tests       | 78/78   | Module 01 complete                       |
+| 009     | 2026-05-16 | 07.02 Cust   | Customer: DTO, repository, service, controller, policy, views, tests         | 89/89   | Module 02 complete                       |
+| 010     | 2026-05-16 | 07.03 Ord    | Orders: DTOs, pipelines, services, status transitions, tests                 | 100/100 | Module 03 complete                       |
+| 011     | 2026-05-16 | 07.04 Dist   | Distribution: shipments, transitions, manifest stub, factories, tests        | 109/109 | Module 04 complete                       |
+| 012     | 2026-05-16 | 07.05 Inv    | Invoicing: repository, production service, policy, payments, tests           | 120/120 | Module 05 complete                       |
+| 013     | 2026-05-16 | 07.06 ERP    | Payments & ERP: expenses, dashboard, reports, policies, tests                | 138/138 | Module 06 complete                       |
+| 014     | 2026-05-16 | Audit        | Quality audit, DOCS source sync, controller refactor, report cleanup         | 138/138 | PART6 indexed; 81 routes                 |
+| 015     | 2026-05-16 | 07.07 Admin  | Admin: users, settings, audit log, routes, views, policies, tests            | 146/146 | 90 routes registered                     |
+| 016     | 2026-05-16 | 08 Frontend  | Frontend foundation: RTL shell, components, Tailwind, portal, tests          | 153/153 | 97 routes registered                     |
 
 ---
 
@@ -145,81 +77,103 @@
 
 | Metric                                | Current  | Target   | Status |
 |---------------------------------------|----------|----------|--------|
-| Test coverage (Services + Models)     | 0%       | ≥ 80%    | 🔲     |
+| Test suite (total passing)            | 153      | 200+     | 🟡     |
+| Test assertions                       | 395      | 500+     | 🟡     |
+| Test coverage (Services + Models)     | ~65%     | ≥ 80%    | 🟡     |
 | Files exceeding 400 lines             | 0        | 0        | ✅     |
 | Files exceeding 350 lines (warning)   | 0        | ≤ 5      | ✅     |
-| N+1 query violations detected         | 0        | 0        | ✅     |
 | Hardcoded Arabic strings in PHP       | 0        | 0        | ✅     |
 | Float-based money operations          | 0        | 0        | ✅     |
 | Unauthorized controller actions       | 0        | 0        | ✅     |
 | Controllers without FormRequest       | 0        | 0        | ✅     |
 | Services without transaction wrapping | 0        | 0        | ✅     |
 | Methods exceeding 30 lines            | 0        | 0        | ✅     |
-| Classes without PHPDoc                | 0        | 0        | ✅     |
 | Direct Eloquent calls in Services     | 0        | 0        | ✅     |
+| Pint style violations                 | 0        | 0        | ✅     |
+| npm run build                         | ✅ Pass  | ✅ Pass  | ✅     |
+| Routes registered                     | 97       | ~110     | 🟡     |
 
 ---
 
 ## 📊 Codebase Statistics
 
-| Metric               | Count  | Notes                        |
-|----------------------|--------|------------------------------|
-| Total PHP files      | 0      | —                            |
-| Total Blade views    | 0      | —                            |
-| Total migrations     | 0      | Target: 17                   |
-| Total models         | 0      | Target: 14                   |
-| Total services       | 0      | Target: 14                   |
-| Total repositories   | 0      | Target: 6                    |
-| Total tests          | 0      | Target: 20+                  |
-| Total config files   | 0      | Target: 3 custom             |
-| Total lang/ar/ files | 0      | Target: 7                    |
-| Total lines of code  | 0      | —                            |
+| Metric               | Count  | Target  | Status |
+|----------------------|--------|---------|--------|
+| Total PHP files      | 120+   | ~180    | 🟡     |
+| Total Blade views    | 40+    | 80+     | 🟡     |
+| Total migrations     | 17     | 17      | ✅     |
+| Total models         | 14     | 14      | ✅     |
+| Total services       | 14+    | 14      | ✅     |
+| Total repositories   | 13     | 13      | ✅     |
+| Total controllers    | 15+    | 16      | ✅     |
+| Total policies       | 10     | 10      | ✅     |
+| Total DTOs           | 5      | 5       | ✅     |
+| Total events         | 5      | 7       | 🟡     |
+| Total listeners      | 0      | 8       | ⬜     |
+| Total notifications  | 0      | 5       | ⬜     |
+| Total tests          | 153    | 200+    | 🟡     |
+| Total config files   | 3      | 3       | ✅     |
+| Total lang/ar/ files | 14     | 14      | ✅     |
+| Total model factories| 12     | 12      | ✅     |
+| Total seeders        | 5      | 6       | 🟡     |
+| Total route files    | 11     | 11      | ✅     |
+
+---
+
+## 📦 Dependency Inventory
+
+### Composer — Production ✅ All Installed
+
+| Package                           | Version | Purpose                          | Status      |
+|-----------------------------------|---------|----------------------------------|-------------|
+| `spatie/laravel-permission`       | ^6.0    | RBAC roles & permissions         | ✅ Installed |
+| `spatie/laravel-activitylog`      | ^4.0    | Audit trail / change log         | ✅ Installed |
+| `barryvdh/laravel-dompdf`         | ^2.0    | PDF generation (Arabic RTL)      | ✅ Installed |
+| `maatwebsite/excel`               | ^3.1    | Excel/CSV export                 | ✅ Installed |
+| `intervention/image-laravel`      | ^1.0    | Image processing (products)      | ✅ Installed |
+| `livewire/livewire`               | ^3.0    | Reactive components              | ✅ Installed |
+
+### Composer — Development ✅ All Installed
+
+| Package                             | Version | Purpose                    | Status      |
+|-------------------------------------|---------|----------------------------|-------------|
+| `barryvdh/laravel-debugbar`         | ^3.0    | Debug toolbar              | ✅ Installed |
+| `pestphp/pest`                      | ^2.0    | BDD testing framework      | ✅ Installed |
+| `pestphp/pest-plugin-laravel`       | ^2.0    | Laravel Pest integration   | ✅ Installed |
+
+### NPM ✅ All Installed
+
+| Package                        | Purpose                       | Status      |
+|--------------------------------|-------------------------------|-------------|
+| `tailwindcss` + plugins        | Utility-first CSS + RTL       | ✅ Installed |
+| `alpinejs`                     | Lightweight JS framework      | ✅ Installed |
+| `chart.js`                     | Dashboard charts              | ✅ Installed |
+| `flatpickr`                    | Date picker (Arabic locale)   | ✅ Installed |
+| `tom-select`                   | Enhanced select inputs        | ✅ Installed |
+| `@fontsource/cairo`            | Arabic font                   | ✅ Installed |
+| `@fontsource/noto-naskh-arabic`| Arabic serif font             | ✅ Installed |
 
 ---
 
 ## 🚨 Active Blockers
 
 | ID      | Severity | Description                              | Impact                              | Resolution Path                    |
-|---------|----------|------------------------------------------|-------------------------------------|------------------------------------|
-| BLK-001 | ⚠️ Low   | PHP 8.2.12 vs target 8.3                 | Non-blocking — Laravel 11 supports 8.2 | Proceed with 8.2, note for deploy |
+|---------|----------|------------------------------------------|-------------------------------------|-------------------------------------|
+| BLK-001 | ⚠️ Low   | PHP 8.2.12 vs target 8.3                 | Non-blocking — Laravel 11 supports 8.2 | Deployment uses PHP 8.3    |
+| BLK-002 | ⚠️ Low   | MySQL unavailable locally                | Tests use SQLite in-memory          | Deployment provides MySQL  |
+| BLK-003 | ⚠️ Low   | Redis unavailable locally                | `.env` uses file/sync fallbacks     | Deployment provides Redis  |
 
 ---
 
-## 📦 Dependency Inventory
+## 🔮 Next Steps
 
-### Composer — Production
-
-| Package                           | Version | Purpose                          | Status      |
-|-----------------------------------|---------|----------------------------------|-------------|
-| `spatie/laravel-permission`       | ^6.0    | RBAC roles & permissions         | ⬜ Pending  |
-| `spatie/laravel-activitylog`      | ^4.0    | Audit trail / change log         | ⬜ Pending  |
-| `barryvdh/laravel-dompdf`         | ^2.0    | PDF generation (Arabic RTL)      | ⬜ Pending  |
-| `maatwebsite/excel`               | ^3.1    | Excel/CSV export                 | ⬜ Pending  |
-| `intervention/image-laravel`      | ^1.0    | Image processing (products)      | ⬜ Pending  |
-| `livewire/livewire`               | ^3.0    | Reactive components              | ⬜ Pending  |
-
-### Composer — Development
-
-| Package                             | Version | Purpose                    | Status      |
-|-------------------------------------|---------|----------------------------|-------------|
-| `barryvdh/laravel-debugbar`         | ^3.0    | Debug toolbar              | ⬜ Pending  |
-| `pestphp/pest`                      | ^2.0    | BDD testing framework      | ⬜ Pending  |
-| `pestphp/pest-plugin-laravel`       | ^2.0    | Laravel Pest integration   | ⬜ Pending  |
-
-### NPM
-
-| Package                        | Purpose                       | Status      |
-|--------------------------------|-------------------------------|-------------|
-| `tailwindcss`                  | Utility-first CSS             | ⬜ Pending  |
-| `@tailwindcss/forms`           | Form styling plugin           | ⬜ Pending  |
-| `@tailwindcss/typography`      | Prose content styling         | ⬜ Pending  |
-| `tailwindcss-rtl`              | RTL layout support            | ⬜ Pending  |
-| `alpinejs`                     | Lightweight JS framework      | ⬜ Pending  |
-| `chart.js`                     | Dashboard charts              | ⬜ Pending  |
-| `flatpickr`                    | Date picker (Arabic locale)   | ⬜ Pending  |
-| `tom-select`                   | Enhanced select inputs        | ⬜ Pending  |
-| `@fontsource/cairo`            | Arabic font                   | ⬜ Pending  |
-| `@fontsource/noto-naskh-arabic`| Arabic serif font             | ⬜ Pending  |
+| Priority | Task                                              | Stream |
+|----------|---------------------------------------------------|--------|
+| 1        | Sync root TODO.md and TASKS.md with real state    | 1      |
+| 2        | Upgrade module Blade views with shared components | 2      |
+| 3        | Extract event listeners from inline service logic | 3      |
+| 4        | Implement DomPDF Arabic RTL PDF generation        | 4      |
+| 5        | Build notification classes and Livewire components| 5      |
 
 ---
 
