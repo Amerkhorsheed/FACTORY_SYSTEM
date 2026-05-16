@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><title>Create Customer</title></head>
-<body><h1>Create Customer</h1></body>
-</html>
+@extends('layouts.app')
+@section('title', __('customers.create'))
+@section('page-title', __('ui.modules.customers'))
+
+@section('content')
+<x-page-header :title="__('customers.create')" :back="route('customers.index')" />
+<form method="POST" action="{{ route('customers.store') }}" class="max-w-5xl">@include('customers._form')</form>
+@endsection
