@@ -34,13 +34,13 @@ class PaymentRepository extends BaseRepository
 
     public function loadDetails(Payment $payment): Payment
     {
-        return $payment->load(['invoice.customer', 'receivedByUser']);
+        return $payment->load(['customer', 'invoice.customer', 'receivedByUser']);
     }
 
     /** @param array<string, mixed> $filters */
     private function filteredQuery(array $filters): Builder
     {
-        $query = Payment::with(['invoice.customer', 'receivedByUser']);
+        $query = Payment::with(['customer', 'invoice.customer', 'receivedByUser']);
 
         if (! empty($filters['customer_id'])) {
             $query->where('customer_id', (int) $filters['customer_id']);

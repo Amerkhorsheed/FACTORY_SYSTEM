@@ -38,8 +38,10 @@ class ShipmentController extends Controller
     public function create(): View
     {
         $this->authorize('create', Shipment::class);
+        $trucks = $this->shipmentService->availableTrucks();
+        $drivers = $this->shipmentService->availableDrivers();
 
-        return view('shipments.create');
+        return view('shipments.create', compact('trucks', 'drivers'));
     }
 
     public function store(StoreShipmentRequest $request): RedirectResponse
@@ -64,15 +66,18 @@ class ShipmentController extends Controller
         $this->authorize('view', $shipment);
 
         $shipment->load(['truck', 'driver', 'orders.customer']);
+        $readyOrders = $this->shipmentService->readyOrders();
 
-        return view('shipments.show', compact('shipment'));
+        return view('shipments.show', compact('shipment', 'readyOrders'));
     }
 
     public function edit(Shipment $shipment): View
     {
         $this->authorize('update', $shipment);
+        $trucks = $this->shipmentService->availableTrucks();
+        $drivers = $this->shipmentService->availableDrivers();
 
-        return view('shipments.edit', compact('shipment'));
+        return view('shipments.edit', compact('shipment', 'trucks', 'drivers'));
     }
 
     public function update(UpdateShipmentRequest $request, Shipment $shipment): RedirectResponse

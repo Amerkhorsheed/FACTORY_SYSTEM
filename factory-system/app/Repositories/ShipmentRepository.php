@@ -3,7 +3,10 @@
 namespace App\Repositories;
 
 use App\Contracts\Repositories\ShipmentRepositoryInterface;
+use App\Models\Driver;
+use App\Models\Order;
 use App\Models\Shipment;
+use App\Models\Truck;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -55,6 +58,26 @@ class ShipmentRepository extends BaseRepository implements ShipmentRepositoryInt
         return Shipment::with(['truck', 'driver'])
             ->active()
             ->forDate(today())
+            ->get();
+    }
+
+    public function availableTrucks(): Collection
+    {
+        return Truck::available()->orderBy('plate_number')->get();
+    }
+
+    public function availableDrivers(): Collection
+    {
+        return Driver::active()->orderBy('name')->get();
+    }
+
+    public function readyOrders(): Collection
+    {
+        return Order::with('customer')
+            ->where('status', 'ready')
+            ->whereNull('shipment_id')
+            ->latest('order_date')
+            ->limit(100)
             ->get();
     }
 }

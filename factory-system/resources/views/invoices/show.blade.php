@@ -1,5 +1,11 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><title>{{ $invoice->invoice_number }}</title></head>
-<body><h1>{{ $invoice->invoice_number }}</h1></body>
-</html>
+@extends('layouts.app')
+@section('title', $invoice->invoice_number)
+@section('page-title', __('invoices.invoice'))
+
+@section('content')
+@php($money = fn ($amount) => number_format((int) $amount).' '.__('ui.currency.syp'))
+<x-page-header :title="$invoice->invoice_number" :description="$invoice->customer?->name" :back="route('invoices.index')"><x-btn :href="route('invoices.download', $invoice)" variant="secondary">{{ __('invoices.download') }}</x-btn></x-page-header>
+<div class="grid gap-6 lg:grid-cols-3"><x-card :title="__('invoices.invoice')" class="lg:col-span-2"><dl class="grid gap-4 sm:grid-cols-4"><div><dt class="text-xs text-slate-500">{{ __('invoices.issue_date') }}</dt><dd class="font-bold">{{ $invoice->issue_date?->format('Y-m-d') }}</dd></div><div><dt class="text-xs text-slate-500">{{ __('invoices.due_date') }}</dt><dd class="font-bold">{{ $invoice->due_date?->format('Y-m-d') }}</dd></div><div><dt class="text-xs text-slate-500">{{ __('ui.fields.status') }}</dt><dd><x-status-badge :status="$invoice->status" /></dd></div><div><dt class="text-xs text-slate-500">{{ __('invoices.balance_due') }}</dt><dd class="font-bold tabular-nums">{{ $money($invoice->balance_due) }}</dd></div></dl></x-card><x-card :title="__('invoices.total')"><p class="text-2xl font-black text-brand-700 tabular-nums">{{ $money($invoice->total_amount) }}</p><p class="mt-2 text-sm text-slate-500">{{ __('invoices.paid') }}: {{ $money($invoice->paid_amount) }}</p></x-card></div>
+@can('recordPayment', $invoice)<x-card :title="__('invoices.payments')" class="mt-6"><form method="POST" action="{{ route('invoices.payments.store', $invoice) }}" class="grid gap-4 md:grid-cols-5">@csrf<x-form-input name="amount" :label="__('invoices.payment_amount')" type="number" required /><x-form-select name="payment_method" :label="__('invoices.payment_method')" required>@foreach(['cash','credit','check','bank_transfer'] as $method)<option value="{{ $method }}">{{ $method }}</option>@endforeach</x-form-select><x-form-input name="payment_date" :label="__('invoices.payment_date')" type="date" :value="today()->toDateString()" required /><x-form-input name="reference_number" :label="__('invoices.reference_number')" /><div class="flex items-end"><x-btn type="submit">{{ __('ui.actions.save') }}</x-btn></div></form></x-card>@endcan
+<x-card :title="__('invoices.payments')" class="mt-6">@forelse($invoice->payments as $payment)<div class="flex justify-between border-b border-slate-100 py-3 last:border-0"><a href="{{ route('payments.show', $payment) }}" class="font-bold text-brand-700">{{ $payment->payment_number }}</a><span class="tabular-nums">{{ $money($payment->amount) }}</span></div>@empty<x-empty-state />@endforelse</x-card>
+@endsection

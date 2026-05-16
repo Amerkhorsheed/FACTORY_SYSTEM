@@ -12,6 +12,7 @@ use App\Models\Shipment;
 use App\Models\Truck;
 use App\StateMachines\ShipmentStateMachine;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ShipmentService implements ShipmentServiceInterface
@@ -150,5 +151,20 @@ class ShipmentService implements ShipmentServiceInterface
     public function delete(Shipment $shipment): void
     {
         $this->repository->delete($shipment);
+    }
+
+    public function availableTrucks(): Collection
+    {
+        return $this->repository->availableTrucks();
+    }
+
+    public function availableDrivers(): Collection
+    {
+        return $this->repository->availableDrivers();
+    }
+
+    public function readyOrders(): Collection
+    {
+        return $this->repository->readyOrders();
     }
 }

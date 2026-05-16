@@ -3,9 +3,12 @@
 namespace App\Contracts\Services;
 
 use App\DTOs\Shipments\CreateShipmentDTO;
+use App\Models\Driver;
 use App\Models\Order;
 use App\Models\Shipment;
+use App\Models\Truck;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 interface ShipmentServiceInterface
 {
@@ -30,4 +33,13 @@ interface ShipmentServiceInterface
     public function update(Shipment $shipment, CreateShipmentDTO $dto): Shipment;
 
     public function delete(Shipment $shipment): void;
+
+    /** @return Collection<int, Truck> */
+    public function availableTrucks(): Collection;
+
+    /** @return Collection<int, Driver> */
+    public function availableDrivers(): Collection;
+
+    /** @return Collection<int, Order> */
+    public function readyOrders(): Collection;
 }
