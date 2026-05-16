@@ -32,11 +32,7 @@ class CustomerController extends Controller
             'search', 'category', 'region', 'is_active', 'has_balance',
         ]));
 
-        $kpis = [
-            'total' => Customer::count(),
-            'category_a' => Customer::where('category', 'A')->count(),
-            'with_debt' => Customer::where('outstanding_balance', '>', 0)->count(),
-        ];
+        $kpis = $this->service->getKpis();
 
         return view('customers.index', compact('customers', 'kpis'));
     }
@@ -58,7 +54,7 @@ class CustomerController extends Controller
 
     public function show(Customer $customer): View
     {
-        $customer->load(['orders' => fn ($q) => $q->latest()->limit(10), 'invoices']);
+        $this->service->loadDetails($customer);
 
         return view('customers.show', compact('customer'));
     }

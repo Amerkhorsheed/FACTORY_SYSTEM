@@ -8,6 +8,7 @@ use App\Exceptions\InsufficientStockException;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Services\BaseService;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -73,6 +74,20 @@ class StockService extends BaseService
             ->where('is_active', true)
             ->orderBy('stock_quantity')
             ->get();
+    }
+
+    /** @param array<string, mixed> $filters */
+    public function listMovements(array $filters, int $perPage = 0): LengthAwarePaginator
+    {
+        return $this->movements->paginateWithFilters(
+            $filters,
+            $perPage ?: config('factory.pagination.per_page', 20)
+        );
+    }
+
+    public function getRecentMovements(Product $product, int $limit = 50): Collection
+    {
+        return $this->movements->getForProduct($product->id, $limit);
     }
 
     private function calculateNewStock(int $before, string $type, int $qty): int

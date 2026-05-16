@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Products;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Products\StockAdjustmentRequest;
 use App\Models\Product;
-use App\Models\StockMovement;
 use App\Services\Products\StockService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,13 +18,9 @@ class StockController extends Controller
     {
         $this->authorize('viewAny', Product::class);
 
-        $movements = StockMovement::with(['product', 'createdByUser'])
-            ->when($request->product_id, fn ($q, $v) => $q->where('product_id', $v))
-            ->when($request->type, fn ($q, $v) => $q->where('type', $v))
-            ->when($request->date_from, fn ($q, $v) => $q->whereDate('created_at', '>=', $v))
-            ->when($request->date_to, fn ($q, $v) => $q->whereDate('created_at', '<=', $v))
-            ->latest()
-            ->paginate(config('factory.pagination.per_page', 20));
+        $movements = $this->stock->listMovements($request->only([
+            'product_id', 'type', 'date_from', 'date_to',
+        ]));
 
         return view('products.stock-movements', compact('movements'));
     }

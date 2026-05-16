@@ -6,17 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Products\StoreProductRequest;
 use App\Http\Requests\Products\UpdateProductRequest;
 use App\Models\Product;
-use App\Models\ProductCategory;
-use App\Models\StockMovement;
 use App\Services\Products\ProductService;
+use App\Services\Products\StockService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    public function __construct(private readonly ProductService $service)
-    {
+    public function __construct(
+        private readonly ProductService $service,
+        private readonly StockService $stock,
+    ) {
         $this->authorizeResource(Product::class, 'product');
     }
 
@@ -25,15 +26,15 @@ class ProductController extends Controller
         $products = $this->service->list($request->only([
             'search', 'category_id', 'is_active', 'low_stock',
         ]));
-        $categories = ProductCategory::active()->orderBy('sort_order')->get();
-        $lowCount = Product::lowStock()->count();
+        $categories = $this->service->getActiveCategories();
+        $lowCount = $this->service->getLowStockCount();
 
         return view('products.index', compact('products', 'categories', 'lowCount'));
     }
 
     public function create(): View
     {
-        $categories = ProductCategory::active()->orderBy('sort_order')->get();
+        $categories = $this->service->getActiveCategories();
 
         return view('products.create', compact('categories'));
     }
@@ -52,19 +53,15 @@ class ProductController extends Controller
 
     public function show(Product $product): View
     {
-        $product->load('category');
-        $movements = StockMovement::where('product_id', $product->id)
-            ->with('createdByUser')
-            ->latest()
-            ->limit(50)
-            ->get();
+        $this->service->loadDetails($product);
+        $movements = $this->stock->getRecentMovements($product);
 
         return view('products.show', compact('product', 'movements'));
     }
 
     public function edit(Product $product): View
     {
-        $categories = ProductCategory::active()->orderBy('sort_order')->get();
+        $categories = $this->service->getActiveCategories();
 
         return view('products.edit', compact('product', 'categories'));
     }

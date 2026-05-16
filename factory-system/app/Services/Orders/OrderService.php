@@ -14,6 +14,7 @@ use App\Pipelines\Order\CalculateOrderTotalsPipe;
 use App\Pipelines\Order\ValidateCustomerCreditPipe;
 use App\Pipelines\Order\ValidateStockAvailabilityPipe;
 use App\Services\BaseService;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
@@ -125,6 +126,12 @@ class OrderService extends BaseService implements OrderServiceInterface
         }
 
         $this->orders->delete($order);
+    }
+
+    /** @return Collection<string, \Illuminate\Database\Eloquent\Collection<int, Order>> */
+    public function daily(Carbon $date): Collection
+    {
+        return $this->orders->getForDate($date)->groupBy('status');
     }
 
     /**

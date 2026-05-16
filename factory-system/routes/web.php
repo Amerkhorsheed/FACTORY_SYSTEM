@@ -25,13 +25,6 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'active', 'portal', 'role:super_admin|accountant|shipping_staff'])
     ->group(function () {
         Route::get('/dashboard', fn () => redirect(route('erp.dashboard')))->name('dashboard');
-
-        Route::prefix('admin')->name('admin.')
-            ->middleware('role:super_admin')
-            ->group(function () {
-                Route::get('/users', fn () => 'Users Index')->name('users.index');
-                Route::get('/settings', fn () => 'Settings Index')->name('settings.index');
-            });
     });
 
 /*
@@ -65,3 +58,4 @@ require __DIR__.'/shipments.php';
 require __DIR__.'/invoices.php';
 require __DIR__.'/payments.php';
 require __DIR__.'/erp.php';
+require __DIR__.'/admin.php';

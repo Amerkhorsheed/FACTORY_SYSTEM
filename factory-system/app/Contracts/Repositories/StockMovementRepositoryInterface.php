@@ -3,6 +3,7 @@
 namespace App\Contracts\Repositories;
 
 use App\Models\StockMovement;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 interface StockMovementRepositoryInterface
@@ -20,6 +21,9 @@ interface StockMovementRepositoryInterface
     public function getForProduct(int $productId, int $limit = 50): Collection;
 
     public function getForDateRange(int $productId, string $from, string $to): Collection;
+
+    /** @param array<string, mixed> $filters */
+    public function paginateWithFilters(array $filters, int $perPage = 20): LengthAwarePaginator;
 
     /**
      * @param  array<string, mixed>  $data

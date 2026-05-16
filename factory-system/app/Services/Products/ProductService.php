@@ -4,8 +4,10 @@ namespace App\Services\Products;
 
 use App\Contracts\Repositories\ProductRepositoryInterface;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Services\BaseService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -81,5 +83,20 @@ class ProductService extends BaseService
     public function restore(int $id): Product
     {
         return $this->products->restore($id);
+    }
+
+    public function getActiveCategories(): Collection
+    {
+        return ProductCategory::active()->orderBy('sort_order')->get();
+    }
+
+    public function getLowStockCount(): int
+    {
+        return Product::lowStock()->count();
+    }
+
+    public function loadDetails(Product $product): Product
+    {
+        return $product->load('category');
     }
 }

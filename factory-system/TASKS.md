@@ -11,7 +11,7 @@ This file is the session-start entry point required by `AGENT.md`.
 - `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md`
 
 ## Current Phase
-Phase 07 - Module 07: Admin (Users, Settings, Audit Log)
+Phase 08 - Frontend Enhancements (Layouts, Components, Portal)
 
 ## Non-Negotiable Rules
 1. No file exceeds 400 lines.

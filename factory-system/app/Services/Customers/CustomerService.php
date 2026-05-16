@@ -161,6 +161,24 @@ class CustomerService extends BaseService implements CustomerServiceInterface
             ->get();
     }
 
+    /** @return array<string, int> */
+    public function getKpis(): array
+    {
+        return [
+            'total' => Customer::count(),
+            'category_a' => Customer::where('category', 'A')->count(),
+            'with_debt' => Customer::where('outstanding_balance', '>', 0)->count(),
+        ];
+    }
+
+    public function loadDetails(Customer $customer): Customer
+    {
+        return $customer->load([
+            'orders' => fn ($q) => $q->latest()->limit(10),
+            'invoices',
+        ]);
+    }
+
     // ── Private helpers ───────────────────────────────────────────────────
 
     private function createPortalUser(Customer $customer, string $password): User

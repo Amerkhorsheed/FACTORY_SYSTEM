@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Invoices;
 use App\Contracts\Services\InvoiceServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Services\Invoices\PaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,43 +17,18 @@ class PaymentController extends Controller
 {
     public function __construct(
         private readonly InvoiceServiceInterface $invoices,
+        private readonly PaymentService $payments,
     ) {}
 
     public function index(Request $request): View
     {
         $this->authorize('viewAny', Payment::class);
 
-        $query = Payment::with(['invoice.customer', 'receivedByUser'])
-            ->latest('payment_date')
-            ->latest('id');
-
-        if (! empty($request->input('customer_id'))) {
-            $query->where('customer_id', $request->integer('customer_id'));
-        }
-
-        if (! empty($request->input('invoice_id'))) {
-            $query->where('invoice_id', $request->integer('invoice_id'));
-        }
-
-        if (! empty($request->input('payment_method'))) {
-            $query->where('payment_method', $request->input('payment_method'));
-        }
-
-        if (! empty($request->input('date_from'))) {
-            $query->whereDate('payment_date', '>=', $request->input('date_from'));
-        }
-
-        if (! empty($request->input('date_to'))) {
-            $query->whereDate('payment_date', '<=', $request->input('date_to'));
-        }
-
-        $payments = $query->paginate(config('factory.pagination.per_page', 20))
-            ->withQueryString();
-
-        $total = (int) Payment::whereIn(
-            'id',
-            $query->clone()->select('id')
-        )->sum('amount');
+        $filters = $request->only([
+            'customer_id', 'invoice_id', 'payment_method', 'date_from', 'date_to',
+        ]);
+        $payments = $this->payments->list($filters);
+        $total = $this->payments->total($filters);
 
         return view('payments.index', compact('payments', 'total'));
     }
@@ -61,7 +37,7 @@ class PaymentController extends Controller
     {
         $this->authorize('view', $payment);
 
-        $payment->load(['invoice.customer', 'receivedByUser']);
+        $this->payments->loadDetails($payment);
 
         return view('payments.show', compact('payment'));
     }

@@ -96,11 +96,7 @@ class OrderController extends Controller
     public function daily(Request $request): View
     {
         $date = Carbon::parse($request->get('date', today()));
-        $orders = Order::with(['customer', 'shipment'])
-            ->whereDate('order_date', $date)
-            ->orderBy('status')
-            ->get()
-            ->groupBy('status');
+        $orders = $this->orders->daily($date);
 
         return view('orders.daily', compact('orders', 'date'));
     }
