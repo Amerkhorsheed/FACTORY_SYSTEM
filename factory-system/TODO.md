@@ -181,6 +181,28 @@
 - [x] Order CRUD tests (OrderCrudTest)
 - [x] Views, routes, translations for orders
 
+## PHASE 07 - MODULE 04: DISTRIBUTION
+- [x] app/DTOs/Shipments/CreateShipmentDTO.php
+- [x] app/Repositories/ShipmentRepository.php
+- [x] app/Services/Distribution/ShipmentService.php
+- [x] app/Services/Distribution/ShipmentStatusService.php
+- [x] app/Http/Controllers/Shipments/ShipmentController.php
+- [x] app/Http/Controllers/Shipments/ShipmentStatusController.php
+- [x] app/Http/Requests/Shipments/StoreShipmentRequest.php
+- [x] app/Http/Requests/Shipments/UpdateShipmentRequest.php
+- [x] app/Http/Requests/Shipments/DispatchShipmentRequest.php
+- [x] app/Http/Requests/Shipments/AttachOrdersRequest.php
+- [x] app/Policies/ShipmentPolicy.php
+- [x] app/Events/ShipmentDispatched.php
+- [x] app/Services/PdfService.php (stub)
+- [x] database/factories/TruckFactory.php
+- [x] database/factories/DriverFactory.php
+- [x] database/factories/ShipmentFactory.php
+- [x] Shipment CRUD tests (ShipmentCrudTest)
+- [x] Views, routes, translations for shipments
+- [x] Fixed BaseRepository variance in ShipmentRepositoryInterface
+- [x] Registered ShipmentPolicy in AuthServiceProvider
+
 ## DONE
 - [x] Initial workspace discovery
 - [x] Management files created

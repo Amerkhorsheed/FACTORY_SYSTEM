@@ -45,4 +45,21 @@ class OrderFactory extends Factory
             'accepted_at' => now(),
         ]);
     }
+
+    public function ready(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'ready',
+            'accepted_at' => now(),
+        ]);
+    }
+
+    public function shipped(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'shipped',
+            'accepted_at' => now(),
+            'shipped_at' => now(),
+        ]);
+    }
 }

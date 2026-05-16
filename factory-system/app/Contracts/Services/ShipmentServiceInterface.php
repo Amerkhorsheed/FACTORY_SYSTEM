@@ -26,4 +26,8 @@ interface ShipmentServiceInterface
     public function complete(Shipment $shipment): Shipment;
 
     public function cancel(Shipment $shipment, string $reason): Shipment;
+
+    public function update(Shipment $shipment, CreateShipmentDTO $dto): Shipment;
+
+    public function delete(Shipment $shipment): void;
 }

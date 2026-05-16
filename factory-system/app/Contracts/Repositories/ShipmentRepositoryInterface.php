@@ -17,11 +17,17 @@ interface ShipmentRepositoryInterface
 
     public function getTodayActive(): Collection;
 
-    /** @param array<string, mixed> $data */
-    public function create(array $data): Shipment;
+    /**
+     * @param  array<string, mixed>  $data
+     * @return Shipment
+     */
+    public function create(array $data);
 
-    /** @param array<string, mixed> $data */
-    public function update(Shipment $shipment, array $data): Shipment;
+    /**
+     * @param  array<string, mixed>  $data
+     * @return Shipment
+     */
+    public function update(Shipment $shipment, array $data);
 
     public function delete(Shipment $shipment): void;
 }

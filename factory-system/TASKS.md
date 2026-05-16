@@ -10,7 +10,7 @@ This file is the session-start entry point required by `AGENT.md`.
 - `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART5.md`
 
 ## Current Phase
-Phase 07 - Module 04: Distribution (Shipments)
+Phase 07 - Module 05: Invoicing
 
 ## Non-Negotiable Rules
 1. No file exceeds 400 lines.

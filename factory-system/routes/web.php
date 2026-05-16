@@ -28,13 +28,6 @@ Route::middleware(['auth', 'active', 'portal', 'role:super_admin|accountant|ship
 
         Route::get('/erp', fn () => 'ERP Dashboard')->name('erp.dashboard');
 
-        Route::prefix('distribution')->name('distribution.')->group(function () {
-            Route::get('/shipments', fn () => 'Shipments Index')->name('shipments.index');
-            Route::get('/shipments/create', fn () => 'Shipments Create')->name('shipments.create');
-            Route::post('/shipments', fn () => 'Shipments Store')->name('shipments.store');
-            Route::get('/shipments/{shipment}', fn () => 'Shipments Show')->name('shipments.show');
-        });
-
         Route::prefix('invoices')->name('invoices.')->group(function () {
             Route::get('/', fn () => 'Invoices Index')->name('index');
             Route::get('/create', fn () => 'Invoices Create')->name('create');
@@ -87,3 +80,4 @@ Route::post('/logout', [LoginController::class, 'logout'])
 require __DIR__.'/products.php';
 require __DIR__.'/customers.php';
 require __DIR__.'/orders.php';
+require __DIR__.'/shipments.php';

@@ -26,7 +26,7 @@
 | 02 Inventory | [x] | 100% | - |
 | 03 Customers | [x] | 100% | - |
 | 04 Orders | [x] | 100% | - |
-| 05 Distribution | [ ] | 0% | - |
+| 05 Distribution | [x] | 100% | - |
 | 06 Invoicing | [ ] | 0% | - |
 | 07 ERP | [ ] | 0% | - |
 | 08 Admin | [ ] | 0% | - |
@@ -532,5 +532,77 @@
 - The blueprint test expects `ready` -> `delivered` directly. Updated `OrderStateMachine` and `OrderPolicy::confirmDelivery` to allow this transition.
 - `AuthServiceProvider` was necessary because Laravel 11 auto-discovery alone was not resolving policies correctly for custom abilities like `confirmDelivery`.
 
+## Session 011 - Distribution Module (Phase 07 Module 04)
+**Date:** 2026-05-16
+**Phase:** 07 - Module 04: Distribution
+
+### Completed:
+- [x] Created `CreateShipmentDTO` immutable data transfer object
+- [x] Created `ShipmentRepository` with search, filters, pagination, and active/today queries
+- [x] Created `ShipmentService` implementing `ShipmentServiceInterface` — CRUD, order attach/detach, dispatch with stock transition, mark delivered, complete, cancel
+- [x] Created `ShipmentStatusService` for status-specific operations (mark order delivered with auto-completion)
+- [x] Created `ShipmentController` with `authorizeResource`, CRUD, dispatch, attach/detach orders, and manifest download
+- [x] Created `ShipmentStatusController` for cancel and mark-order-delivered actions
+- [x] Created `StoreShipmentRequest`, `UpdateShipmentRequest`, `DispatchShipmentRequest`, and `AttachOrdersRequest`
+- [x] Created `ShipmentPolicy` with permission checks for view, create, update, delete, dispatch, cancel, updateStatus, and viewManifest
+- [x] Registered `ShipmentPolicy` in `AuthServiceProvider`
+- [x] Created `ShipmentDispatched` event
+- [x] Created `PdfService` stub implementing `PdfServiceInterface` with HTML-based invoice/manifest/statement generation
+- [x] Created `TruckFactory`, `DriverFactory`, and `ShipmentFactory`
+- [x] Added `ready()` and `shipped()` states to `OrderFactory`
+- [x] Created `ShipmentCrudTest` with 9 tests covering creation, dispatch, order delivery, cancellation, manifest generation, unauthorized access, pagination, update, and deletion
+- [x] Updated `ShipmentServiceInterface` to include `update` and `delete` methods
+- [x] Fixed `ShipmentRepositoryInterface` return types to avoid PHP variance conflicts with `BaseRepository`
+- [x] Added Arabic translations for shipments
+- [x] Created minimal Blade views and `routes/shipments.php`
+
+### Files Created (23):
+- `app/DTOs/Shipments/CreateShipmentDTO.php`
+- `app/Repositories/ShipmentRepository.php`
+- `app/Services/Distribution/ShipmentService.php`
+- `app/Services/Distribution/ShipmentStatusService.php`
+- `app/Services/PdfService.php`
+- `app/Http/Controllers/Shipments/ShipmentController.php`
+- `app/Http/Controllers/Shipments/ShipmentStatusController.php`
+- `app/Http/Requests/Shipments/StoreShipmentRequest.php`
+- `app/Http/Requests/Shipments/UpdateShipmentRequest.php`
+- `app/Http/Requests/Shipments/DispatchShipmentRequest.php`
+- `app/Http/Requests/Shipments/AttachOrdersRequest.php`
+- `app/Policies/ShipmentPolicy.php`
+- `app/Events/ShipmentDispatched.php`
+- `database/factories/TruckFactory.php`
+- `database/factories/DriverFactory.php`
+- `database/factories/ShipmentFactory.php`
+- `tests/Feature/ShipmentCrudTest.php`
+- `routes/shipments.php`
+- `lang/ar/shipments.php`
+- `resources/views/shipments/index.blade.php`
+- `resources/views/shipments/create.blade.php`
+- `resources/views/shipments/edit.blade.php`
+- `resources/views/shipments/show.blade.php`
+- `resources/views/pdf/manifest.blade.php`
+- `resources/views/pdf/invoice.blade.php`
+- `resources/views/pdf/statement.blade.php`
+
+### Files Updated (8):
+- `app/Contracts/Repositories/ShipmentRepositoryInterface.php` (removed return types from `create`/`update` to match `BaseRepository` variance)
+- `app/Contracts/Services/ShipmentServiceInterface.php` (added `update` and `delete` methods)
+- `app/Providers/AuthServiceProvider.php` (registered `ShipmentPolicy`)
+- `routes/web.php` (removed placeholder shipment routes, added `require shipments.php`)
+- `database/factories/OrderFactory.php` (added `ready()` and `shipped()` states)
+- `resources/views/shipments/_form.blade.php`
+
+### Verification:
+- Focused Phase 07 Module 04 tests -> 9 passed, 21 assertions
+- `php artisan clear-compiled` -> passed
+- Pint formatting pass -> fixed minor style issues across 3 files
+- Full suite -> 109 passed, 288 assertions
+
+### Notes:
+- `Truck` status enum only allows `['available', 'on_trip', 'maintenance', 'inactive']`; `ShipmentService::dispatch` correctly sets `on_trip` (not `on_delivery` as in blueprint).
+- `CustomerPortalMiddleware` redirects customer-role users to `portal.dashboard` (302), so unauthorized access tests assert redirect rather than 403.
+- `PdfService` is a minimal stub using HTML views stored to disk; full PDF generation (DomPDF/Browsershot) will be added in Phase 07 Module 06.
+- `ShipmentStatusService` does not depend on `ShipmentService` to avoid circular dependency; inline completion logic handles auto-complete when all orders resolved.
+
 ### Next Session Plan:
-- PHASE 07: Module 04 — Distribution (Shipments) (ShipmentService, ShipmentRepository, ShipmentController, form requests, policy, and tests).
+- PHASE 07: Module 05 — Invoicing (InvoiceService, InvoiceRepository, InvoiceController, form requests, policy, and tests).
