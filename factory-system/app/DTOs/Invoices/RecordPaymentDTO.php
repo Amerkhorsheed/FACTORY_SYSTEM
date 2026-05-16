@@ -3,15 +3,18 @@
 namespace App\DTOs\Invoices;
 
 /**
- * Minimal DTO for recording a payment against an invoice.
+ * Immutable DTO for recording a payment against an invoice.
  */
-final class RecordPaymentDTO
+final readonly class RecordPaymentDTO
 {
     public function __construct(
-        public readonly int $invoiceId,
-        public readonly int $amount,
-        public readonly string $method,
-        public readonly ?string $reference = null,
-        public readonly ?string $notes = null,
+        public int $invoiceId,
+        public int $customerId,
+        public int $amount,
+        public string $method,
+        public string $paymentDate,
+        public ?string $reference = null,
+        public ?string $notes = null,
+        public ?int $receivedBy = null,
     ) {}
 }

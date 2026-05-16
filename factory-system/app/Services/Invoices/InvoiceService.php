@@ -2,92 +2,149 @@
 
 namespace App\Services\Invoices;
 
+use App\Contracts\Repositories\InvoiceRepositoryInterface;
+use App\Contracts\Services\CustomerServiceInterface;
 use App\Contracts\Services\InvoiceServiceInterface;
 use App\DTOs\Invoices\RecordPaymentDTO;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Services\BaseService;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
- * Invoice service — minimal stub for order lifecycle support.
- * Full invoicing module will be implemented in Phase 07 Module 06.
+ * Production invoice service with transaction-safe payments and balance tracking.
  */
-class InvoiceService implements InvoiceServiceInterface
+class InvoiceService extends BaseService implements InvoiceServiceInterface
 {
+    public function __construct(
+        private readonly InvoiceRepositoryInterface $invoices,
+        private readonly CustomerServiceInterface $customers,
+    ) {}
+
+    /** @param array<string, mixed> $filters */
+    public function list(array $filters, int $perPage = 0): LengthAwarePaginator
+    {
+        return $this->invoices->paginateWithFilters($filters, $perPage ?: 20);
+    }
+
     public function createFromOrder(Order $order): Invoice
     {
-        return Invoice::create([
-            'order_id' => $order->id,
-            'customer_id' => $order->customer_id,
-            'type' => 'sale',
-            'status' => 'draft',
-            'issue_date' => now(),
-            'due_date' => now()->addDays(30),
-            'subtotal' => $order->subtotal,
-            'discount_amount' => $order->discount_amount,
-            'tax_rate' => 0,
-            'tax_amount' => $order->tax_amount,
-            'total_amount' => $order->total_amount,
-            'paid_amount' => 0,
-            'balance_due' => $order->total_amount,
-            'created_by' => $order->created_by,
-        ]);
+        return $this->transaction(function () use ($order) {
+            $invoice = $this->invoices->create([
+                'order_id' => $order->id,
+                'customer_id' => $order->customer_id,
+                'type' => 'sale',
+                'status' => 'draft',
+                'issue_date' => now(),
+                'due_date' => now()->addDays(30),
+                'subtotal' => $order->subtotal,
+                'discount_amount' => $order->discount_amount,
+                'tax_rate' => 0,
+                'tax_amount' => $order->tax_amount,
+                'total_amount' => $order->total_amount,
+                'paid_amount' => 0,
+                'balance_due' => $order->total_amount,
+                'created_by' => $order->created_by,
+            ]);
+
+            return $invoice->fresh();
+        });
     }
 
     public function issue(Invoice $invoice): Invoice
     {
-        $invoice->update(['status' => 'issued']);
+        return $this->transaction(function () use ($invoice) {
+            $this->invoices->update($invoice, ['status' => 'issued']);
 
-        return $invoice->fresh();
+            return $invoice->fresh();
+        });
     }
 
     public function void(Invoice $invoice, string $reason): Invoice
     {
-        $invoice->update([
-            'status' => 'void',
-            'void_reason' => $reason,
-            'voided_at' => now(),
-        ]);
+        return $this->transaction(function () use ($invoice, $reason) {
+            if (! $invoice->canBeVoided()) {
+                throw new \DomainException(__('invoices.cannot_void'));
+            }
 
-        return $invoice->fresh();
+            $this->invoices->update($invoice, [
+                'status' => 'void',
+                'void_reason' => $reason,
+                'voided_at' => now(),
+                'balance_due' => 0,
+            ]);
+
+            $this->customers->recalculateBalance($invoice->customer);
+
+            return $invoice->fresh();
+        });
     }
 
     public function recordPayment(RecordPaymentDTO $dto): Payment
     {
-        $payment = Payment::create([
-            'invoice_id' => $dto->invoiceId,
-            'amount' => $dto->amount,
-            'method' => $dto->method,
-            'reference' => $dto->reference,
-            'notes' => $dto->notes,
-            'payment_date' => now(),
-        ]);
+        return $this->transaction(function () use ($dto) {
+            $invoice = $this->invoices->findByIdOrFail($dto->invoiceId);
 
-        $invoice = Invoice::find($dto->invoiceId);
-        if ($invoice) {
-            $newPaid = $invoice->paid_amount + $dto->amount;
-            $invoice->update([
-                'paid_amount' => $newPaid,
-                'balance_due' => max(0, $invoice->total_amount - $newPaid),
-                'status' => $newPaid >= $invoice->total_amount ? 'paid' : 'issued',
+            if (in_array($invoice->status, ['paid', 'void', 'draft'], true)) {
+                throw new \DomainException(__('invoices.cannot_record_payment'));
+            }
+
+            if ($dto->amount > $invoice->balance_due) {
+                throw new \DomainException(__('invoices.payment_exceeds_balance'));
+            }
+
+            $payment = Payment::create([
+                'invoice_id' => $dto->invoiceId,
+                'customer_id' => $dto->customerId,
+                'amount' => $dto->amount,
+                'payment_method' => $dto->method,
+                'payment_date' => $dto->paymentDate,
+                'reference_number' => $dto->reference,
+                'notes' => $dto->notes,
+                'received_by' => $dto->receivedBy ?? auth()->id(),
             ]);
-        }
 
-        return $payment;
+            $newPaid = $invoice->paid_amount + $dto->amount;
+            $newBalance = max(0, $invoice->total_amount - $newPaid);
+            $newStatus = $newBalance === 0 ? 'paid' : 'partial';
+
+            $this->invoices->update($invoice, [
+                'paid_amount' => $newPaid,
+                'balance_due' => $newBalance,
+                'status' => $newStatus,
+            ]);
+
+            $this->customers->recalculateBalance($invoice->customer);
+
+            return $payment->fresh();
+        });
     }
 
     public function deletePayment(Payment $payment): void
     {
-        $invoice = $payment->invoice;
-        $payment->delete();
+        $this->transaction(function () use ($payment) {
+            $invoice = $payment->invoice;
 
-        if ($invoice) {
-            $totalPaid = $invoice->payments()->sum('amount');
-            $invoice->update([
-                'paid_amount' => $totalPaid,
-                'balance_due' => max(0, $invoice->total_amount - $totalPaid),
-                'status' => $totalPaid >= $invoice->total_amount ? 'paid' : 'issued',
-            ]);
-        }
+            $payment->delete();
+
+            if ($invoice) {
+                $totalPaid = (int) $invoice->payments()->sum('amount');
+                $balance = max(0, $invoice->total_amount - $totalPaid);
+                $status = match (true) {
+                    $balance === 0 => 'paid',
+                    $totalPaid === 0 => 'issued',
+                    default => 'partial',
+                };
+
+                $this->invoices->update($invoice, [
+                    'paid_amount' => $totalPaid,
+                    'balance_due' => $balance,
+                    'status' => $status,
+                ]);
+
+                $this->customers->recalculateBalance($invoice->customer);
+            }
+        });
     }
 }

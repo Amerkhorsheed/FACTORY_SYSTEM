@@ -26,25 +26,6 @@ Route::middleware(['auth', 'active', 'portal', 'role:super_admin|accountant|ship
     ->group(function () {
         Route::get('/dashboard', fn () => redirect(route('erp.dashboard')))->name('dashboard');
 
-        Route::get('/erp', fn () => 'ERP Dashboard')->name('erp.dashboard');
-
-        Route::prefix('invoices')->name('invoices.')->group(function () {
-            Route::get('/', fn () => 'Invoices Index')->name('index');
-            Route::get('/create', fn () => 'Invoices Create')->name('create');
-            Route::post('/', fn () => 'Invoices Store')->name('store');
-            Route::get('/{invoice}', fn () => 'Invoices Show')->name('show');
-            Route::get('/{invoice}/edit', fn () => 'Invoices Edit')->name('edit');
-            Route::put('/{invoice}', fn () => 'Invoices Update')->name('update');
-            Route::delete('/{invoice}', fn () => 'Invoices Destroy')->name('destroy');
-        });
-
-        Route::prefix('erp')->name('erp.')
-            ->middleware('role:accountant|super_admin')
-            ->group(function () {
-                Route::get('/expenses', fn () => 'Expenses Index')->name('expenses.index');
-                Route::get('/reports', fn () => 'Reports Index')->name('reports.index');
-            });
-
         Route::prefix('admin')->name('admin.')
             ->middleware('role:super_admin')
             ->group(function () {
@@ -81,3 +62,6 @@ require __DIR__.'/products.php';
 require __DIR__.'/customers.php';
 require __DIR__.'/orders.php';
 require __DIR__.'/shipments.php';
+require __DIR__.'/invoices.php';
+require __DIR__.'/payments.php';
+require __DIR__.'/erp.php';

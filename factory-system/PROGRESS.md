@@ -27,8 +27,8 @@
 | 03 Customers | [x] | 100% | - |
 | 04 Orders | [x] | 100% | - |
 | 05 Distribution | [x] | 100% | - |
-| 06 Invoicing | [ ] | 0% | - |
-| 07 ERP | [ ] | 0% | - |
+| 06 Invoicing | [x] | 100% | - |
+| 07 ERP | [x] | 100% | - |
 | 08 Admin | [ ] | 0% | - |
 | 09 Frontend | [ ] | 0% | - |
 | 10 PDF | [ ] | 0% | - |
@@ -604,5 +604,126 @@
 - `PdfService` is a minimal stub using HTML views stored to disk; full PDF generation (DomPDF/Browsershot) will be added in Phase 07 Module 06.
 - `ShipmentStatusService` does not depend on `ShipmentService` to avoid circular dependency; inline completion logic handles auto-complete when all orders resolved.
 
+## Session 012 - Invoicing Module (Phase 07 Module 05)
+**Date:** 2026-05-16
+**Phase:** 07 - Module 05: Invoicing
+
+### Completed:
+- [x] Created `InvoiceRepository` with filtering, search, pagination, and overdue queries
+- [x] Created `InvoiceService` production implementation replacing the stub — transaction-safe with customer balance recalculation
+- [x] Created `InvoiceController` with index, show, destroy (void), issue, void, recordPayment, deletePayment, and download actions
+- [x] Created `InvoicePolicy` with permission checks for view, create, update, delete, issue, void, send, recordPayment, deletePayment, and viewAll
+- [x] Created `StorePaymentRequest` with validation for amount, payment_method, payment_date, reference_number, and notes
+- [x] Updated `RecordPaymentDTO` with `customerId`, `paymentDate`, and `receivedBy` fields
+- [x] Updated `InvoiceServiceInterface` to include `list` method
+- [x] Created `InvoiceFactory` with states: draft, issued, paid, void, overdue
+- [x] Created `PaymentFactory` with `forInvoice` state for testing
+- [x] Registered `InvoicePolicy` in `AuthServiceProvider`
+- [x] Created `InvoiceCrudTest` with 11 tests covering listing, show, issue, partial payment, full payment, balance overflow guard, payment deletion, voiding, void guard with payments, unauthorized access, and service-level order-to-invoice creation
+- [x] Added comprehensive Arabic translations for invoices and payments
+- [x] Created minimal Blade views and `routes/invoices.php`
+
+### Files Created (16):
+- `app/Repositories/InvoiceRepository.php`
+- `app/Services/Invoices/InvoiceService.php` (rewritten from stub)
+- `app/Http/Controllers/Invoices/InvoiceController.php`
+- `app/Http/Requests/Invoices/StorePaymentRequest.php`
+- `app/Policies/InvoicePolicy.php`
+- `database/factories/InvoiceFactory.php`
+- `database/factories/PaymentFactory.php`
+- `tests/Feature/InvoiceCrudTest.php`
+- `routes/invoices.php`
+- `lang/ar/invoices.php`
+- `resources/views/invoices/index.blade.php`
+- `resources/views/invoices/show.blade.php`
+
+### Files Updated (6):
+- `app/Contracts/Services/InvoiceServiceInterface.php` (added `list` method)
+- `app/DTOs/Invoices/RecordPaymentDTO.php` (added customerId, paymentDate, receivedBy)
+- `app/Providers/AuthServiceProvider.php` (registered `InvoicePolicy`)
+- `routes/web.php` (removed placeholder invoice routes, added `require invoices.php`)
+- `app/Services/Invoices/InvoiceService.php` (complete rewrite from stub)
+
+### Verification:
+- Focused Phase 07 Module 05 tests -> 11 passed, 29 assertions
+- `php artisan clear-compiled` -> passed
+- Pint formatting pass -> passed with zero issues
+- Full suite -> **120 passed, 317 assertions**
+
+### Notes:
+- `InvoiceService::void` now recalculates customer balance after voiding, and enforces `canBeVoided()` (paid_amount === 0 and status in [draft, issued]).
+- `InvoicePolicy::void` checks `canBeVoided()` directly, so paid invoices return 403 rather than allowing controller-level exception handling. This is the correct authorization pattern.
+- `InvoiceService::recordPayment` blocks payments on draft/paid/void invoices and validates amount <= balance_due before creating the payment record.
+- `InvoiceService::deletePayment` recalculates invoice totals from remaining (non-soft-deleted) payments and updates status to `paid`, `issued`, or `partial` accordingly.
+- Customer balance is recalculated after every payment operation and void via `CustomerService::recalculateBalance`.
+- The existing `OrderStatusService` continues to work unchanged because `InvoiceService::createFromOrder`, `issue`, and `void` signatures remain compatible.
+
+## Session 013 - Payments & ERP Module (Phase 07 Module 06)
+**Date:** 2026-05-16
+**Phase:** 07 - Module 06: Payments & ERP
+
+### Completed:
+- [x] Created `ExpenseRepository` extending `BaseRepository` with filtering, pagination, date-range queries, and total aggregation
+- [x] Created `ExpenseService` with transaction-safe CRUD, list filtering, and period totals
+- [x] Created `PaymentPolicy` with `viewAny`, `view`, and `delete` abilities using `payments.view` and `payments.delete` permissions
+- [x] Created `ExpensePolicy` with full CRUD abilities using `erp.expenses.*` permissions
+- [x] Registered `PaymentPolicy` and `ExpensePolicy` in `AuthServiceProvider`
+- [x] Created `StoreExpenseRequest` and `UpdateExpenseRequest` with full validation rules and Arabic attribute labels
+- [x] Created `PaymentController` (standalone) with index, show, and destroy actions; supports filtering by customer, invoice, method, and date range
+- [x] Created `ExpenseController` with `authorizeResource`, full CRUD, category/date-range/amount filtering
+- [x] Created `DashboardController` with KPI aggregation: today's orders, sales, month sales, active shipments, overdue invoices/amount, low stock count, today's expenses, pending/ready orders
+- [x] Created `ReportController` with sales, receivables, stock, and profit-loss reports
+- [x] Created `ExpenseFactory` with randomized categories and amounts
+- [x] Created Arabic translations for `payments.php`, `expenses.php`, and `erp.php`
+- [x] Created minimal Blade views for payments, expenses, dashboard, and all four reports
+- [x] Created `routes/payments.php` and `routes/erp.php` with proper middleware and role restrictions
+- [x] Removed placeholder ERP routes from `routes/web.php`
+- [x] Created `PaymentCrudTest` with 5 tests: listing, show, deletion, customer filter, unauthorized access
+- [x] Created `ExpenseCrudTest` with 7 tests: listing, creation, show, update, delete, category filter, unauthorized access
+- [x] Created `DashboardTest` with 6 tests: dashboard KPIs, customer block, sales report, receivables report, stock report, P&L report
+
+### Files Created (23):
+- `app/Repositories/ExpenseRepository.php`
+- `app/Services/Erp/ExpenseService.php`
+- `app/Policies/PaymentPolicy.php`
+- `app/Policies/ExpensePolicy.php`
+- `app/Http/Requests/Erp/StoreExpenseRequest.php`
+- `app/Http/Requests/Erp/UpdateExpenseRequest.php`
+- `app/Http/Controllers/Invoices/PaymentController.php`
+- `app/Http/Controllers/Erp/ExpenseController.php`
+- `app/Http/Controllers/Erp/DashboardController.php`
+- `app/Http/Controllers/Erp/ReportController.php`
+- `database/factories/ExpenseFactory.php`
+- `tests/Feature/PaymentCrudTest.php`
+- `tests/Feature/ExpenseCrudTest.php`
+- `tests/Feature/DashboardTest.php`
+- `routes/payments.php`
+- `routes/erp.php`
+- `lang/ar/payments.php`
+- `lang/ar/expenses.php`
+- `lang/ar/erp.php`
+- `resources/views/payments/index.blade.php`
+- `resources/views/payments/show.blade.php`
+- `resources/views/erp/expenses/{index,create,edit,show}.blade.php`
+- `resources/views/erp/dashboard.blade.php`
+- `resources/views/erp/reports/{sales,receivables,stock,profit-loss}.blade.php`
+
+### Files Updated (3):
+- `app/Providers/AuthServiceProvider.php` (registered PaymentPolicy and ExpensePolicy)
+- `routes/web.php` (removed placeholder ERP routes, added `require payments.php` and `require erp.php`)
+
+### Verification:
+- Focused Phase 07 Module 06 tests -> 18 passed, 30 assertions
+- `php artisan clear-compiled` -> passed
+- Pint formatting pass -> fixed minor style issues in 1 file
+- Full suite -> **138 passed, 347 assertions**
+
+### Notes:
+- `ExpenseRepository` intentionally does NOT override `create`/`update`/`delete` from `BaseRepository` because narrowing parameter types without an interface causes PHP fatal errors. The inherited `BaseRepository` methods handle Expense models correctly.
+- `DashboardController` aggregates KPIs through simple model queries. In production with large datasets, these should be cached or moved to materialized views.
+- `ReportController` uses basic pagination for all reports. Full export functionality (Excel/PDF) will be added in a later phase.
+- ERP routes are restricted to `super_admin|accountant` roles; `shipping_staff` cannot access financial reports or expenses.
+- `PaymentController::destroy` delegates to `InvoiceService::deletePayment` to ensure invoice totals and customer balances are recalculated correctly.
+
 ### Next Session Plan:
-- PHASE 07: Module 05 — Invoicing (InvoiceService, InvoiceRepository, InvoiceController, form requests, policy, and tests).
+- PHASE 07: Module 07 — Admin (User management, system settings, audit log) OR Phase 08 Frontend enhancements.

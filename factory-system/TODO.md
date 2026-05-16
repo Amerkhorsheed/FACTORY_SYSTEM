@@ -203,6 +203,39 @@
 - [x] Fixed BaseRepository variance in ShipmentRepositoryInterface
 - [x] Registered ShipmentPolicy in AuthServiceProvider
 
+## PHASE 07 - MODULE 05: INVOICING
+- [x] app/Repositories/InvoiceRepository.php
+- [x] app/Services/Invoices/InvoiceService.php (production rewrite)
+- [x] app/Http/Controllers/Invoices/InvoiceController.php
+- [x] app/Http/Requests/Invoices/StorePaymentRequest.php
+- [x] app/Policies/InvoicePolicy.php
+- [x] app/DTOs/Invoices/RecordPaymentDTO.php (updated)
+- [x] app/Contracts/Services/InvoiceServiceInterface.php (updated)
+- [x] database/factories/InvoiceFactory.php
+- [x] database/factories/PaymentFactory.php
+- [x] Invoice CRUD tests (InvoiceCrudTest)
+- [x] Views, routes, translations for invoices
+- [x] Registered InvoicePolicy in AuthServiceProvider
+
+## PHASE 07 - MODULE 06: PAYMENTS & ERP
+- [x] app/Repositories/ExpenseRepository.php
+- [x] app/Services/Erp/ExpenseService.php
+- [x] app/Policies/PaymentPolicy.php
+- [x] app/Policies/ExpensePolicy.php
+- [x] app/Http/Requests/Erp/StoreExpenseRequest.php
+- [x] app/Http/Requests/Erp/UpdateExpenseRequest.php
+- [x] app/Http/Controllers/Invoices/PaymentController.php
+- [x] app/Http/Controllers/Erp/ExpenseController.php
+- [x] app/Http/Controllers/Erp/DashboardController.php
+- [x] app/Http/Controllers/Erp/ReportController.php
+- [x] database/factories/ExpenseFactory.php
+- [x] Payment CRUD tests (PaymentCrudTest)
+- [x] Expense CRUD tests (ExpenseCrudTest)
+- [x] Dashboard tests (DashboardTest)
+- [x] Views, routes, translations for payments, expenses, ERP
+- [x] Registered PaymentPolicy and ExpensePolicy in AuthServiceProvider
+- [x] Removed placeholder ERP routes from web.php
+
 ## DONE
 - [x] Initial workspace discovery
 - [x] Management files created
