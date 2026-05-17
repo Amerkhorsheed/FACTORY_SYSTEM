@@ -3,7 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect(route('login')));
+Route::redirect('/', '/login');
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +24,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware(['auth', 'active', 'portal', 'role:super_admin|accountant|shipping_staff'])
     ->group(function () {
-        Route::get('/dashboard', fn () => redirect(route('erp.dashboard')))->name('dashboard');
+        Route::redirect('/dashboard', '/erp')->name('dashboard');
     });
 
 /*

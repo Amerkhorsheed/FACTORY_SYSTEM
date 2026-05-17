@@ -291,6 +291,30 @@
 - [x] Add Arabic notification translations and email templates
 - [x] Add notification feature tests and run full Phase 10 verification commands
 
+## PHASE 11 - DEPLOYMENT
+- [x] Add VPS deployment structure for PHP-FPM, Nginx, MySQL, Redis, queue workers, and scheduler
+- [x] Document PHP 8.3 production host requirements and Composer/Vite build steps
+- [x] Add hardened production environment guidance
+- [x] Add Supervisor config for queue workers and scheduler
+- [x] Add production Nginx site template and include it in preflight checks
+- [x] Add guarded `deploy.sh` with maintenance mode, backup, migrations, cache warm-up, and worker restart
+- [x] Add `.env.production.example` and safe local `.env.example` defaults
+- [x] Replace route closures so `route:cache` succeeds
+- [x] Add standalone Arabic error and maintenance pages
+- [x] Add deployment runbook, update README and CHANGELOG
+- [x] Add deployment readiness tests and run full Phase 11 verification commands
+
+## PHASE 12 - FINAL LAUNCH VERIFICATION
+- [x] Add `factory:preflight` launch verification command
+- [x] Check deployment assets, production settings, route-cache safety, PHP extensions, scheduled commands, and writable paths
+- [x] Add optional runtime checks for database, cache, and Redis connectivity
+- [x] Wire production preflight into `deploy.sh`
+- [x] Add `LAUNCH_CHECKLIST.md` for target-host manual verification
+- [x] Add automated preflight tests and run full local verification gates
+- [x] Refresh root `implementation_plan.md` with the current launch baseline and target-host validation plan
+- [ ] Run `php artisan factory:preflight --production --runtime` on the real production host
+- [ ] Verify HTTPS/TLS, queue workers, scheduler, backup output, browser matrix, and PDF rendering on target infrastructure
+
 ## DONE
 - [x] Initial workspace discovery
 - [x] Management files created
@@ -316,3 +340,4 @@
 - [x] Phase 08 auth/welcome public frontend polish completed
 - [x] Phase 09 PDF generation completed
 - [x] Phase 10 notifications and communication completed
+- [x] Phase 11 deployment completed

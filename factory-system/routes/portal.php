@@ -14,7 +14,7 @@ Route::middleware(['auth', 'active', 'portal', 'role:customer'])
     ->name('portal.')
     ->group(function () {
         Route::get('/', [CustomerPortalController::class, 'dashboard'])->name('dashboard');
-        Route::get('dashboard', fn () => redirect()->route('portal.dashboard'))->name('dashboard.redirect');
+        Route::redirect('dashboard', '/portal')->name('dashboard.redirect');
 
         Route::get('orders', [CustomerPortalController::class, 'orders'])->name('orders.index');
         Route::get('orders/create', [CustomerPortalController::class, 'createOrder'])->name('orders.create');

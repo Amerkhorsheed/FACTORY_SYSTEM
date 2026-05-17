@@ -1,17 +1,8 @@
-@extends('layouts.app')
+@extends('errors.layout')
 
-@section('title', __('ui.error_403'))
-
-@section('content')
-<div class="flex flex-col items-center justify-center min-h-[60vh] text-center" dir="rtl">
-    <div class="text-8xl font-bold text-red-200 mb-4">403</div>
-    <h1 class="text-2xl font-cairo font-bold text-ink-900 mb-2">{{ __('ui.access_denied') }}</h1>
-    <p class="text-ink-500 mb-8 max-w-md">{{ __('ui.access_denied_message') }}</p>
-    <a href="{{ url()->previous() }}" class="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition font-cairo">
-        <svg class="w-5 h-5 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        {{ __('ui.go_back') }}
-    </a>
-</div>
-@endsection
+@section('title', __('errors.403.title'))
+@section('code', '403')
+@section('heading', __('errors.403.title'))
+@section('message', __('errors.403.message'))
+@section('href', route('dashboard'))
+@section('action', __('errors.403.action'))

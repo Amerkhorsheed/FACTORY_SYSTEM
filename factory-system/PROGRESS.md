@@ -3,7 +3,7 @@
 This file was compacted on 2026-05-16 to keep the project-managed progress log under the 400-line rule.
 
 ## Current Phase
-- Phase 11 - Deployment
+- Phase 12 - Final Launch Verification (target infrastructure)
 - Source requirements are indexed in `TASKS.md`, including DOCS parts 1 through 6.
 
 ## Session Log
@@ -29,6 +29,10 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 018 | 2026-05-17 | Frontend public polish: auth/welcome layout, translated copy, render tests, event/PDF verification fixes | 155/155 | Phase 08 frontend polish complete; 97 routes registered |
 | 019 | 2026-05-17 | PDF generation: private DomPDF service, Arabic invoice/manifest/statement output, routes, tests | 160/160 | Phase 09 complete; 99 routes registered |
 | 020 | 2026-05-17 | Notifications: queued customer/staff alerts, digest commands, Livewire bell, Arabic mail templates, tests | 166/166 | Phase 10 complete; 99 routes and 3 scheduled commands registered |
+| 021 | 2026-05-17 | Deployment: PHP-FPM/Nginx/MySQL/Supervisor assets, deploy script, Arabic error pages, cache readiness | 168/168 | Phase 11 complete; route/config/view/event cache verified |
+| 022 | 2026-05-17 | Final launch tooling: production preflight command, runtime checks, launch checklist, tests, full local gate | 171/171 | Repo-side launch verification complete; target-host HTTPS/browser checks remain |
+| 023 | 2026-05-17 | Refreshed root implementation plan with current system baseline and target-host launch path | 171/171 | Documentation only; production deployment remains PHP-FPM/Nginx/Supervisor oriented |
+| 024 | 2026-05-17 | Added production Nginx site template and wired it into deployment preflight | 171/171 | Focused deployment tests passed; target-host Nginx reload remains live-host work |
 
 ## Module Status
 | Module | Status | % Done | Blockers |
@@ -50,7 +54,8 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 08 Frontend | [x] | 100% | PDF output is tracked separately in Phase 09 |
 | 09 PDF | [x] | 100% | - |
 | 10 Notifications | [x] | 100% | - |
-| 11 Deployment | [ ] | 0% | - |
+| 11 Deployment | [x] | 100% | - |
+| 12 Final Launch | [ ] | 80% | Requires real production host for HTTPS/TLS, Redis/MySQL runtime, worker, scheduler, backup, and browser validation |
 
 ## Completed Scope
 - Phase 00: Laravel 11 app scaffolded, dependencies installed, configuration files created, key/storage verified.
@@ -72,6 +77,8 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Phase 08 Public polish: shared public RTL layout, upgraded login/welcome screens, translated public copy, and render tests completed.
 - Phase 09 PDF: production DomPDF service, Arabic invoice/manifest/statement templates, private PDF storage, stream/download routes, and PDF tests completed.
 - Phase 10 Notifications: queued database/mail notifications, customer/staff event wiring, digest commands, schedules, Livewire bell, Arabic mail templates, and tests completed.
+- Phase 11 Deployment: production deployment files, Nginx/Supervisor templates, cache-safe routes, Arabic error pages, runbook, release notes, and deployment readiness tests completed.
+- Phase 12 Launch tooling: `factory:preflight`, target-host checklist, deploy-script preflight integration, runtime checks, and automated launch verification tests completed.
 
 ## Session 014 Audit Changes
 - Added `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md` to `TASKS.md`.
@@ -135,12 +142,41 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Added Livewire notification bell polling, topbar integration, unread count, and mark-read/mark-all-read behavior.
 - Added `NotificationCommunicationTest` for event delivery, digest commands, and notification bell behavior.
 
+## Session 021 Deployment Changes
+- Added `.env.production.example`, Supervisor config, deploy script, and production deployment documentation.
+- Added queue and scheduler deployment coverage for Redis-backed `default` and `notifications` queues.
+- Replaced route-action closures with cacheable redirect routes so `php artisan route:cache` succeeds.
+- Reworked 403, 404, 500, and 503 pages into standalone Arabic error views backed by `lang/ar/errors.php`.
+- Updated `.env.example` and config defaults to safe local file/sync defaults while production templates use Redis.
+- Added `DEPLOYMENT.md`, rewrote `README.md`, and added `CHANGELOG.md` v1.0.0 release notes.
+- Added `DeploymentReadinessTest` for production cache warm-up and deployment asset presence.
+
+## Session 022 Final Launch Verification Changes
+- Added `PreflightCheckService` and `factory:preflight` with production, runtime, and JSON modes.
+- Preflight verifies deployment assets, production environment settings, route-cache safety, Vite manifest, writable paths, PHP extensions, scheduled commands, and optional DB/cache/Redis connectivity.
+- Integrated `factory:preflight --production` into `deploy.sh`, with optional `PREFLIGHT_RUNTIME=true` for live host checks.
+- Added `LAUNCH_CHECKLIST.md` covering automated gates, infrastructure, security, browser verification, and operational smoke tests.
+- Expanded `DeploymentReadinessTest` to cover local preflight success, insecure production failure, and preflight summary behavior.
+
+## Session 023 Implementation Plan Changes
+- Replaced the stale root Part 7 plan with the current repository-side Phase 12 launch baseline.
+- Documented completed scope, architecture, module map, deployment model, production requirements, verification gates, launch risks, and acceptance criteria.
+- Kept the plan focused on the remaining target-host validation work; no application code changed.
+
+## Session 024 Nginx Deployment Template Changes
+- Added `nginx/factory.conf` as a production Nginx site template for PHP 8.3 FPM deployments.
+- Added the Nginx template to deployment asset preflight checks and deployment readiness tests.
+- Updated README, deployment runbook, launch checklist, and implementation plan to include Nginx installation steps.
+
 ## Latest Verification
-- `php artisan test` -> 166 passed, 447 assertions.
+- `php artisan test` -> 171 passed, 466 assertions.
+- `php artisan test tests/Feature/DeploymentReadinessTest.php` -> 5 passed, 20 assertions.
 - `vendor\\bin\\pint --test` -> passed.
 - `php artisan route:list --except-vendor` -> 99 routes registered.
 - `php artisan schedule:list` -> 3 scheduled commands registered.
 - `npm run build` -> passed.
+- `php artisan config:cache`, `route:cache`, `view:cache`, `event:cache`, then `optimize:clear` -> passed.
+- `php artisan factory:preflight --json` -> 0 failures locally, 34 passed, 13 warnings, 47 total.
 - Authored project file count check -> no non-generated project-managed file exceeds 400 lines.
 - Generated `package-lock.json` exceeds 400 lines and is treated as an external lockfile artifact.
 
@@ -148,9 +184,10 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Local PHP is 8.2.12; blueprint target is PHP 8.3.
 - Local MySQL credentials are unavailable; tests use SQLite in-memory via `phpunit.xml`.
 - Redis is unavailable locally; `.env` uses file/sync fallbacks.
-- Phase 10 notification delivery is complete; deployment work remains upcoming.
+- Local PHP is below target 8.3 and lacks production Redis/pcntl extensions; production host must provide PHP 8.3 with required extensions.
+- Final launch verification remains infrastructure-dependent after repo-side tooling and local gates.
 
 ## Next Session Plan
-- Begin Phase 11 Deployment.
-- Prioritize deployment files, environment hardening, backup/scheduler readiness, and production verification documentation.
-- Keep generated deployment artifacts out of project-managed 400-line checks where appropriate.
+- On target infrastructure, run the VPS deploy script.
+- Run `php artisan factory:preflight --production --runtime` after setting production `.env`.
+- Complete HTTPS/TLS, browser matrix, PDF rendering, queue worker, scheduler, backup, and operational smoke checks.
