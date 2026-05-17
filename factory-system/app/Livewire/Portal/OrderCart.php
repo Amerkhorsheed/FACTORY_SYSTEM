@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Services\Customers\CustomerPortalService;
 use App\Services\Orders\OrderFinancialsService;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -35,10 +36,13 @@ class OrderCart extends Component
     /** @var array<int, string> */
     public array $categories = [];
 
+    /** @var Collection<int, Product>|null */
+    private ?Collection $cachedProducts = null;
+
     public function mount(Customer $customer, CustomerPortalService $portal): void
     {
         $this->customer = $customer;
-        $this->categories = $this->loadCategories($portal);
+        $this->loadCategories($portal);
     }
 
     public function addProduct(int $productId, CustomerPortalService $portal): void
@@ -156,26 +160,33 @@ class OrderCart extends Component
             return;
         }
 
-        $order = $portal->createOrderFromCart(
-            $this->customer,
-            [
-                'items' => $this->buildCartArrays(),
-                'notes' => $this->notes,
-                'requested_delivery_date' => $this->requestedDeliveryDate,
-            ],
-            auth()->user()
-        );
+        try {
+            $order = $portal->createOrder(
+                $this->customer,
+                [
+                    'items' => $this->buildCartArrays(),
+                    'notes' => $this->notes,
+                    'requested_delivery_date' => $this->requestedDeliveryDate,
+                ],
+                auth()->user()
+            );
 
-        $this->dispatch('orderCreated', orderId: $order->id);
-        $this->reset(['items', 'notes', 'requestedDeliveryDate', 'showCreditWarning']);
+            $this->dispatch('orderCreated', orderId: $order->id);
+            $this->reset(['items', 'notes', 'requestedDeliveryDate', 'showCreditWarning']);
+            $this->cachedProducts = null;
+        } catch (ValidationException $e) {
+            $this->dispatch('notify', type: 'error', message: $e->getMessage());
+        }
     }
 
     public function render(CustomerPortalService $portal): View
     {
-        $products = $portal->availableProducts();
+        if ($this->cachedProducts === null) {
+            $this->cachedProducts = $portal->availableProducts();
+        }
 
         return view('livewire.portal.order-cart', [
-            'filteredProducts' => $this->filteredProducts($products),
+            'filteredProducts' => $this->filteredProducts($this->cachedProducts),
         ]);
     }
 
@@ -213,7 +224,6 @@ class OrderCart extends Component
         return collect($this->items)->map(fn (array $item) => [
             'product_id' => $item['product_id'],
             'quantity' => $item['quantity'],
-            'unit_price' => $item['unit_price'],
             'notes' => $item['notes'] ?: null,
         ])->all();
     }
@@ -225,7 +235,7 @@ class OrderCart extends Component
     private function filteredProducts(Collection $products): Collection
     {
         return $products
-            ->when($this->selectedCategory, fn ($q) => $q->where('category_id', $this->selectedCategory))
+            ->when($this->selectedCategory, fn ($q) => $q->where('category_id', (int) $this->selectedCategory))
             ->when($this->searchQuery, function ($q) {
                 $term = mb_strtolower($this->searchQuery);
 
@@ -234,12 +244,12 @@ class OrderCart extends Component
             ->values();
     }
 
-    /**
-     * @return array<int, string>
-     */
-    private function loadCategories(CustomerPortalService $portal): array
+    private function loadCategories(CustomerPortalService $portal): void
     {
-        return $portal->availableProducts()
+        $products = $portal->availableProducts();
+        $this->cachedProducts = $products;
+
+        $this->categories = $products
             ->pluck('category.name', 'category_id')
             ->filter()
             ->unique()

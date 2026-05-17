@@ -70,6 +70,7 @@
 | 026 | 2026-05-17 | Hardened payment ownership, order updates, shipment delivery, money percentages, backup execution, and preflight checks. | 180 tests passed |
 | 027 | 2026-05-17 | Compacted root DECISIONS.md and SKILLS.md under 400-line limit; finalized local release gates and worktree review. | All gates passed |
 | 028 | 2026-05-18 | Implemented Customer Portal v2.0: interactive Livewire cart, real-time credit validation, visual order timeline, admin notifications, and 8 new tests. | 188 tests passed |
+| 029 | 2026-05-18 | Deep audit and hardening: fixed 2 critical bugs (missing email template, broken notification accessor), consolidated order creation with credit/stock validation, added product caching, error handling, and 4 new tests. | 192 tests, 503 assertions |
 
 ---
 
@@ -128,6 +129,23 @@
 | `lang/ar/portal.php` | Added 20+ new Arabic translations for cart, credit, tracking, and notifications. |
 | `lang/ar/notifications.php` | Added `portal_order` notification translations. |
 | `tests/Feature/PortalOrderCartTest.php` | 8 focused tests covering catalog display, cart operations, credit blocking, stock blocking, multi-item checkout, search filter, removal, and quantity increment. |
+
+---
+
+## Completed In Session 029
+
+| File Area | Change |
+|---|---|
+| `resources/views/emails/admin-portal-order.blade.php` | Created missing email template for admin portal order notifications. |
+| `AdminNewPortalOrderNotification.php` | Fixed `$this->order->total->format()` to `$this->order->formatted_total_amount`. |
+| `CustomerPortalService.php` | Consolidated `createOrder()` and `createOrderFromCart()` into single method with credit check, stock validation, price re-fetch, and event dispatch. |
+| `OrderCart.php` | Added product caching, error handling for checkout, removed stale price from cart arrays, cast category filter to int. |
+| `CustomerPortalRepository.php` | Changed `firstOrFail()` to `abort(403)` with meaningful message for missing customer records. |
+| `StorePortalOrderRequest.php` | Added custom validation message for product existence. |
+| `database/migrations/2026_05_18_000001_add_index_on_customers_user_id.php` | Added index on `customers.user_id` for portal auth queries. |
+| `lang/ar/notifications.php` | Added `portal_order.greeting`, `portal_order.details`, `portal_order.order_number`, `portal_order.customer`, `portal_order.view_order`. |
+| `lang/ar/portal.php` | Added `insufficient_stock`, `customer_record_not_found`. |
+| `PortalFrontendTest.php` | Added 4 new tests: profile page, deactivated customer block, invoice isolation, event dispatch verification. |
 
 ---
 

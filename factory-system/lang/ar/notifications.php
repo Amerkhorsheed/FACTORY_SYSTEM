@@ -64,8 +64,13 @@ return [
     ],
     'portal_order' => [
         'body' => 'قام العميل :customer بإرسال طلبية جديدة عبر البوابة.',
+        'customer' => 'العميل',
+        'details' => 'تفاصيل الطلبية',
+        'greeting' => 'مرحباً :name،',
         'message' => 'طلبية بوابة جديدة :number من :customer',
+        'order_number' => 'رقم الطلبية',
         'subject' => 'طلبية بوابة جديدة: :number',
         'total' => 'إجمالي الطلبية',
+        'view_order' => 'عرض الطلبية',
     ],
 ];

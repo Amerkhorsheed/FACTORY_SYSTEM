@@ -65,17 +65,57 @@ class CustomerPortalService extends BaseService
         return Product::active()->where('id', $id)->first();
     }
 
+    /** @param array<string, mixed> $data */
+    public function updateProfile(Customer $customer, array $data): Customer
+    {
+        return $this->transaction(fn () => $this->portal->updateProfile($customer, $data));
+    }
+
     /**
-     * Create an order from a validated cart array.
+     * Create an order from portal cart/form data.
+     * Validates credit limits, stock availability, and re-fetches prices from DB.
      *
      * @param  array<string, mixed>  $data
      *
      * @throws ValidationException
      */
-    public function createOrderFromCart(Customer $customer, array $data, User $actor): Order
+    public function createOrder(Customer $customer, array $data, User $actor): Order
     {
         $items = collect($data['items'] ?? []);
-        $totalAmount = $items->sum(fn ($item) => $item['unit_price'] * $item['quantity']);
+        $productIds = $items->pluck('product_id')->map(fn ($id) => (int) $id)->all();
+        $products = $this->portal->productsByIds($productIds);
+
+        $preparedItems = [];
+        $totalAmount = 0;
+
+        foreach ($items as $item) {
+            $product = $products->get((int) $item['product_id']);
+
+            if (! $product) {
+                throw ValidationException::withMessages([
+                    'items' => __('portal.product_unavailable'),
+                ]);
+            }
+
+            $quantity = (int) ($item['quantity'] ?? 1);
+
+            if ($product->stock_quantity < $quantity) {
+                throw ValidationException::withMessages([
+                    'items' => __('portal.insufficient_stock', ['product' => $product->name]),
+                ]);
+            }
+
+            $unitPrice = $product->unit_price;
+            $totalAmount += $unitPrice * $quantity;
+
+            $preparedItems[] = [
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'unit_price' => $unitPrice,
+                'discount_percent' => 0,
+                'notes' => $item['notes'] ?? null,
+            ];
+        }
 
         if (! $customer->canAcceptOrder($totalAmount)) {
             throw ValidationException::withMessages([
@@ -83,15 +123,7 @@ class CustomerPortalService extends BaseService
             ]);
         }
 
-        return $this->transaction(function () use ($customer, $data, $actor, $items) {
-            $preparedItems = $items->map(fn ($item) => [
-                'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'discount_percent' => 0,
-                'notes' => $item['notes'] ?? null,
-            ])->all();
-
+        return $this->transaction(function () use ($customer, $data, $actor, $preparedItems) {
             $order = $this->orders->create(CreateOrderDTO::fromArray([
                 'customer_id' => $customer->id,
                 'order_date' => today()->toDateString(),
@@ -105,43 +137,5 @@ class CustomerPortalService extends BaseService
 
             return $order;
         });
-    }
-
-    /** @param array<string, mixed> $data */
-    public function updateProfile(Customer $customer, array $data): Customer
-    {
-        return $this->transaction(fn () => $this->portal->updateProfile($customer, $data));
-    }
-
-    /** @param array<string, mixed> $data */
-    public function createOrder(Customer $customer, array $data, User $actor): Order
-    {
-        $items = collect($data['items']);
-        $products = $this->portal->productsByIds($items->pluck('product_id')->map(fn ($id) => (int) $id)->all());
-
-        $preparedItems = $items->map(function (array $item) use ($products) {
-            $product = $products->get((int) $item['product_id']);
-
-            if (! $product) {
-                throw ValidationException::withMessages(['items' => __('portal.product_unavailable')]);
-            }
-
-            return [
-                'product_id' => $product->id,
-                'quantity' => (int) $item['quantity'],
-                'unit_price' => $product->unit_price,
-                'discount_percent' => 0,
-                'notes' => $item['notes'] ?? null,
-            ];
-        })->all();
-
-        return $this->orders->create(CreateOrderDTO::fromArray([
-            'customer_id' => $customer->id,
-            'order_date' => today()->toDateString(),
-            'requested_delivery_date' => $data['requested_delivery_date'] ?? null,
-            'notes' => $data['notes'] ?? null,
-            'created_by' => $actor->id,
-            'items' => $preparedItems,
-        ]));
     }
 }

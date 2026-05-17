@@ -24,4 +24,12 @@ class StorePortalOrderRequest extends FormRequest
             'items.*.notes' => ['nullable', 'string', 'max:500'],
         ];
     }
+
+    /** @return array<string, mixed> */
+    public function messages(): array
+    {
+        return [
+            'items.*.product_id.exists' => __('portal.product_unavailable'),
+        ];
+    }
 }

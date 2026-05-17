@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Events\Orders\OrderPlacedByCustomer;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
@@ -10,6 +11,7 @@ use App\Models\Product;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class PortalFrontendTest extends TestCase
@@ -156,5 +158,64 @@ class PortalFrontendTest extends TestCase
         $this->actingAs($staff)
             ->get(route('portal.dashboard'))
             ->assertForbidden();
+    }
+
+    /** @test */
+    public function it_renders_the_profile_page(): void
+    {
+        [$user, $customer] = $this->portalCustomer();
+
+        $this->actingAs($user)
+            ->get(route('portal.profile'))
+            ->assertOk()
+            ->assertSee($customer->phone);
+    }
+
+    /** @test */
+    public function it_blocks_deactivated_customer_from_portal(): void
+    {
+        [$user, $customer] = $this->portalCustomer();
+        $user->update(['is_active' => false]);
+
+        $this->actingAs($user)
+            ->get(route('portal.dashboard'))
+            ->assertRedirect();
+    }
+
+    /** @test */
+    public function it_lists_only_the_authenticated_customer_invoices(): void
+    {
+        [$user, $customer] = $this->portalCustomer();
+        $ownInvoice = Invoice::factory()->issued()->create(['customer_id' => $customer->id]);
+        $otherInvoice = Invoice::factory()->issued()->create();
+
+        $this->actingAs($user)
+            ->get(route('portal.invoices.index'))
+            ->assertOk()
+            ->assertSee($ownInvoice->invoice_number)
+            ->assertDontSee($otherInvoice->invoice_number);
+    }
+
+    /** @test */
+    public function it_dispatches_event_when_portal_order_created(): void
+    {
+        [$user, $customer] = $this->portalCustomer();
+        $product = Product::factory()->create([
+            'unit_price' => 10_000,
+            'stock_quantity' => 20,
+        ]);
+
+        Event::fake([OrderPlacedByCustomer::class]);
+
+        $this->actingAs($user)
+            ->post(route('portal.orders.store'), [
+                'items' => [[
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                ]],
+            ])
+            ->assertRedirect();
+
+        Event::assertDispatched(OrderPlacedByCustomer::class);
     }
 }

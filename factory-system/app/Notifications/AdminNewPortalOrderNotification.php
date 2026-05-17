@@ -39,7 +39,7 @@ class AdminNewPortalOrderNotification extends Notification implements ShouldQueu
                 'name' => $notifiable->name,
                 'order_number' => $this->order->order_number,
                 'customer_name' => $this->order->customer->name,
-                'total' => $this->order->total->format(),
+                'total' => $this->order->formatted_total_amount,
             ]);
     }
 

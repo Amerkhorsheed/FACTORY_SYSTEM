@@ -179,7 +179,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Fixed soft-delete restore to use a soft-delete-aware query builder and added/updated regression coverage.
 
 ## Latest Verification
-- `php artisan test` -> 188 passed, 495 assertions.
+- `php artisan test` -> 192 passed, 503 assertions.
 - `php artisan test tests/Feature/DeploymentReadinessTest.php` -> 6 passed, 22 assertions.
 - `vendor\\bin\pint --test` -> passed.
 - `php artisan route:list --except-vendor` -> 99 routes registered.
@@ -206,6 +206,20 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - **Admin Notifications**: `OrderPlacedByCustomer` event + `NotifyAdminsOfNewPortalOrder` listener + `AdminNewPortalOrderNotification`.
 - **Tests**: Added `PortalOrderCartTest` with 8 tests (14 assertions) covering all cart operations.
 - **Test Baseline**: 188 tests, 495 assertions, 0 failures.
+
+## Session 029 — Portal Hardening
+- **BUG-1 Fixed**: Created missing `emails.admin-portal-order.blade.php` template.
+- **BUG-2 Fixed**: Changed `$this->order->total->format()` to `$this->order->formatted_total_amount`.
+- **BUG-3+4+5 Fixed**: Consolidated order creation into single method with credit check, stock validation, price re-fetch, and event dispatch.
+- **SEC-1 Fixed**: Livewire cart now passes product_id + quantity only; service re-fetches prices from DB.
+- **QUAL-2 Fixed**: Products cached in Livewire `$cachedProducts` property.
+- **QUAL-4 Fixed**: Category filter cast to `(int)` for strict comparison.
+- **QUAL-7 Fixed**: Added try/catch in Livewire checkout for ValidationException.
+- **QUAL-3 Fixed**: `customerForUser()` now returns 403 with meaningful message instead of 404.
+- **QUAL-5 Fixed**: Added custom validation message for product existence.
+- **DB-3 Fixed**: Added index on `customers.user_id`.
+- **Tests**: Added 4 new tests (profile page, deactivated customer, invoice isolation, event dispatch).
+- **Test Baseline**: 192 tests, 503 assertions, 0 failures.
 
 ## Next Session Plan
 - On target infrastructure, run the VPS deploy script.

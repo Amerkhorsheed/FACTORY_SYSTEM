@@ -18,7 +18,13 @@ class CustomerPortalRepository
 {
     public function customerForUser(User $user): Customer
     {
-        return Customer::query()->where('user_id', $user->id)->firstOrFail();
+        $customer = Customer::query()->where('user_id', $user->id)->first();
+
+        if (! $customer) {
+            abort(403, __('portal.customer_record_not_found'));
+        }
+
+        return $customer;
     }
 
     /** @return array<string, mixed> */
