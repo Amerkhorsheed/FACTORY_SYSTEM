@@ -8,7 +8,7 @@ This plan is the current implementation and launch baseline for the Factory Dist
 - Scope: inventory, customers, orders, distribution, invoices, payments, expenses, reports, administration, PDFs, notifications, deployment assets, and preflight tooling.
 - Repository status: Phases 00 through 12 repository-side work are complete.
 - Current launch state: codebase is locally verified; final production host validation remains.
-- Local test baseline: 171 tests, 466 assertions.
+- Local test baseline: 180 tests, 481 assertions.
 - Application routes: 99 application routes.
 - Scheduled commands: `factory:overdue-alerts`, `factory:low-stock-check`, `factory:backup`.
 - Production target: PHP 8.3 FPM, Nginx, MySQL 8, Redis, and Supervisor.
@@ -68,9 +68,9 @@ This plan is the current implementation and launch baseline for the Factory Dist
 | --- | --- | --- |
 | Inventory | Product catalog, categories, stock movements, low-stock detection. | Stock writes are service-owned and guarded by policy/request validation. |
 | Customers | Customer records, balances, credit limits, statements, portal access. | Portal data is scoped server-side to the authenticated customer. |
-| Orders | Order creation, stock/credit validation, status lifecycle. | Pipeline validation prevents invalid financial or stock states. |
-| Distribution | Shipment planning, trucks, drivers, order assignment, dispatch/delivery. | State machine blocks invalid shipment transitions. |
-| Invoicing | Invoice issuance, voiding, payment application, PDFs. | Payment and invoice totals are recalculated in transactional services. |
+| Orders | Order creation, update validation, stock/credit validation, status lifecycle. | Current product prices, stock, credit, accepted-order stock deltas, and invoice sync are service-enforced. |
+| Distribution | Shipment planning, trucks, drivers, order assignment, dispatch/delivery. | Shipment delivery requires matching shipped orders on dispatched shipments. |
+| Invoicing | Invoice issuance, voiding, payment application, PDFs. | Payment ownership and invoice totals are recalculated in transactional services. |
 | ERP | Dashboard KPIs, expense management, operational reports. | Report datasets are produced outside controllers. |
 | Admin | Users, settings, audit trail, role-protected administration. | Self-delete and authorization edge cases are tested. |
 | Portal | Customer dashboard, order/invoice visibility, profile update. | Staff access is blocked from portal-only paths. |
@@ -108,7 +108,7 @@ APP_MAINTENANCE_DRIVER=cache
 APP_MAINTENANCE_STORE=redis
 ```
 
-The production host must also have a valid `APP_KEY`, real database credentials, real SMTP credentials, writable `storage`, writable `bootstrap/cache`, and a built Vite manifest under `public/build/manifest.json`.
+The production host must also have a valid `APP_KEY`, real database credentials, real SMTP credentials, `mysqldump`, writable `storage`, writable `bootstrap/cache`, writable backup storage, and a built Vite manifest under `public/build/manifest.json`.
 
 ## 8. Deployment Runbook
 

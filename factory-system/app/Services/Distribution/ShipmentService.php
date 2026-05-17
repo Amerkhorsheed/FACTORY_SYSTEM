@@ -5,13 +5,14 @@ namespace App\Services\Distribution;
 use App\Contracts\Repositories\ShipmentRepositoryInterface;
 use App\Contracts\Services\ShipmentServiceInterface;
 use App\DTOs\Shipments\CreateShipmentDTO;
-use App\Events\Orders\OrderDelivered;
 use App\Events\Orders\OrderShipped;
 use App\Events\ShipmentDispatched;
 use App\Exceptions\InvalidStatusTransitionException;
 use App\Models\Order;
 use App\Models\Shipment;
 use App\Models\Truck;
+use App\Services\Orders\OrderStatusService;
+use App\StateMachines\OrderStateMachine;
 use App\StateMachines\ShipmentStateMachine;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,6 +23,8 @@ class ShipmentService implements ShipmentServiceInterface
     public function __construct(
         private readonly ShipmentRepositoryInterface $repository,
         private readonly ShipmentStateMachine $stateMachine,
+        private readonly OrderStateMachine $orderStateMachine,
+        private readonly OrderStatusService $orderStatus,
     ) {}
 
     /** @param array<string, mixed> $filters */
@@ -84,6 +87,7 @@ class ShipmentService implements ShipmentServiceInterface
             $orders = $shipment->orders()->where('status', 'ready')->get();
 
             foreach ($orders as $order) {
+                $this->orderStateMachine->transition($order->status, 'shipped');
                 $order->update(['status' => 'shipped']);
                 event(new OrderShipped($order->fresh()));
             }
@@ -101,11 +105,20 @@ class ShipmentService implements ShipmentServiceInterface
                 throw new \InvalidArgumentException('Order does not belong to this shipment.');
             }
 
-            $order->status = 'delivered';
-            $order->delivered_at = now();
-            $order->save();
+            if ($shipment->status !== 'dispatched') {
+                throw new InvalidStatusTransitionException('Only dispatched shipments can mark orders as delivered.');
+            }
 
-            event(new OrderDelivered($order->fresh()));
+            if ($order->status !== 'shipped') {
+                throw new InvalidStatusTransitionException('Only shipped orders can be marked delivered from a shipment.');
+            }
+
+            $actor = auth()->user();
+            if (! $actor) {
+                throw new \RuntimeException('Authenticated user is required to confirm delivery.');
+            }
+
+            $this->orderStatus->confirmDelivery($order, $actor);
 
             $shipment->refresh();
             if ($shipment->allOrdersResolved()) {

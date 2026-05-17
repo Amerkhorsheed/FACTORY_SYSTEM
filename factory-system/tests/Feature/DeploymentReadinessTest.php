@@ -73,6 +73,15 @@ class DeploymentReadinessTest extends TestCase
         $this->assertSame(count($checks), $summary['total']);
     }
 
+    /** @test */
+    public function preflight_reports_backup_readiness(): void
+    {
+        $checks = collect(app(PreflightCheckService::class)->run());
+
+        $this->assertNotNull($checks->firstWhere('name', 'executable: mysqldump'));
+        $this->assertNotNull($checks->firstWhere('name', 'writable: storage/app/backups'));
+    }
+
     /** @return array<int, string> */
     private function deploymentFiles(): array
     {

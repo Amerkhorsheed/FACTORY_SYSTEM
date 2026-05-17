@@ -1,180 +1,122 @@
-<!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║                 PROGRESS.md — LIVE BUILD PROGRESS TRACKER               ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
-
-# 📊 Build Progress — Factory Distribution & Shipping System
+# Build Progress - Factory Distribution & Shipping System
 
 > **Project:** نظام إدارة معمل التوزيع والشحن
-> **Version:** 1.0.0-dev · **Branch:** `main`
-> **Started:** 2026-05-16 · **Target Completion:** TBD
-> **Last Updated:** 2026-05-17 01:20 (Asia/Damascus)
-> **Overall Progress:** ██████████████░░░░░░ **70%** (14 of 19 modules complete)
+> **Version:** 1.0.0
+> **Last Updated:** 2026-05-17
+> **Current Phase:** Phase 12 - Final Launch Verification on target infrastructure
+> **Repository Status:** Implementation complete through repository-side launch tooling
 
 ---
 
-## 🏗️ Module Status Dashboard
+## Executive Status
 
-### Foundation Layer (Phases 00–05)
-
-| #   | Module                       | Status           | Progress               | Files Created | Tests  | Blockers                                |
-|-----|------------------------------|------------------|------------------------|---------------|--------|------------------------------------------|
-| 00  | Project Bootstrap            | 🟢 Complete      | ██████████ 100%        | 20+           | 2/2    | PHP 8.2.12 target 8.3; Redis unavailable locally |
-| 01  | Database & Migrations        | 🟢 Complete      | ██████████ 100%        | 17/17         | ✅     | MySQL unavailable locally; SQLite passed |
-| 02  | Value Objects & State Machine| 🟢 Complete      | ██████████ 100%        | 5/5           | 32/32  | —                                        |
-| 03  | Base Classes & Contracts     | 🟢 Complete      | ██████████ 100%        | 15+           | 40/40  | —                                        |
-| 04  | Models, Traits & Observers   | 🟢 Complete      | ██████████ 100%        | 22/22         | 46/46  | —                                        |
-| 05  | Seeders & RBAC Roles         | 🟢 Complete      | ██████████ 100%        | 5/6           | 53/53  | DemoDataSeeder pending                   |
-
-### Core Business Layer (Phases 06–11)
-
-| #   | Module                       | Status           | Progress               | Files Created | Tests  | Blockers |
-|-----|------------------------------|------------------|------------------------|---------------|--------|----------|
-| 06  | Authentication & Middleware  | 🟢 Complete      | ██████████ 100%        | 12/12         | 65/65  | —        |
-| 07  | Inventory (Products & Stock) | 🟢 Complete      | ██████████ 100%        | 18/18         | 78/78  | —        |
-| 08  | Customer Management          | 🟢 Complete      | ██████████ 100%        | 15/15         | 89/89  | —        |
-| 09  | Orders Module ★              | 🟢 Complete      | ██████████ 100%        | 25+           | 100/100| —        |
-| 10  | Distribution & Shipping      | 🟢 Complete      | ██████████ 100%        | 18/18         | 109/109| —        |
-| 11  | Invoicing & Payments         | 🟢 Complete      | ██████████ 100%        | 16/16         | 138/138| —        |
-
-### Administration & Presentation (Phases 12–18)
-
-| #   | Module                       | Status           | Progress               | Files Created | Tests  | Blockers |
-|-----|------------------------------|------------------|------------------------|---------------|--------|----------|
-| 12  | Admin Module                 | 🟢 Complete      | ██████████ 100%        | 15+           | 146/146| —        |
-| 13  | Frontend Architecture        | 🟡 In Progress   | █████░░░░░ 45%         | 20/35+        | 153/153| Module view upgrades pending |
-| 14  | PDF Generation               | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/8           | —      | PdfService is HTML stub      |
-| 15  | Notifications                | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/10          | —      | —        |
-| 16  | Event Listeners              | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/10          | —      | Logic inline in services     |
-| 17  | Full Test Suite              | 🟡 In Progress   | ████████░░ 75%         | 22/30+        | 153    | Target: 200+ tests, ≥80%    |
-| 18  | Deployment & DevOps          | ⬜ Not Started   | ░░░░░░░░░░ 0%          | 0/8           | —      | —        |
+| Area | Status | Notes |
+|---|---|---|
+| Application implementation | Complete | Modules 00 through 11 delivered. |
+| Launch tooling | Complete | `factory:preflight`, runbook, Nginx, Supervisor, deploy script, checklist. |
+| Local verification | Passing | Pint, full tests, build, cache, route, schedule, Composer, and preflight gates passed. |
+| Production validation | Pending | Requires target host with PHP 8.3, MySQL, Redis, SMTP, TLS, workers, scheduler. |
 
 ---
 
-## 📋 Session History
+## Module Status
 
-| Session | Date       | Phase        | Tasks Completed                                                              | Tests   | Notes                                    |
-|---------|------------|--------------|------------------------------------------------------------------------------|---------|------------------------------------------|
-| 001     | 2026-05-16 | 00 Bootstrap | Environment setup, Laravel install, packages, vendor publish, verification   | 2/2     | PHP 8.2.12 detected                      |
-| 002     | 2026-05-16 | 01 Database  | All 17 strict-order migrations created and verified                          | 2/2     | SQLite verification passed               |
-| 003     | 2026-05-16 | 02 Values    | Money value object, transition exception, state machines                     | 32/32   | Phase 02 complete                        |
-| 004     | 2026-05-16 | 03 Base      | Base service/repository infrastructure, contracts, DI bindings               | 40/40   | SQLite in-memory for tests               |
-| 005     | 2026-05-16 | 04 Models    | Model traits, code generator, 13 domain models, observers                    | 46/46   | Phase 04 complete                        |
-| 006     | 2026-05-16 | 05 Seeders   | Seeders for roles, permissions, settings, admin users, categories            | 53/53   | 4 roles seeded                           |
-| 007     | 2026-05-16 | 06 Auth      | Auth controller, middleware, route structure, auth tests                      | 65/65   | Portal middleware ready                  |
-| 008     | 2026-05-16 | 07.01 Inv    | Inventory: products, stock services, policies, requests, routes, tests       | 78/78   | Module 01 complete                       |
-| 009     | 2026-05-16 | 07.02 Cust   | Customer: DTO, repository, service, controller, policy, views, tests         | 89/89   | Module 02 complete                       |
-| 010     | 2026-05-16 | 07.03 Ord    | Orders: DTOs, pipelines, services, status transitions, tests                 | 100/100 | Module 03 complete                       |
-| 011     | 2026-05-16 | 07.04 Dist   | Distribution: shipments, transitions, manifest stub, factories, tests        | 109/109 | Module 04 complete                       |
-| 012     | 2026-05-16 | 07.05 Inv    | Invoicing: repository, production service, policy, payments, tests           | 120/120 | Module 05 complete                       |
-| 013     | 2026-05-16 | 07.06 ERP    | Payments & ERP: expenses, dashboard, reports, policies, tests                | 138/138 | Module 06 complete                       |
-| 014     | 2026-05-16 | Audit        | Quality audit, DOCS source sync, controller refactor, report cleanup         | 138/138 | PART6 indexed; 81 routes                 |
-| 015     | 2026-05-16 | 07.07 Admin  | Admin: users, settings, audit log, routes, views, policies, tests            | 146/146 | 90 routes registered                     |
-| 016     | 2026-05-16 | 08 Frontend  | Frontend foundation: RTL shell, components, Tailwind, portal, tests          | 153/153 | 97 routes registered                     |
-
----
-
-## 📈 Quality Metrics Dashboard
-
-| Metric                                | Current  | Target   | Status |
-|---------------------------------------|----------|----------|--------|
-| Test suite (total passing)            | 153      | 200+     | 🟡     |
-| Test assertions                       | 395      | 500+     | 🟡     |
-| Test coverage (Services + Models)     | ~65%     | ≥ 80%    | 🟡     |
-| Files exceeding 400 lines             | 0        | 0        | ✅     |
-| Files exceeding 350 lines (warning)   | 0        | ≤ 5      | ✅     |
-| Hardcoded Arabic strings in PHP       | 0        | 0        | ✅     |
-| Float-based money operations          | 0        | 0        | ✅     |
-| Unauthorized controller actions       | 0        | 0        | ✅     |
-| Controllers without FormRequest       | 0        | 0        | ✅     |
-| Services without transaction wrapping | 0        | 0        | ✅     |
-| Methods exceeding 30 lines            | 0        | 0        | ✅     |
-| Direct Eloquent calls in Services     | 0        | 0        | ✅     |
-| Pint style violations                 | 0        | 0        | ✅     |
-| npm run build                         | ✅ Pass  | ✅ Pass  | ✅     |
-| Routes registered                     | 97       | ~110     | 🟡     |
+| Module | Status | Evidence |
+|---|---|---|
+| 00 Bootstrap | Complete | Laravel 11 app, dependencies, config, key/storage verification. |
+| 01 Database | Complete | 17 migrations for all core and support entities. |
+| 02 Domain Primitives | Complete | `Money`, order state machine, shipment state machine. |
+| 03 Base Architecture | Complete | Base service/repository, contracts, DI bindings. |
+| 04 Models & Observers | Complete | 14 models, traits, code generation, observers. |
+| 05 Seeders & RBAC | Complete | Roles, permissions, settings, admin users, categories, demo/load-test seeders. |
+| 06 Auth | Complete | Login/logout, active user, locale, portal, last activity middleware. |
+| 07.01 Inventory | Complete | Product, category, stock movement, low-stock workflows. |
+| 07.02 Customers | Complete | Customer CRUD, credit, statement, portal access. |
+| 07.03 Orders | Complete | Pipeline validation and full lifecycle. |
+| 07.04 Distribution | Complete | Trucks, drivers, shipments, dispatch, delivery, manifests. |
+| 07.05 Invoicing | Complete | Invoice issue/void/download and payment recalculation. |
+| 07.06 Payments & ERP | Complete | Payments, expenses, dashboard, reports. |
+| 07.07 Admin | Complete | Users, settings, audit log, policies. |
+| 08 Frontend | Complete | Shared RTL layout, module views, public and portal screens. |
+| 09 PDF | Complete | DomPDF service and Arabic PDF templates. |
+| 10 Notifications | Complete | Queued notifications, digests, Livewire bell. |
+| 11 Deployment Assets | Complete | Nginx, Supervisor, deploy script, env template, runbook. |
+| 12 Final Launch | In Progress | Target-host runtime validation remains. |
 
 ---
 
-## 📊 Codebase Statistics
+## Latest Verification
 
-| Metric               | Count  | Target  | Status |
-|----------------------|--------|---------|--------|
-| Total PHP files      | 120+   | ~180    | 🟡     |
-| Total Blade views    | 40+    | 80+     | 🟡     |
-| Total migrations     | 17     | 17      | ✅     |
-| Total models         | 14     | 14      | ✅     |
-| Total services       | 14+    | 14      | ✅     |
-| Total repositories   | 13     | 13      | ✅     |
-| Total controllers    | 15+    | 16      | ✅     |
-| Total policies       | 10     | 10      | ✅     |
-| Total DTOs           | 5      | 5       | ✅     |
-| Total events         | 5      | 7       | 🟡     |
-| Total listeners      | 0      | 8       | ⬜     |
-| Total notifications  | 0      | 5       | ⬜     |
-| Total tests          | 153    | 200+    | 🟡     |
-| Total config files   | 3      | 3       | ✅     |
-| Total lang/ar/ files | 14     | 14      | ✅     |
-| Total model factories| 12     | 12      | ✅     |
-| Total seeders        | 5      | 6       | 🟡     |
-| Total route files    | 11     | 11      | ✅     |
+| Command | Result |
+|---|---|
+| `vendor/bin/pint --test` | Passed |
+| `php artisan test` | 180 passed, 481 assertions |
+| `php artisan test tests/Feature/SeedersTest.php` | 7 passed, 24 assertions |
+| `npm run build` | Passed |
+| `php artisan route:list --except-vendor --json` | 99 application routes |
+| `php artisan schedule:list` | 3 scheduled commands |
+| `php artisan factory:preflight --json` | 36 passed, 14 warnings, 0 failures in local mode |
 
 ---
 
-## 📦 Dependency Inventory
+## Recent Sessions
 
-### Composer — Production ✅ All Installed
-
-| Package                           | Version | Purpose                          | Status      |
-|-----------------------------------|---------|----------------------------------|-------------|
-| `spatie/laravel-permission`       | ^6.0    | RBAC roles & permissions         | ✅ Installed |
-| `spatie/laravel-activitylog`      | ^4.0    | Audit trail / change log         | ✅ Installed |
-| `barryvdh/laravel-dompdf`         | ^2.0    | PDF generation (Arabic RTL)      | ✅ Installed |
-| `maatwebsite/excel`               | ^3.1    | Excel/CSV export                 | ✅ Installed |
-| `intervention/image-laravel`      | ^1.0    | Image processing (products)      | ✅ Installed |
-| `livewire/livewire`               | ^3.0    | Reactive components              | ✅ Installed |
-
-### Composer — Development ✅ All Installed
-
-| Package                             | Version | Purpose                    | Status      |
-|-------------------------------------|---------|----------------------------|-------------|
-| `barryvdh/laravel-debugbar`         | ^3.0    | Debug toolbar              | ✅ Installed |
-| `pestphp/pest`                      | ^2.0    | BDD testing framework      | ✅ Installed |
-| `pestphp/pest-plugin-laravel`       | ^2.0    | Laravel Pest integration   | ✅ Installed |
-
-### NPM ✅ All Installed
-
-| Package                        | Purpose                       | Status      |
-|--------------------------------|-------------------------------|-------------|
-| `tailwindcss` + plugins        | Utility-first CSS + RTL       | ✅ Installed |
-| `alpinejs`                     | Lightweight JS framework      | ✅ Installed |
-| `chart.js`                     | Dashboard charts              | ✅ Installed |
-| `flatpickr`                    | Date picker (Arabic locale)   | ✅ Installed |
-| `tom-select`                   | Enhanced select inputs        | ✅ Installed |
-| `@fontsource/cairo`            | Arabic font                   | ✅ Installed |
-| `@fontsource/noto-naskh-arabic`| Arabic serif font             | ✅ Installed |
+| Session | Date | Summary | Verification |
+|---|---|---|---|
+| 022 | 2026-05-17 | Added production preflight, runtime checks, launch checklist, deploy integration. | 171 tests baseline |
+| 023 | 2026-05-17 | Replaced stale implementation plan with current Phase 12 launch baseline. | Documentation update |
+| 024 | 2026-05-17 | Added production Nginx site template and preflight coverage. | Deployment tests |
+| 025 | 2026-05-17 | Synced root TASKS, implemented load-test seeder cleanup, restored Pint gate. | Pint passed, 171 tests passed |
+| 026 | 2026-05-17 | Hardened payment ownership, order updates, shipment delivery, money percentages, backup execution, and preflight checks. | 180 tests passed |
 
 ---
 
-## 🚨 Active Blockers
+## Completed In Session 025
 
-| ID      | Severity | Description                              | Impact                              | Resolution Path                    |
-|---------|----------|------------------------------------------|-------------------------------------|-------------------------------------|
-| BLK-001 | ⚠️ Low   | PHP 8.2.12 vs target 8.3                 | Non-blocking — Laravel 11 supports 8.2 | Deployment uses PHP 8.3    |
-| BLK-002 | ⚠️ Low   | MySQL unavailable locally                | Tests use SQLite in-memory          | Deployment provides MySQL  |
-| BLK-003 | ⚠️ Low   | Redis unavailable locally                | `.env` uses file/sync fallbacks     | Deployment provides Redis  |
-
----
-
-## 🔮 Next Steps
-
-| Priority | Task                                              | Stream |
-|----------|---------------------------------------------------|--------|
-| 1        | Sync root TODO.md and TASKS.md with real state    | 1      |
-| 2        | Upgrade module Blade views with shared components | 2      |
-| 3        | Extract event listeners from inline service logic | 3      |
-| 4        | Implement DomPDF Arabic RTL PDF generation        | 4      |
-| 5        | Build notification classes and Livewire components| 5      |
+| File | Change |
+|---|---|
+| `TASKS.md` | Rebuilt root master index around current Phase 12 baseline. |
+| `README.md` | Replaced stale test-count overview with current launch-ready project summary. |
+| `PROGRESS.md` | Replaced stale 70 percent tracker with current implementation and verification status. |
+| `TODO.md` | Replaced stale frontend sprint board with target-host launch board. |
+| `factory-system/database/seeders/SystemTestSeeder.php` | Implemented style-clean load-test seeder with explicit counts, integer money math, lifecycle-aware statuses, and safe ownership. |
+| `factory-system/app/Providers/AppServiceProvider.php` | Normalized import/docblock style so full Pint passes. |
 
 ---
 
-*Updated by FACTORY-AGENT after each session. This is a living document.*
+## Completed In Session 026
+
+| File Area | Change |
+|---|---|
+| Invoices | Payment deletion now verifies the payment belongs to the invoice route parameter. |
+| Orders | Updates use current product prices, revalidate stock/credit, sync accepted-order stock deltas, and refresh safe invoice totals. |
+| Shipments | Delivery confirmation requires a dispatched shipment, matching order, and shipped order status. |
+| Money | Order discounts now use basis points; `Money::multiply()` is integer-only. |
+| Backups | `factory:backup` checks `mysqldump`, uses Symfony Process, and deletes partial failed backups. |
+| Preflight | Backup executable/storage and mail sender readiness are reported. |
+| Tests | Added focused regressions for invoice payment ownership, order update rules, shipment delivery guards, backup preflight, and money percentages. |
+
+---
+
+## Known Constraints
+
+| Constraint | Impact | Resolution |
+|---|---|---|
+| Local PHP is 8.2.12 | Below production target. | Validate PHP 8.3+ on production with preflight. |
+| Local Redis unavailable | Local env uses file/sync fallbacks. | Production must use Redis. |
+| Local MySQL not fully validated | Tests use SQLite in-memory. | Validate migrations/seeders on production MySQL. |
+| Real SMTP unavailable locally | Mail rendering is tested, delivery is not. | Send production test notifications. |
+| Browser/TLS/PDF visual checks require host | Cannot be fully proven locally. | Complete launch checklist on the target host. |
+
+---
+
+## Next Steps
+
+1. Run the final formatting, frontend build, cache, and preflight gates after documentation sync.
+2. Decide whether to keep and commit `factory-system/database/seeders/SystemTestSeeder.php`.
+3. Resolve or confirm the current unrelated working-tree changes before release sign-off.
+4. Provision PHP 8.3 FPM, Nginx, MySQL 8, Redis, Supervisor, Composer, Node, npm, and `mysqldump` on the target host.
+5. Configure production `.env` from `.env.production.example`.
+6. Run `APP_DIR=/var/www/factory-system ./deploy.sh main`.
+7. Run `php artisan factory:preflight --production --runtime` on the host.
+8. Complete `factory-system/LAUNCH_CHECKLIST.md`.

@@ -4,7 +4,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 
 ## Current Phase
 - Phase 12 - Final Launch Verification (target infrastructure)
-- Source requirements are indexed in `TASKS.md`, including DOCS parts 1 through 6.
+- Source requirements are indexed in `TASKS.md`, including DOCS parts 1 through 7.
 
 ## Session Log
 | Session | Date | Tasks Completed | Tests Passing | Notes |
@@ -33,6 +33,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 022 | 2026-05-17 | Final launch tooling: production preflight command, runtime checks, launch checklist, tests, full local gate | 171/171 | Repo-side launch verification complete; target-host HTTPS/browser checks remain |
 | 023 | 2026-05-17 | Refreshed root implementation plan with current system baseline and target-host launch path | 171/171 | Documentation only; production deployment remains PHP-FPM/Nginx/Supervisor oriented |
 | 024 | 2026-05-17 | Added production Nginx site template and wired it into deployment preflight | 171/171 | Focused deployment tests passed; target-host Nginx reload remains live-host work |
+| 025 | 2026-05-17 | Release hardening: payment ownership, order update validation, shipment delivery guards, integer percentage math, backup/preflight checks | 180/180 | Full local suite passed; production runtime validation remains host-dependent |
 
 ## Module Status
 | Module | Status | % Done | Blockers |
@@ -78,7 +79,8 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Phase 09 PDF: production DomPDF service, Arabic invoice/manifest/statement templates, private PDF storage, stream/download routes, and PDF tests completed.
 - Phase 10 Notifications: queued database/mail notifications, customer/staff event wiring, digest commands, schedules, Livewire bell, Arabic mail templates, and tests completed.
 - Phase 11 Deployment: production deployment files, Nginx/Supervisor templates, cache-safe routes, Arabic error pages, runbook, release notes, and deployment readiness tests completed.
-- Phase 12 Launch tooling: `factory:preflight`, target-host checklist, deploy-script preflight integration, runtime checks, and automated launch verification tests completed.
+- Phase 12 Launch tooling and hardening: `factory:preflight`, target-host checklist, deploy-script preflight integration, runtime checks, backup readiness checks, and automated launch verification tests completed.
+- Release hardening: invoice payment deletion is invoice-scoped, order updates revalidate stock/credit and sync accepted-order stock/invoices, shipment delivery requires dispatched shipment and matching shipped order, and money percentages avoid float arithmetic.
 
 ## Session 014 Audit Changes
 - Added `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md` to `TASKS.md`.
@@ -168,15 +170,23 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Added the Nginx template to deployment asset preflight checks and deployment readiness tests.
 - Updated README, deployment runbook, launch checklist, and implementation plan to include Nginx installation steps.
 
+## Session 025 Release Hardening Changes
+- Added service-level invoice payment ownership checks and a regression for cross-invoice payment deletion.
+- Reworked order updates to use current product prices, revalidate stock and credit, adjust accepted-order stock deltas, and sync safe invoice totals.
+- Tightened shipment delivery to require the order to belong to the shipment, the shipment to be dispatched, and the order to be shipped before delivery confirmation.
+- Removed float money percentage paths by switching order discounts to basis points and adding integer percentage support to `Money`.
+- Hardened `factory:backup` with explicit `mysqldump` detection, process-based execution, partial-file cleanup, and backup preflight checks.
+- Fixed soft-delete restore to use a soft-delete-aware query builder and added/updated regression coverage.
+
 ## Latest Verification
-- `php artisan test` -> 171 passed, 466 assertions.
-- `php artisan test tests/Feature/DeploymentReadinessTest.php` -> 5 passed, 20 assertions.
+- `php artisan test` -> 180 passed, 481 assertions.
+- `php artisan test tests/Feature/DeploymentReadinessTest.php` -> 6 passed, 22 assertions.
 - `vendor\\bin\\pint --test` -> passed.
 - `php artisan route:list --except-vendor` -> 99 routes registered.
 - `php artisan schedule:list` -> 3 scheduled commands registered.
 - `npm run build` -> passed.
 - `php artisan config:cache`, `route:cache`, `view:cache`, `event:cache`, then `optimize:clear` -> passed.
-- `php artisan factory:preflight --json` -> 0 failures locally, 34 passed, 13 warnings, 47 total.
+- `php artisan factory:preflight --json` -> 0 failures locally, 36 passed, 14 warnings, 50 total.
 - Authored project file count check -> no non-generated project-managed file exceeds 400 lines.
 - Generated `package-lock.json` exceeds 400 lines and is treated as an external lockfile artifact.
 

@@ -76,13 +76,19 @@ final class Money
     }
 
     /**
-     * Multiply the amount by a numeric factor.
-     *
-     * @param  int|float  $factor  Multiplication factor.
+     * Multiply the amount by an integer factor.
      */
-    public function multiply(int|float $factor): self
+    public function multiply(int $factor): self
     {
-        return new self((int) round($this->amount * $factor), $this->currency);
+        return new self($this->amount * $factor, $this->currency);
+    }
+
+    /**
+     * Calculate a percentage using basis points, without floating point math.
+     */
+    public function percentage(int $basisPoints): self
+    {
+        return new self(intdiv(($this->amount * $basisPoints) + 5000, 10000), $this->currency);
     }
 
     /**

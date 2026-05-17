@@ -1,253 +1,320 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║             TASKS.md — MASTER REQUIREMENTS & EXECUTION INDEX            ║ -->
+<!-- ║          TASKS.md — MASTER REQUIREMENTS, EXECUTION & LAUNCH INDEX       ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
-# 📋 Master Requirements & Execution Index
+# Master Requirements, Execution & Launch Index
 
-> **Project:** Factory Distribution & Shipping Management System  
-> **نظام إدارة معمل التوزيع والشحن**  
-> **Version:** 1.0.0 · **Status:** In Development  
-> **Stack:** Laravel 11 · PHP 8.3 · MySQL 8.0 · Blade + Livewire 3 + Alpine.js · Tailwind CSS 3  
-> **⚠️ This file is READ-ONLY — do not modify during execution.**
-
----
-
-## 📚 Source Documents
-
-The complete system specification is contained in **6 detailed prompt files** totaling **~663 KB**. These are the **single authoritative source of truth** for all requirements, code patterns, and implementation details.
-
-| Part | File                                            | Lines  | Size    | Specification Coverage                                                                                   |
-|------|-------------------------------------------------|--------|---------|----------------------------------------------------------------------------------------------------------|
-| 1    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM.md`           | 2,388  | ~88 KB  | Agent identity · SOLID principles · 12 design patterns · Directory structure · Phases 00–18 · Config files · `.env` template · `config/factory.php` with all status labels |
-| 2    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART2.md`     | 3,187  | ~121 KB | 5 DTOs (CreateOrderDTO, OrderItemDTO, RecordPaymentDTO, CreateCustomerDTO, CreateShipmentDTO) · OrderRepository · ProductRepository · OrderService · OrderStatusService · OrderFinancialsService · InvoiceService · SettingService · Pipeline pipes · Controllers (Product, Customer, Order, Invoice, Shipment, ERP) · Form Requests · Livewire components · Blade views |
-| 3    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART3.md`     | 3,387  | ~113 KB | Model Traits (HasMoneyFormatting, HasSoftDeleteGuard, GeneratesSequentialCode) · Full Models (Product, Customer, Invoice, Shipment) · 4 Observers · 5 Notifications · PdfService · ReportService · Frontend CSS/JS setup · Deployment (Docker, Nginx, Supervisor) · Seeders · README.md · CHANGELOG.md |
-| 4    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART4.md`     | 3,526  | ~117 KB | 7 Policies (Order, Invoice, Payment, Product, Customer, Shipment, Expense) · AuthServiceProvider · 4 Middleware · LoginController · ShipmentService · CustomerService · CustomerPortalController · Livewire (ShipmentOrderAssignment, NotificationBell) · Email templates · Error pages · 3 Export strategies · `config/money.php` · `config/pdf.php` · `bootstrap/app.php` |
-| 5    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART5.md`     | 3,411  | ~109 KB | Models (Truck, Driver, OrderItem, StockMovement, Expense, SystemSetting, ProductCategory, Payment, User, Order) · Repositories (Invoice, Shipment, Customer, StockMovement) · Services (ProductService, StockService, CustomerService, ExpenseService) · Events · Listeners · Model Factories (9) · Seeders (6) · Unit Tests (7) · Feature Tests (10) |
-| 6    | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md`     | ~3,000 | ~115 KB | Additional specifications, extended requirements, supplementary patterns and implementation details        |
-
-**Cross-reference guide — which Part to read for each module:**
-
-| Module                  | Primary Part(s) | Key Sections to Read                                          |
-|-------------------------|-----------------|---------------------------------------------------------------|
-| Bootstrap & Config      | Part 1          | Phase 00, `.env`, `config/factory.php`                        |
-| Database Migrations     | Part 1          | Phase 01, migration example pattern                           |
-| Value Objects           | Part 1          | Phase 02, `Money.php`, State Machines                         |
-| Base Classes & DI       | Part 1          | Phase 03, directory structure                                 |
-| Models & Traits         | Part 3 + 5      | Section A (Traits, Product, Customer, Invoice, Shipment) + Part 5 (remaining) |
-| Observers               | Part 3          | Section B (all 4 observers)                                   |
-| Seeders & Roles         | Part 5          | Seeders section, RBAC permissions                             |
-| Auth & Middleware        | Part 4          | Sections B + C (middleware, LoginController)                   |
-| Products Module         | Part 2 + 5      | ProductRepository, ProductService, StockService               |
-| Customers Module        | Part 2 + 4      | CustomerRepository, CustomerService, CustomerPortalController |
-| Orders Module           | Part 2          | All Services, Pipeline pipes, Controllers, Form Requests       |
-| Distribution Module     | Part 4 + 5      | ShipmentService, ShipmentRepository                           |
-| Invoicing Module        | Part 2 + 5      | InvoiceService, InvoiceRepository, PaymentObserver            |
-| PDF Generation          | Part 3          | PdfService, PDF Blade templates                               |
-| ERP & Reports           | Part 3          | ReportService, Dashboard views                                |
-| Frontend                | Part 3          | CSS/JS setup, Blade components                                |
-| Notifications           | Part 3          | 5 notification classes                                        |
-| Policies & Security     | Part 4          | Section A (all 7 policies), AuthServiceProvider               |
-| Tests                   | Part 5          | Unit tests (7 files), Feature tests (10 files)                |
-| Deployment              | Part 3          | Docker, Nginx, Supervisor configs                             |
+> **Project:** Factory Distribution & Shipping Management System
+> **Arabic Name:** نظام إدارة معمل التوزيع والشحن
+> **Application Path:** `factory-system/`
+> **Version:** 1.0.0 · **Repository Status:** Implementation complete through repository-side launch tooling
+> **Current Phase:** Phase 12 — Final Launch Verification on target infrastructure
+> **Stack:** Laravel 11 · PHP 8.3 target · MySQL 8 · Redis · Blade · Livewire 3 · Alpine.js · Tailwind CSS 3 · DomPDF
+> **Last Verified Locally:** 2026-05-17
 
 ---
 
-## 🗺️ Execution Roadmap
+## 1. Authority Model
 
-Phases **must** be executed in strict sequential order. Each phase has defined **entry criteria**, **key deliverables**, and **exit checkpoints** that must pass before proceeding.
+This file is the root session-start index. It is not a replacement for the detailed specifications; it tells the agent or engineer exactly where the current truth lives.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                              EXECUTION FLOW DIAGRAM                                      │
-│                                                                                          │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐              │
-│  │ Phase 00 │──→│ Phase 01 │──→│ Phase 02 │──→│ Phase 03 │──→│ Phase 04 │              │
-│  │Bootstrap │   │ Database │   │ ValueObj │   │ Base/DI  │   │ Models   │              │
-│  │ Setup    │   │Migrations│   │  State   │   │Contracts │   │Observers │              │
-│  └──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘              │
-│       │                                                            │                     │
-│       ▼                                                            ▼                     │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐              │
-│  │ Phase 05 │──→│ Phase 06 │──→│ Phase 07 │──→│ Phase 08 │──→│ Phase 09 │              │
-│  │ Seeders  │   │   Auth   │   │Inventory │   │Customers │   │Orders ★  │              │
-│  │  RBAC    │   │Middleware│   │ Products │   │ Credit   │   │Pipeline  │              │
-│  └──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘              │
-│                                                                    │                     │
-│                                                                    ▼                     │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐              │
-│  │ Phase 10 │──→│ Phase 11 │──→│ Phase 12 │──→│ Phase 13 │──→│ Phase 14 │              │
-│  │  Distri- │   │Invoicing │   │   PDF    │   │   ERP    │   │Frontend  │              │
-│  │  bution  │   │ Payments │   │ Arabic   │   │ Reports  │   │RTL/Blade │              │
-│  └──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘              │
-│                                                                    │                     │
-│                                                                    ▼                     │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐                              │
-│  │ Phase 15 │──→│ Phase 16 │──→│ Phase 17 │──→│ Phase 18 │                              │
-│  │  Notif.  │   │Security  │   │  Tests   │   │  Deploy  │                              │
-│  │  Email   │   │Hardening │   │ ≥80% cov │   │  Docker  │                              │
-│  └──────────┘   └──────────┘   └──────────┘   └──────────┘                              │
-│                                                                                          │
-│  ★ = Most complex module (Orders: 25+ files, Pipeline, State Machine, 5+ tests)         │
-│                                                                                          │
-│  LEGEND: Each box represents a Phase with specific entry/exit criteria                   │
-│          Arrows show strict sequential dependency                                        │
-└─────────────────────────────────────────────────────────────────────────────────────────┘
-```
+| Priority | Document | Authority |
+|---|---|---|
+| 1 | `implementation_plan.md` | Current implementation and launch baseline. Supersedes older scaffolding where it conflicts with prompt Part 7. |
+| 2 | `factory-system/PROGRESS.md` | Live implementation progress, session history, verification status, constraints, and next production steps. |
+| 3 | `factory-system/TASKS.md` | Compact application-local task index required by `AGENT.md`. |
+| 4 | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM*.md` | Original detailed specification set. Use for missing implementation detail and design intent. |
+| 5 | Root management docs | Governance and project overview. If stale, prefer this file plus `implementation_plan.md`. |
+
+**Conflict rule:** if a source prompt conflicts with implemented launch architecture, use `implementation_plan.md` unless the user explicitly asks to restore the older specification.
 
 ---
 
-### Phase Details
+## 2. Source Documents
 
-#### Foundation Layer (Phases 00–05) — Infrastructure & Data
+The complete prompt specification now contains **7 source files**, not 6. Current total: **20,751 lines** and approximately **724 KB**.
 
-| Phase | Name                           | Source          | Key Deliverables                                                                          | Files Created | Exit Checkpoint                                       |
-|-------|--------------------------------|-----------------|-------------------------------------------------------------------------------------------|---------------|-------------------------------------------------------|
-| 00    | Project Bootstrap              | Part 1 §Phase00 | Laravel 11 install, 9 Composer packages, 10 NPM packages, `.env`, 3 config files, vendor publish | ~20           | `php artisan serve` → no errors                       |
-| 01    | Database & Migrations          | Part 1 §Phase01 | 17 migration files, all BIGINT money columns, composite indexes, FK constraints           | 17            | `php artisan migrate:fresh` → zero errors             |
-| 02    | Value Objects & State Machines | Part 1 §Phase02 | `Money.php`, `OrderStateMachine.php`, `ShipmentStateMachine.php`, unit tests              | 5             | All state machine + Money tests passing               |
-| 03    | Base Classes & Contracts       | Part 1 §Phase03 | `BaseService`, `BaseRepository`, 6 repo interfaces, 5 service interfaces, DI bindings    | 15+           | `php artisan clear-compiled` → no errors              |
-| 04    | Models, Traits & Observers     | Part 3+5        | 14 models, 4 traits, 4 observers, all relationships, scopes, casts                       | 22            | `php artisan tinker` → all relationships verified     |
-| 05    | Seeders & RBAC                 | Part 5          | 6 seeders, 4 roles (super_admin, admin, accountant, warehouse, sales, driver, customer), 30+ permissions | 6  | `php artisan migrate:fresh --seed` → zero errors      |
-
-#### Core Business Layer (Phases 06–11) — Domain Logic
-
-| Phase | Name                           | Source          | Key Deliverables                                                                          | Files Created | Exit Checkpoint                                       |
-|-------|--------------------------------|-----------------|-------------------------------------------------------------------------------------------|---------------|-------------------------------------------------------|
-| 06    | Authentication & Middleware    | Part 4 §B–C    | Login via email/phone, rate limiting, 4 middleware, route groups (admin, portal, API)      | 12            | Auth tests passing, role redirects working            |
-| 07    | Inventory Module               | Part 2+5       | ProductService, StockService, ProductController, StockController, CRUD views, categories  | 18            | Product CRUD + stock movement tests passing           |
-| 08    | Customer Module                | Part 2+4       | CustomerService, CustomerController, portal, credit checks, statement view                | 15            | Customer CRUD + credit limit tests passing            |
-| 09    | Orders Module ★                | Part 2         | OrderService (3 sub-services), Pipeline (3 pipes), 3 Controllers, DTOs, full lifecycle    | 25+           | Full lifecycle test: `pending` → `delivered`          |
-| 10    | Distribution Module            | Part 4+5       | ShipmentService, TruckController, DriverController, manifest PDF, order assignment        | 18            | Shipment flow test passing                            |
-| 11    | Invoicing & Payments           | Part 2+5       | InvoiceService, PaymentController, balance recalculation, statement generation            | 16            | Payment flow test, customer balance verification      |
-
-#### Presentation & Cross-Cutting (Phases 12–18)
-
-| Phase | Name                           | Source          | Key Deliverables                                                                          | Files Created | Exit Checkpoint                                       |
-|-------|--------------------------------|-----------------|-------------------------------------------------------------------------------------------|---------------|-------------------------------------------------------|
-| 12    | PDF Generation                 | Part 3         | DomPDF Arabic RTL setup, 4 PDF templates (invoice, return, manifest, statement)           | 8             | All 4 PDF types render Arabic correctly               |
-| 13    | ERP Dashboard & Reports        | Part 3         | Dashboard KPIs, 5 report views, export strategies (Excel, CSV, PDF), Chart.js             | 12            | Dashboard loads with charts, exports work             |
-| 14    | Frontend Architecture          | Part 3         | RTL master layout, 15+ Blade components, sidebar, Alpine.js interactions, responsive      | 30+           | All pages render correctly, responsive verified       |
-| 15    | Notifications                  | Part 3         | 5 notification classes, database + email channels, NotificationBell Livewire component    | 10            | Bell works, emails render in Arabic                   |
-| 16    | Security Hardening             | Part 4         | 7 policies enforced, CSRF on all forms, customer data scoping, rate limiting              | 7             | Role access tests passing                             |
-| 17    | Full Test Suite                | Part 5         | 7 unit tests, 10 feature tests, ≥80% coverage on Services + Models                       | 17+           | `php artisan test` → zero failures, coverage ≥ 80%   |
-| 18    | Deployment                     | Part 3         | Docker Compose (4 containers), Nginx config, Supervisor, `deploy.sh`, SSL                 | 8             | `docker-compose up` → all services healthy            |
+| Part | File | Lines | Size | Primary Coverage |
+|---|---|---:|---:|---|
+| 1 | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM.md` | 2,387 | 85.8 KB | Agent rules, SOLID principles, design patterns, phases 00-18, bootstrap, config, migrations, state machines. |
+| 2 | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART2.md` | 3,186 | 117.7 KB | DTOs, repositories, order/product/customer/invoice/shipment services, controllers, requests, Blade and Livewire patterns. |
+| 3 | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART3.md` | 3,386 | 110.5 KB | Traits, models, observers, notifications, PDF service, reports, frontend setup, seeders, deployment references. |
+| 4 | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART4.md` | 3,525 | 114.7 KB | Policies, middleware, auth, distribution, customer portal, exports, money/pdf config, error pages. |
+| 5 | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART5.md` | 3,410 | 106.6 KB | Remaining models, repositories, services, events, listeners, factories, seeders, unit and feature tests. |
+| 6 | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md` | 2,850 | 111.9 KB | Additional extended requirements, supplementary implementation details, final prompt refinements. |
+| 7 | `DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART7.md` | 2,007 | 76.9 KB | Late gap specification: Livewire filters, exports, report views, portal/distribution views, migrations, verification scripts, master index template. |
 
 ---
 
-## 🏗️ Entity Relationship Overview
+## 3. Current Baseline
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                     ENTITY RELATIONSHIP MAP                          │
-│                                                                      │
-│  User ──────────────────────────────┐                                │
-│    │ (created_by FK on many tables) │                                │
-│    │                                │                                │
-│  Customer ─────────┬───── Order ────┬───── OrderItem ──── Product   │
-│    │  (1:N)        │      │ (1:N)   │       (N:1)          │        │
-│    │               │      │         │                      │        │
-│    │               │      ├── Shipment ──── Truck           │        │
-│    │               │      │              └── Driver          │        │
-│    │               │      │                                  │        │
-│    ├── Invoice ────┘      └── Invoice                       │        │
-│    │    │ (1:N)                │ (1:1 via order_id)          │        │
-│    │    │                     │                              │        │
-│    │    └── Payment           │                              │        │
-│    │         (N:1)            │                              │        │
-│    │                          │                              │        │
-│    └── outstanding_balance ←──┘ (cached, recalculated)      │        │
-│                                                              │        │
-│  Product ──── ProductCategory (N:1)                         │        │
-│    │                                                         │        │
-│    └── StockMovement (1:N, immutable audit trail)           │        │
-│                                                              │        │
-│  Expense (standalone, categorized)                          │        │
-│  SystemSetting (key-value config store)                     │        │
-└─────────────────────────────────────────────────────────────────────┘
+| Area | Current State |
+|---|---|
+| Repository implementation | Phases 00 through 12 are implemented on the repository side. |
+| Remaining work | Production-host validation only: HTTPS, PHP 8.3, MySQL, Redis, workers, scheduler, backups, SMTP, browser/PDF visual smoke tests. |
+| Local tests | `php artisan test` → 180 passed, 481 assertions in the latest local run. |
+| Application routes | `php artisan route:list --except-vendor --json` → 99 application routes. |
+| Total routes | `php artisan route:list --json` → 114 total routes including vendor routes. |
+| Scheduled commands | `factory:overdue-alerts`, `factory:low-stock-check`, `factory:backup`. |
+| Frontend build | `npm run build` passed locally. |
+| Local preflight | `php artisan factory:preflight --json` → 36 passed, 14 warnings, 0 failures. |
+| Local PHP | 8.2.12. Production target remains PHP 8.3+. |
+| Working-tree caveat | `vendor\bin\pint --test` now passes locally. `factory-system/database/seeders/SystemTestSeeder.php` is implemented but still untracked until intentionally added. |
+
+---
+
+## 4. Execution Roadmap
+
+The original phases were executed sequentially, then compacted into the current launch baseline. Do not reopen completed modules unless launch validation finds a concrete defect.
+
+| Phase | Status | Delivered Outcome | Primary Evidence |
+|---|---|---|---|
+| 00 Bootstrap | Complete | Laravel 11 app, packages, config, key/storage verification. | `composer.json`, `package.json`, config files. |
+| 01 Database | Complete | 17 migrations for users, products, customers, logistics, orders, invoices, payments, expenses, settings, permissions, activity log, notifications. | `factory-system/database/migrations/`. |
+| 02 Domain Primitives | Complete | `Money`, order state machine, shipment state machine, invalid transition exception. | Unit tests pass. |
+| 03 Base Architecture | Complete | Base service/repository primitives, contracts, export strategy interface, DI bindings. | Provider binding tests pass. |
+| 04 Models & Observers | Complete | 14 models, traits, code generation, soft-delete guards, 4 observers, activity logging. | Model layer tests pass. |
+| 05 Seeders & RBAC | Complete | Roles, permissions, settings, default users, categories, demo/system seeders. | Seeder tests pass. |
+| 06 Auth & Middleware | Complete | Login/logout, active user checks, locale, portal guard, last activity, role redirects. | Auth tests pass. |
+| 07.01 Inventory | Complete | Products, categories, stock adjustments, stock movements, low-stock detection. | Product and stock tests pass. |
+| 07.02 Customers | Complete | Customer CRUD, portal access, credit calculations, statements. | Customer tests pass. |
+| 07.03 Orders | Complete | Order pipeline, update validation, stock/credit validation, lifecycle transitions, financials. | Order lifecycle and update-rule tests pass. |
+| 07.04 Distribution | Complete | Trucks, drivers, shipments, assignment, dispatch/cancel/guarded deliver, manifests. | Shipment tests pass. |
+| 07.05 Invoicing | Complete | Issue/void/download invoices, invoice-scoped payments, recalculation logic. | Invoice/payment tests pass. |
+| 07.06 Payments & ERP | Complete | Payments, expenses, dashboard KPIs, sales/receivables/stock/profit-loss reports. | Dashboard and CRUD tests pass. |
+| 07.07 Admin | Complete | User management, settings, audit log, policies, temporary password notifications. | Admin tests pass. |
+| 08 Frontend | Complete | Shared Arabic RTL layout, module views, public auth/welcome polish, customer portal. | Frontend render tests pass. |
+| 09 PDF | Complete | DomPDF service, private PDF storage, Arabic invoice/manifest/statement templates. | PDF feature tests pass. |
+| 10 Notifications | Complete | Queued database/mail notifications, staff digests, Livewire notification bell, scheduled digests. | Notification tests pass. |
+| 11 Deployment Assets | Complete | Production env template, Nginx, Supervisor, deploy script, runbook, launch checklist, error pages. | Deployment readiness tests pass. |
+| 12 Final Launch | In Progress | Repo-side tooling complete; target-host runtime verification remains. | `factory:preflight --production --runtime` must pass on production. |
+
+---
+
+## 5. Module Cross-Reference
+
+| Module | Source Parts | Implemented Location | Current Status |
+|---|---|---|---|
+| Bootstrap & Config | 1 | `factory-system/config/`, `.env.example`, `.env.production.example` | Complete |
+| Database | 1, 7 | `factory-system/database/migrations/` | Complete |
+| Domain Primitives | 1 | `app/ValueObjects/`, `app/StateMachines/` | Complete |
+| Architecture Contracts | 1, 2, 5 | `app/Contracts/`, `app/Services/`, `app/Repositories/` | Complete |
+| Inventory | 2, 5 | `app/Services/Products/`, `routes/products.php`, `resources/views/products/` | Complete |
+| Customers & Portal | 2, 4, 7 | `app/Http/Controllers/Customers/`, `routes/customers.php`, `routes/portal.php` | Complete |
+| Orders | 2, 7 | `app/Services/Orders/`, `app/Pipelines/Order/`, `routes/orders.php` | Complete |
+| Distribution | 4, 5, 7 | `app/Services/Distribution/`, `routes/shipments.php`, `resources/views/shipments/` | Complete |
+| Invoices & Payments | 2, 5 | `app/Services/Invoices/`, `routes/invoices.php`, `routes/payments.php` | Complete |
+| ERP & Reports | 3, 5, 7 | `app/Services/Erp/`, `routes/erp.php`, `resources/views/erp/` | Complete |
+| Frontend & RTL | 3, 7 | `resources/views/`, `resources/css/app.css`, `resources/js/app.js` | Complete |
+| PDF Generation | 3, 4 | `app/Services/PdfService.php`, `resources/views/pdf/` | Complete |
+| Notifications | 3, 5 | `app/Notifications/`, `app/Listeners/`, `app/Livewire/NotificationBell.php` | Complete |
+| Security | 4 | `app/Policies/`, form requests, middleware, route groups | Complete |
+| Deployment | 3, `implementation_plan.md` | `deploy.sh`, `nginx/factory.conf`, `supervisor/factory.conf`, `DEPLOYMENT.md` | Target-host validation pending |
+
+---
+
+## 6. Architecture Baseline
+
+```text
+HTTP Request
+  -> Middleware
+  -> FormRequest validation
+  -> Controller authorization and DTO construction
+  -> Service orchestration, transactions, events, PDFs, notifications
+  -> Repository query/data access
+  -> Model relationships, casts, observers, policies
 ```
 
----
-
-## 🚨 Non-Negotiable Rules
-
-These rules apply to **every line of code** in the project. Violations must be corrected **immediately** — no exceptions, no "we'll fix it later."
-
-| #   | Rule                                                                     | How to Verify                                      | Fix Strategy                              |
-|-----|--------------------------------------------------------------------------|----------------------------------------------------|--------------------------------------------|
-| 01  | No file exceeds **400 lines**                                            | `find app -name "*.php" \| xargs wc -l`            | Split into sub-classes/traits/partials    |
-| 02  | Money is **BIGINT**, never float/decimal                                 | `grep -rn 'float.*price\|decimal.*amount' app/`    | Change to integer + Money value object    |
-| 03  | Business logic in **Services only**                                      | Controllers ≤ 30 lines per method                  | Extract to appropriate Service class      |
-| 04  | Services use **Repositories**, not Eloquent                              | `grep -rn 'Model::' app/Services/`                 | Inject repository interface               |
-| 05  | All DB writes in **`DB::transaction()`**                                 | Review every `create()`/`update()`/`delete()`      | Wrap in `$this->transaction()`            |
-| 06  | Every controller calls **`$this->authorize()`**                          | `grep -rL 'authorize' app/Http/Controllers/`       | Add authorize() as first line             |
-| 07  | Arabic strings in **`lang/ar/`** only                                    | `grep -rP '[\x{0600}-\x{06FF}]' app/ --include="*.php"` | Move to lang file, use `__()`       |
-| 08  | Lists are **paginated** — no unbounded `->get()`                         | Review every controller `index()` method           | Use `->paginate()` with `withQueryString` |
-| 09  | Status changes via **State Machine** only                                | No direct `->update(['status' => ...])`            | Use `$stateMachine->transition()`         |
-| 10  | Services accept **DTOs**, not arrays                                     | Type hints on service method parameters            | Create DTO class with `fromArray()`       |
+| Principle | Required Standard |
+|---|---|
+| Controllers | Thin; authorize every action; no business or query-heavy logic. |
+| Services | Own business decisions, transactions, lifecycle transitions, cross-module orchestration. |
+| Repositories | Own Eloquent query composition, eager loading, filters, reports, pagination. |
+| Money | Stored as integer/BIGINT and handled through `Money`; never float/decimal arithmetic. |
+| Statuses | Changed through state machines/services, not ad-hoc controller updates. |
+| Events | Explicitly registered; automatic event discovery remains disabled. |
+| PDFs | Generated through `PdfService`, stored privately, streamed/downloaded through authorized routes. |
+| Notifications | Database/mail delivery via queued notifications and scheduled digest commands. |
+| Localization | Arabic strings belong in `lang/ar`; application UI is RTL-first. |
 
 ---
 
-## 📦 File Manifest — Total Expected Files
+## 7. Domain Relationship Map
 
-| Category                  | Count  | Location                                  |
-|---------------------------|--------|-------------------------------------------|
-| Management docs           | 6      | Root (AGENT, PROGRESS, TODO, DECISIONS, SKILLS, TASKS) |
-| Migrations                | 17     | `database/migrations/`                    |
-| Models                    | 14     | `app/Models/`                             |
-| Model Traits              | 4      | `app/Models/Traits/`                      |
-| Observers                 | 4      | `app/Observers/`                          |
-| Services                  | 14     | `app/Services/`                           |
-| Repositories              | 7      | `app/Repositories/` (including Base)      |
-| Repository Interfaces     | 6      | `app/Contracts/Repositories/`             |
-| Service Interfaces        | 5      | `app/Contracts/Services/`                 |
-| DTOs                      | 5      | `app/DTOs/`                               |
-| Controllers               | 16     | `app/Http/Controllers/`                   |
-| Form Requests             | 10     | `app/Http/Requests/`                      |
-| Middleware                 | 4      | `app/Http/Middleware/`                    |
-| Policies                  | 7      | `app/Policies/`                           |
-| Events                    | 7      | `app/Events/`                             |
-| Listeners                 | 8      | `app/Listeners/`                          |
-| Notifications             | 5      | `app/Notifications/`                      |
-| Livewire Components       | 7      | `app/Livewire/`                           |
-| Blade Views               | 50+    | `resources/views/`                        |
-| Blade Components          | 15+    | `resources/views/components/`             |
-| PDF Templates             | 4      | `resources/views/pdf/`                    |
-| Email Templates           | 5      | `resources/views/emails/`                 |
-| Config Files              | 3      | `config/` (factory, money, pdf)           |
-| Lang Files                | 7      | `lang/ar/`                                |
-| Seeders                   | 6      | `database/seeders/`                       |
-| Model Factories           | 9      | `database/factories/`                     |
-| Unit Tests                | 7      | `tests/Unit/`                             |
-| Feature Tests             | 10     | `tests/Feature/`                          |
-| State Machines            | 2      | `app/StateMachines/`                      |
-| Value Objects             | 1      | `app/ValueObjects/`                       |
-| Exceptions                | 5      | `app/Exceptions/`                         |
-| Facades                   | 1      | `app/Facades/`                            |
-| Factories (code gen)      | 1      | `app/Factories/`                          |
-| Pipeline Pipes            | 3      | `app/Pipelines/Order/`                    |
-| Artisan Commands          | 3      | `app/Console/Commands/`                   |
-| JS Files                  | 3      | `resources/js/`                           |
-| CSS Files                 | 1      | `resources/css/`                          |
-| Providers                 | 3      | `app/Providers/`                          |
-| Deployment Files          | 5      | `docker/`, `supervisor/`, root            |
-| **TOTAL**                 | **~270** | —                                       |
+```text
+User
+  -> creates/manages many operational records
 
----
+Customer
+  -> Orders -> OrderItems -> Products -> ProductCategory
+  -> Invoices -> Payments
+  -> Portal user account
+  -> Cached outstanding balance recalculated by services/listeners
 
-## 📊 Current Phase
+Order
+  -> Customer
+  -> OrderItems
+  -> Shipment assignment
+  -> Invoice
+  -> State machine lifecycle
 
-```
-╔═══════════════════════════════════════════════════════════════════╗
-║                                                                   ║
-║   CURRENT PHASE:  Frontend Completion (Stream 2)                 ║
-║   STATUS:         🟡 In Progress (70% overall)                    ║
-║   COMPLETED:      Phases 00–07 + Frontend Foundation (153 tests) ║
-║   REMAINING:      Frontend views, PDF, Notifications, Deploy     ║
-║   ESTIMATED:      ~270 files total · ~200 built · ~85 remaining  ║
-║                                                                   ║
-╚═══════════════════════════════════════════════════════════════════╝
+Shipment
+  -> Truck
+  -> Driver
+  -> Assigned orders
+  -> Manifest PDF
+
+Product
+  -> StockMovements immutable audit trail
+  -> Low-stock detection and notifications
+
+Expense, SystemSetting, ActivityLog
+  -> ERP/admin support entities
 ```
 
 ---
 
-*Read this file at the beginning of every session. Cross-reference with the Source Documents table for detailed implementation specifications per module.*
+## 8. Non-Negotiable Engineering Rules
+
+| # | Rule | Verification Gate |
+|---:|---|---|
+| 01 | Project-managed files stay under 400 lines. | File-count audit before release; generated lockfiles are excluded. |
+| 02 | Money is stored as BIGINT/integer values, never float. | Migration and service review; Money tests. |
+| 03 | Business logic belongs in services. | Controller review and feature tests. |
+| 04 | Services use repositories for data access. | Service review and binding tests. |
+| 05 | Critical writes run inside transactions. | Service review; transaction helper usage. |
+| 06 | Every controller action authorizes access. | Policy tests and route/controller audit. |
+| 07 | Arabic strings belong in `lang/ar/`. | Translation review; no hardcoded Arabic in PHP application logic. |
+| 08 | Lists are paginated. | Index actions and repository methods use pagination. |
+| 09 | Status changes go through state-machine-aware services. | Lifecycle tests and state machine tests. |
+| 10 | Production target is PHP-FPM/Nginx/Supervisor unless explicitly changed. | `implementation_plan.md`, `DEPLOYMENT.md`, preflight checks. |
+
+---
+
+## 9. Current File Inventory
+
+Working-tree inventory as of 2026-05-17. Counts include current uncommitted files visible to the workspace.
+
+| Category | Current Count | Location |
+|---|---:|---|
+| App PHP files | 171 | `factory-system/app/**/*.php` |
+| Migrations | 17 | `database/migrations/` |
+| Models | 14 | `app/Models/` |
+| Model traits | 3 | `app/Models/Traits/` |
+| Observers | 4 | `app/Observers/` |
+| Services | 20 | `app/Services/` |
+| Repositories | 13 | `app/Repositories/` |
+| Repository interfaces | 6 | `app/Contracts/Repositories/` |
+| Service interfaces | 6 | `app/Contracts/Services/` |
+| DTOs | 5 | `app/DTOs/` |
+| Controllers | 18 | `app/Http/Controllers/` |
+| Form requests | 20 | `app/Http/Requests/` |
+| Middleware | 4 | `app/Http/Middleware/` |
+| Policies | 10 | `app/Policies/` |
+| Events | 9 | `app/Events/` |
+| Listeners | 8 | `app/Listeners/` |
+| Notifications | 6 | `app/Notifications/` |
+| Livewire components | 1 | `app/Livewire/` |
+| Blade views | 92 | `resources/views/**/*.blade.php` |
+| Blade components | 15 | `resources/views/components/` |
+| PDF views | 5 | `resources/views/pdf/` |
+| Email views | 7 | `resources/views/emails/` |
+| Arabic lang files | 18 | `lang/ar/` |
+| Seeders | 7 | `database/seeders/` |
+| Model factories | 12 | `database/factories/` |
+| Unit tests | 6 | `tests/Unit/` |
+| Feature tests | 21 | `tests/Feature/` |
+| All tests | 28 | `tests/**/*.php` |
+| State machines | 2 | `app/StateMachines/` |
+| Value objects | 1 | `app/ValueObjects/` |
+| Exceptions | 4 | `app/Exceptions/` |
+| Export strategies | 3 | `app/Exports/` |
+| Console commands | 4 | `app/Console/Commands/` |
+| Route files | 11 | `routes/` |
+| Primary deployment assets | 6 | `.env.production.example`, `deploy.sh`, `nginx/`, `supervisor/`, `DEPLOYMENT.md`, `LAUNCH_CHECKLIST.md` |
+
+---
+
+## 10. Release Verification Gates
+
+Run from `factory-system/` before any release sign-off:
+
+```bash
+vendor/bin/pint --test
+php artisan test
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan event:cache
+php artisan factory:preflight --production
+php artisan schedule:list
+php artisan optimize:clear
+```
+
+Run on the real production host after `.env` and services are configured:
+
+```bash
+php artisan factory:preflight --production --runtime
+```
+
+The production runtime preflight must report **zero failures** before launch approval.
+
+---
+
+## 11. Production Launch Checklist
+
+| Area | Required Before Launch |
+|---|---|
+| Runtime | PHP 8.3+ FPM with required extensions including Redis and pcntl. |
+| Web server | Nginx serves `public/`, HTTP redirects to HTTPS, TLS certificate is valid. |
+| Database | MySQL 8 configured, migrations and seeders verified against real credentials. |
+| Redis | Cache, queue, session, and maintenance store use Redis. |
+| Workers | Supervisor runs `default` and `notifications` queue workers. |
+| Scheduler | Laravel scheduler triggers overdue alerts, low-stock checks, and backup command. |
+| Mail | Real SMTP sends customer/staff notifications successfully. |
+| Backups | `mysqldump` is installed and `factory:backup` writes a valid backup under `storage/app/backups`. |
+| Browser smoke | Chrome, Firefox, Edge, Safari; widths 375px, 768px, 1280px. |
+| PDF smoke | Invoice, shipment manifest, and customer statement render Arabic correctly. |
+| Security | `APP_DEBUG=false`, secure cookies, encrypted sessions, no stack traces, scoped portal data. |
+
+---
+
+## 12. Known Constraints
+
+| Constraint | Current Impact | Resolution |
+|---|---|---|
+| Local PHP is 8.2.12 | Non-blocking locally; production target is stricter. | Validate PHP 8.3+ on production with preflight. |
+| Local Redis unavailable | Local env uses file/sync fallbacks. | Production must use Redis for cache/session/queue. |
+| Local MySQL not fully validated | Tests run on SQLite in-memory. | Run migration, seed, and runtime preflight on MySQL. |
+| Local SMTP cannot prove delivery | Mail rendering is tested, delivery requires real provider. | Send test notifications after production SMTP setup. |
+| Current load-test seeder is untracked | The seeder is implemented and style-clean, but not yet part of version control. | Add it intentionally if the load-test dataset is required for release operations. |
+| Production validation requires real host | Repository-side work cannot prove TLS, workers, scheduler, Redis, backups, or browser matrix. | Complete `factory-system/LAUNCH_CHECKLIST.md`. |
+
+---
+
+## 13. Immediate Next Steps
+
+1. Decide whether to keep and commit the implemented `factory-system/database/seeders/SystemTestSeeder.php` load-test dataset seeder.
+2. Run final local release gates after the latest hardening and documentation updates.
+3. Prepare the production host with PHP 8.3 FPM, Nginx, MySQL 8, Redis, Supervisor, Composer, Node, npm, and `mysqldump`.
+4. Configure `.env` from `.env.production.example` with real production secrets and HTTPS `APP_URL`.
+5. Run `APP_DIR=/var/www/factory-system ./deploy.sh main` on the host.
+6. Run `php artisan factory:preflight --production --runtime` on the host.
+7. Complete `factory-system/LAUNCH_CHECKLIST.md` and record final launch evidence in `factory-system/PROGRESS.md`.
+
+---
+
+## 14. Session Start Protocol
+
+At the beginning of every serious implementation or launch session:
+
+1. Read this file first.
+2. Read `implementation_plan.md` for the current launch baseline.
+3. Read `factory-system/PROGRESS.md` for latest verification and constraints.
+4. Check `git status --short` and preserve unrelated user changes.
+5. If editing implementation code, run the relevant tests plus the release gates that apply to the changed area.
+
+---
+
+**Final Position:** the application implementation is complete at repository level. The only planned work before launch is final local gate rerun, release diff cleanup/approval, and real target-infrastructure validation.

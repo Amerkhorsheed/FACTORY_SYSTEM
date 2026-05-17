@@ -101,7 +101,7 @@ class ShipmentController extends Controller
     {
         $this->authorize('delete', $shipment);
 
-        $shipment->delete();
+        $this->shipmentService->delete($shipment);
 
         return redirect()->route('shipments.index')
             ->with('success', __('shipments.deleted'));

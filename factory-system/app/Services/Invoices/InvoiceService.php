@@ -54,6 +54,43 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
         });
     }
 
+    public function syncFromOrder(Order $order): ?Invoice
+    {
+        return $this->transaction(function () use ($order) {
+            $order->loadMissing('invoice');
+
+            if (! $order->invoice) {
+                return null;
+            }
+
+            $invoice = $order->invoice;
+            if ($invoice->paid_amount > 0 || in_array($invoice->status, ['paid', 'void'], true)) {
+                throw new \DomainException(__('invoices.cannot_sync_paid_order'));
+            }
+
+            $oldCustomer = $invoice->customer;
+            $updated = $this->invoices->update($invoice, [
+                'customer_id' => $order->customer_id,
+                'subtotal' => $order->subtotal,
+                'discount_amount' => $order->discount_amount,
+                'tax_amount' => $order->tax_amount,
+                'total_amount' => $order->total_amount,
+                'paid_amount' => 0,
+                'balance_due' => $order->total_amount,
+            ]);
+
+            if ($oldCustomer) {
+                $this->customers->recalculateBalance($oldCustomer);
+            }
+
+            if ($updated->customer_id !== $oldCustomer?->id) {
+                $this->customers->recalculateBalance($updated->customer);
+            }
+
+            return $updated->fresh();
+        });
+    }
+
     public function issue(Invoice $invoice): Invoice
     {
         return $this->transaction(function () use ($invoice) {
@@ -127,9 +164,13 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
         });
     }
 
-    public function deletePayment(Payment $payment): void
+    public function deletePayment(Payment $payment, ?Invoice $invoice = null): void
     {
-        $this->transaction(function () use ($payment) {
+        $this->transaction(function () use ($payment, $invoice) {
+            if ($invoice && $payment->invoice_id !== $invoice->id) {
+                throw new \DomainException(__('invoices.payment_not_found'));
+            }
+
             $invoice = $payment->invoice;
 
             $payment->delete();

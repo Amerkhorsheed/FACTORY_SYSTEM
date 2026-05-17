@@ -66,7 +66,8 @@ abstract class BaseRepository
             throw new LogicException('Repository model does not support soft deletes.');
         }
 
-        $model = $this->model->newQueryWithoutScopes()
+        $model = $this->model->newQuery()
+            ->withTrashed()
             ->whereKey($id)
             ->firstOrFail();
 

@@ -51,7 +51,8 @@ class ShipmentPolicy
 
     public function updateStatus(User $user, Shipment $shipment): bool
     {
-        return $user->hasPermissionTo('shipments.update_status');
+        return $user->hasPermissionTo('shipments.update_status')
+            && $shipment->status === 'dispatched';
     }
 
     public function viewManifest(User $user, Shipment $shipment): bool

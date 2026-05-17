@@ -187,6 +187,34 @@ class InvoiceCrudTest extends TestCase
     }
 
     /** @test */
+    public function it_does_not_delete_a_payment_from_a_different_invoice(): void
+    {
+        $admin = $this->createAdmin();
+        $firstCustomer = Customer::factory()->create();
+        $secondCustomer = Customer::factory()->create();
+        $firstOrder = Order::factory()->create(['customer_id' => $firstCustomer->id]);
+        $secondOrder = Order::factory()->create(['customer_id' => $secondCustomer->id]);
+        $firstInvoice = Invoice::factory()->issued()->create([
+            'order_id' => $firstOrder->id,
+            'customer_id' => $firstCustomer->id,
+        ]);
+        $secondInvoice = Invoice::factory()->issued()->create([
+            'order_id' => $secondOrder->id,
+            'customer_id' => $secondCustomer->id,
+        ]);
+        $foreignPayment = Payment::factory()->forInvoice($secondInvoice)->create([
+            'customer_id' => $secondCustomer->id,
+            'received_by' => $admin->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->delete(route('invoices.payments.destroy', [$firstInvoice, $foreignPayment]))
+            ->assertNotFound();
+
+        $this->assertDatabaseHas('payments', ['id' => $foreignPayment->id]);
+    }
+
+    /** @test */
     public function it_voids_an_invoice_with_no_payments(): void
     {
         $admin = $this->createAdmin();

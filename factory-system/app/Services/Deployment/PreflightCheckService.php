@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\Process\ExecutableFinder;
 use Throwable;
 
 class PreflightCheckService
@@ -21,6 +22,7 @@ class PreflightCheckService
             $this->deploymentAssetChecks(),
             $this->applicationChecks($production),
             $this->phpExtensionChecks($production),
+            $this->backupChecks($production),
             $this->scheduleChecks(),
             $runtime ? $this->runtimeChecks() : [],
         ));
@@ -78,6 +80,7 @@ class PreflightCheckService
             $this->productionEquals('SESSION_SECURE_COOKIE', config('session.secure'), true, $production),
             $this->productionEquals('SESSION_ENCRYPT', config('session.encrypt'), true, $production),
             $this->productionNotIn('MAIL_MAILER', config('mail.default'), ['array', 'log'], $production),
+            $this->required(config('mail.from.address'), 'MAIL_FROM_ADDRESS', 'Mail sender address is configured.', 'MAIL_FROM_ADDRESS is missing.', $production),
             $this->productionEquals('maintenance driver', config('app.maintenance.driver'), 'cache', $production),
             $this->routeClosureCheck(),
             $this->assetManifestCheck($production),
@@ -119,6 +122,21 @@ class PreflightCheckService
     }
 
     /** @return array<int, array{name:string,status:string,message:string}> */
+    private function backupChecks(bool $production): array
+    {
+        return [
+            $this->required(
+                (new ExecutableFinder)->find('mysqldump') !== null,
+                'executable: mysqldump',
+                'mysqldump is available for database backups.',
+                'mysqldump is missing; scheduled backups will fail.',
+                $production,
+            ),
+            $this->writableDirectoryOrParent('storage/app/backups', storage_path('app/backups'), $production),
+        ];
+    }
+
+    /** @return array<int, array{name:string,status:string,message:string}> */
     private function scheduleChecks(): array
     {
         $commands = array_keys(Artisan::all());
@@ -153,8 +171,8 @@ class PreflightCheckService
     private function routeClosureCheck(): array
     {
         $closureRoutes = collect(Route::getRoutes())
-            ->reject(fn ($route): bool => $route->uri() === 'up')
-            ->filter(fn ($route): bool => ($route->getAction('uses') ?? null) instanceof Closure);
+            ->reject(fn (\Illuminate\Routing\Route $route): bool => $route->uri() === 'up')
+            ->filter(fn (\Illuminate\Routing\Route $route): bool => ($route->getAction('uses') ?? null) instanceof Closure);
 
         return $this->check(
             $closureRoutes->isEmpty(),
@@ -195,6 +213,22 @@ class PreflightCheckService
             "writable: {$name}",
             'Path is writable.',
             'Path is not writable.',
+        );
+    }
+
+    private function writableDirectoryOrParent(string $name, string $path, bool $production): array
+    {
+        $parent = dirname($path);
+        $writable = File::isDirectory($path)
+            ? File::isWritable($path)
+            : File::isDirectory($parent) && File::isWritable($parent);
+
+        return $this->required(
+            $writable,
+            "writable: {$name}",
+            'Backup directory exists or can be created.',
+            'Backup directory is not writable and cannot be created.',
+            $production,
         );
     }
 

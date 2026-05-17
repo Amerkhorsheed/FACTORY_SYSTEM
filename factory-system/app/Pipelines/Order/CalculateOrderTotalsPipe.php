@@ -27,7 +27,7 @@ class CalculateOrderTotalsPipe
                 productId: $item->productId,
                 quantity: $item->quantity,
                 unitPrice: $product->unit_price,
-                discountPercent: $item->discountPercent,
+                discountBasisPoints: $item->discountBasisPoints,
                 notes: $item->notes,
             );
         });

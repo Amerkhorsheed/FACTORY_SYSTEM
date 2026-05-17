@@ -18,7 +18,7 @@ class ProductCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->word(),
+            'name' => fake()->unique()->words(3, true),
             'is_active' => true,
             'sort_order' => fake()->numberBetween(1, 100),
         ];

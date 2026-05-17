@@ -21,5 +21,5 @@ interface InvoiceServiceInterface
 
     public function recordPayment(RecordPaymentDTO $dto): Payment;
 
-    public function deletePayment(Payment $payment): void;
+    public function deletePayment(Payment $payment, ?Invoice $invoice = null): void;
 }

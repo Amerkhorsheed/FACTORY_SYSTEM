@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\InvalidStatusTransitionException;
 use App\Models\Driver;
 use App\Models\Order;
 use App\Models\Shipment;
 use App\Models\Truck;
 use App\Models\User;
+use App\Services\Distribution\ShipmentService;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -84,6 +86,46 @@ class ShipmentCrudTest extends TestCase
 
         $response->assertRedirect();
         $this->assertSame('delivered', $order->fresh()->status);
+        $this->assertSame('completed', $shipment->fresh()->status);
+    }
+
+    /** @test */
+    public function it_does_not_mark_order_delivered_before_shipment_dispatch(): void
+    {
+        $truck = Truck::factory()->create(['status' => 'available']);
+        $driver = Driver::factory()->create(['is_active' => true]);
+        $shipment = Shipment::factory()->create([
+            'truck_id' => $truck->id,
+            'driver_id' => $driver->id,
+            'status' => 'planned',
+        ]);
+        $order = Order::factory()->shipped()->create(['shipment_id' => $shipment->id]);
+
+        $this->expectException(InvalidStatusTransitionException::class);
+
+        app(ShipmentService::class)->markOrderDelivered($shipment, $order);
+    }
+
+    /** @test */
+    public function it_does_not_mark_foreign_shipment_order_delivered(): void
+    {
+        $truck = Truck::factory()->create(['status' => 'available']);
+        $driver = Driver::factory()->create(['is_active' => true]);
+        $shipment = Shipment::factory()->create([
+            'truck_id' => $truck->id,
+            'driver_id' => $driver->id,
+            'status' => 'dispatched',
+        ]);
+        $otherShipment = Shipment::factory()->create([
+            'truck_id' => Truck::factory()->create(['status' => 'available'])->id,
+            'driver_id' => Driver::factory()->create(['is_active' => true])->id,
+            'status' => 'dispatched',
+        ]);
+        $foreignOrder = Order::factory()->shipped()->create(['shipment_id' => $otherShipment->id]);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        app(ShipmentService::class)->markOrderDelivered($shipment, $foreignOrder);
     }
 
     /** @test */

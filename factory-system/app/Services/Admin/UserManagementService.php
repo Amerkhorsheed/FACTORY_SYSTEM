@@ -64,6 +64,7 @@ class UserManagementService extends BaseService
                 $data['password'] = Hash::make($data['password']);
             }
 
+            /** @var User $updated */
             $updated = $this->users->update($user, $data);
 
             return $this->users->syncRole($updated, $role);

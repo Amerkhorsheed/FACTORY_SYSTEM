@@ -1,199 +1,146 @@
-<!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║           FACTORY DISTRIBUTION & SHIPPING MANAGEMENT SYSTEM             ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
+# Factory Distribution & Shipping Management System
 
-# 🏭 Factory Distribution & Shipping Management System
+Enterprise Laravel 11 platform for Arabic RTL factory operations: inventory, customers, orders, distribution, invoices, payments, expenses, reports, administration, PDFs, notifications, and production launch readiness.
 
-### نظام إدارة معمل التوزيع والشحن
+نظام احترافي لإدارة المعامل والتوزيع والشحن باللغة العربية واتجاه RTL، مبني على Laravel 11 مع فصل واضح بين الخدمات والمستودعات والسياسات والواجهات.
 
-> Enterprise-grade Arabic RTL management platform for factory distribution operations — orders, invoicing, shipments, inventory, and customer relationship management.
+## Current Status
 
-[![Laravel 11](https://img.shields.io/badge/Laravel-11.x-FF2D20?style=flat-square&logo=laravel)](https://laravel.com)
-[![PHP 8.2+](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat-square&logo=php)](https://php.net)
-[![Tests 153](https://img.shields.io/badge/Tests-153%20passing-4BC51D?style=flat-square)](https://pestphp.com)
-[![License MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+| Metric | Current Value |
+|---|---|
+| Repository status | Implementation complete through repository-side Phase 12 launch tooling |
+| Remaining work | Target-host production validation |
+| Test suite | 180 passing tests, 481 assertions |
+| Application routes | 99 non-vendor routes |
+| Scheduled commands | `factory:overdue-alerts`, `factory:low-stock-check`, `factory:backup` |
+| Local style gate | `vendor/bin/pint --test` passes |
+| Frontend build | `npm run build` passes |
+| Production target | PHP 8.3 FPM, Nginx, MySQL 8, Redis, Supervisor |
 
----
+## Core Scope
 
-## ✨ Key Features
+| Module | Delivered Capabilities |
+|---|---|
+| Inventory | Product CRUD, categories, stock movements, stock adjustment, low-stock alerts. |
+| Customers | CRM, portal access, credit limits, balances, account statements. |
+| Orders | State-machine lifecycle, update validation, stock/credit validation, customer portal ordering. |
+| Distribution | Trucks, drivers, shipments, dispatch, guarded delivery, manifests. |
+| Invoicing | Invoice issuing, voiding, invoice-scoped payments, private PDF generation. |
+| ERP | Dashboard KPIs, expenses, sales, receivables, stock, profit/loss reports. |
+| Admin | Users, roles, settings, audit log, temporary password notifications. |
+| Notifications | Queued database/mail notifications, staff digests, Livewire notification bell. |
+| Deployment | Production env template, Nginx config, Supervisor config, deploy script, backup command, preflight command. |
 
-| Module | Capabilities |
-|--------|-------------|
-| **📦 Inventory** | Product CRUD, stock movements, low-stock alerts, barcode support, category management |
-| **👥 Customers** | Customer lifecycle, A/B/C categorization, credit limits, outstanding balance tracking |
-| **📋 Orders** | Full lifecycle (8 statuses), pipeline validation (credit + stock), price snapshots |
-| **🚛 Distribution** | Shipment planning, truck/driver assignment, manifest generation, delivery tracking |
-| **🧾 Invoicing** | Auto-generation from orders, partial payments, balance recalculation, statement view |
-| **💰 Payments** | Multi-method (cash, credit, check, bank transfer), receipt tracking, audit trail |
-| **📊 ERP Dashboard** | KPI cards, sales reports, receivables aging, stock valuation, profit & loss |
-| **🔧 Admin** | User management, RBAC (7 roles, 30+ permissions), system settings, audit log |
-| **🌐 Customer Portal** | Self-service order viewing, invoice access, profile management, scoped data |
+## Architecture
 
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  HTTP Request → Middleware → FormRequest → Controller       │
-│       ↓                                                      │
-│  Controller (authorize, DTO, call service, redirect)         │
-│       ↓                                                      │
-│  Service (business logic, events, transactions)              │
-│       ↓                                                      │
-│  Repository (Eloquent queries, data access)                  │
-│       ↓                                                      │
-│  Model (relationships, scopes, casts) → Observer (audit)     │
-└─────────────────────────────────────────────────────────────┘
+```text
+HTTP Request
+  -> Middleware
+  -> FormRequest validation
+  -> Controller authorization and DTO construction
+  -> Service orchestration, transactions, events, PDFs, notifications
+  -> Repository query/data access
+  -> Model relationships, casts, observers, policies
 ```
 
-**15 Design Patterns Applied:** Service Layer, Repository, Observer, State Machine, Strategy, Factory, Template Method, Facade, DTO, Pipeline, Event/Listener, Value Object, Decorator, Chain of Responsibility, Command.
+## Engineering Rules
 
----
+| Rule | Standard |
+|---|---|
+| Money | Integer/BIGINT storage only; no float money arithmetic. |
+| Controllers | Thin, authorized, and delegated to services. |
+| Services | Own business logic and transactional writes. |
+| Repositories | Own Eloquent query composition and pagination. |
+| Statuses | Changed through state-machine-aware services. |
+| Localization | Arabic strings live in `lang/ar`. |
+| File size | Project-managed files stay under 400 lines. |
 
-## 🔧 Technology Stack
+## Project Structure
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Backend** | PHP 8.2+ / Laravel 11 | Application framework |
-| **Database** | MySQL 8.0 / SQLite (dev) | Relational data store |
-| **Cache/Queue** | Redis 7.x (prod) / File (dev) | Cache, sessions, queues |
-| **Frontend** | Blade + Alpine.js 3 | Server-rendered + reactive |
-| **Styling** | Tailwind CSS 3 + RTL plugin | Arabic RTL utility-first CSS |
-| **Charts** | Chart.js 4 | Dashboard visualizations |
-| **PDF** | DomPDF 2 | Arabic RTL PDF generation |
-| **RBAC** | Spatie Permission 6 | Role-based access control |
-| **Audit** | Spatie ActivityLog 4 | Change tracking & audit trail |
-| **Testing** | Pest 2 | BDD-style testing (153 tests) |
-| **Typography** | Cairo + Noto Naskh Arabic | Arabic font families |
+```text
+FACTORY_SYSTEM/
+  AGENT.md
+  TASKS.md
+  PROGRESS.md
+  TODO.md
+  DECISIONS.md
+  SKILLS.md
+  implementation_plan.md
+  DOCS/
+    AGENT_PROMPT_FACTORY_SYSTEM*.md
+  factory-system/
+    app/
+    config/
+    database/
+    lang/ar/
+    resources/
+    routes/
+    tests/
+    DEPLOYMENT.md
+    LAUNCH_CHECKLIST.md
+```
 
----
+## Local Setup
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- PHP 8.2+ with extensions: `pdo_mysql`, `mbstring`, `xml`, `gd`, `intl`
-- Composer 2.x
-- Node.js 18+ / npm 9+
-- MySQL 8.0 (or SQLite for development)
-
-### Installation
+Run from `factory-system/`:
 
 ```bash
-# Clone the repository
-git clone https://github.com/Amerkhorsheed/FACTORY_SYSTEM.git
-cd FACTORY_SYSTEM/factory-system
-
-# Install PHP dependencies
 composer install
-
-# Install frontend dependencies
 npm install
-
-# Configure environment
 cp .env.example .env
 php artisan key:generate
-
-# Run migrations and seed data
-php artisan migrate:fresh --seed
-
-# Build frontend assets
+php artisan migrate --seed
 npm run build
-
-# Start development server
 php artisan serve
 ```
 
-### Default Login
+## Verification
 
-| Role | Email | Password |
-|------|-------|----------|
-| Super Admin | `admin@factory.local` | `password` |
+Run from `factory-system/` before release sign-off:
 
----
-
-## 📁 Project Structure
-
-```
-FACTORY_SYSTEM/
-├── AGENT.md              ← Agent operating manual & session protocols
-├── TASKS.md              ← Master requirements & phase execution index
-├── PROGRESS.md           ← Live build progress tracker (16 sessions)
-├── TODO.md               ← Sprint task board with granular tracking
-├── DECISIONS.md          ← 16 Architecture Decision Records (MADR)
-├── SKILLS.md             ← 15 design patterns catalog with examples
-├── DOCS/                 ← 6 source specification files (~663 KB)
-├── factory-system/       ← Laravel 11 application
-│   ├── app/
-│   │   ├── Contracts/    ← Repository & service interfaces
-│   │   ├── DTOs/         ← 5 immutable data transfer objects
-│   │   ├── Events/       ← Domain events (Order, Stock, Invoice)
-│   │   ├── Exceptions/   ← Custom domain exceptions
-│   │   ├── Http/         ← Controllers, middleware, form requests
-│   │   ├── Models/       ← 14 Eloquent models + 3 traits
-│   │   ├── Observers/    ← 4 audit logging observers
-│   │   ├── Pipelines/    ← Order validation pipeline (3 pipes)
-│   │   ├── Policies/     ← 10 authorization policies
-│   │   ├── Repositories/ ← 13 data access repositories
-│   │   ├── Services/     ← 14+ business logic services
-│   │   ├── StateMachines/← Order (8 status) & Shipment (5 status)
-│   │   └── ValueObjects/ ← Money value object (integer-based)
-│   ├── config/           ← factory.php, money.php, pdf.php
-│   ├── database/         ← 17 migrations, 12 factories, 5 seeders
-│   ├── lang/ar/          ← 14 Arabic translation files
-│   ├── resources/views/  ← Blade views + 10 components
-│   ├── routes/           ← 11 route files (97 routes)
-│   └── tests/            ← 22 test files (153 passing, 395 assertions)
-└── README.md             ← You are here
+```bash
+vendor/bin/pint --test
+php artisan test
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan event:cache
+php artisan schedule:list
+php artisan factory:preflight --production
+php artisan optimize:clear
 ```
 
----
+Run on the production host after services are configured:
 
-## 💰 Money Handling
-
-All monetary values are stored as `BIGINT UNSIGNED` (integer-based, zero floating-point). The `Money` value object provides immutable arithmetic:
-
-```php
-$price = Money::of(50000, 'SYP');       // 50,000 piasters
-$total = $price->multiply(3);            // 150,000
-$display = $total->format();             // "150,000 ل.س"
+```bash
+php artisan factory:preflight --production --runtime
 ```
 
----
+## Production Launch
 
-## 📊 Build Status
-
-| Metric | Value |
-|--------|-------|
-| **Tests** | 153 passing · 395 assertions |
-| **Routes** | 97 registered |
-| **Models** | 14 Eloquent models |
-| **Services** | 14+ business services |
-| **Policies** | 10 authorization policies |
-| **Lang Files** | 14 Arabic translation files |
-| **Overall Progress** | ~70% (Phases 00–08 of 18) |
-
----
-
-## 📖 Documentation
+Use these documents as the launch source of truth:
 
 | Document | Purpose |
-|----------|---------|
-| [AGENT.md](AGENT.md) | Agent operating manual — rules, conventions, architecture |
-| [TASKS.md](TASKS.md) | Master requirements index — phases, deliverables, ER diagram |
-| [PROGRESS.md](PROGRESS.md) | Live progress — session log, metrics, statistics |
-| [TODO.md](TODO.md) | Sprint board — current tasks, upcoming work |
-| [DECISIONS.md](DECISIONS.md) | 16 Architecture Decision Records with rationale |
-| [SKILLS.md](SKILLS.md) | 15 design patterns catalog with code examples |
+|---|---|
+| `TASKS.md` | Root master requirements, execution, and launch index. |
+| `implementation_plan.md` | Current implementation and production launch baseline. |
+| `factory-system/DEPLOYMENT.md` | Operational deployment runbook. |
+| `factory-system/LAUNCH_CHECKLIST.md` | Target-host launch checklist and acceptance evidence. |
+| `factory-system/PROGRESS.md` | Live implementation progress and latest verification. |
 
----
+Required production services: PHP 8.3 FPM, Nginx, MySQL 8, Redis, Supervisor, real SMTP, HTTPS/TLS, queue workers, scheduler, and backup validation.
 
-## 📄 License
+## Current Constraints
 
-This project is licensed under the MIT License.
+| Constraint | Resolution |
+|---|---|
+| Local PHP is 8.2.12 | Production host must provide PHP 8.3+. |
+| Local Redis is unavailable | Production must use Redis for cache, queue, session, and maintenance mode. |
+| Local tests use SQLite | Production launch must validate MySQL migrations and seeders. |
+| SMTP cannot be proven locally | Send test notifications through the real SMTP provider. |
+| Browser/PDF smoke tests require host | Complete `factory-system/LAUNCH_CHECKLIST.md`. |
 
----
+## License
 
-*Built with precision for enterprise-scale factory distribution management.*
-*نظام إدارة معمل التوزيع والشحن · May 2026*
+Proprietary software. All rights reserved.

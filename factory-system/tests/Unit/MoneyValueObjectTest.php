@@ -42,12 +42,21 @@ class MoneyValueObjectTest extends TestCase
     /**
      * @test
      */
-    public function it_multiplies_amounts_by_a_factor(): void
+    public function it_multiplies_amounts_by_an_integer_factor(): void
     {
         $money = Money::of(10_000);
 
         $this->assertSame(30_000, $money->multiply(3)->amount());
-        $this->assertSame(1_500, $money->multiply(0.15)->amount());
+    }
+
+    /**
+     * @test
+     */
+    public function it_calculates_percentages_with_basis_points(): void
+    {
+        $money = Money::of(10_000);
+
+        $this->assertSame(1_500, $money->percentage(1500)->amount());
     }
 
     /**

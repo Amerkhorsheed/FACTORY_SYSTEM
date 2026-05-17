@@ -26,9 +26,9 @@ class OrderFinancialsService extends BaseService
     {
         $subtotal = $items->sum(fn (OrderItemDTO $i) => $i->unitPrice * $i->quantity);
         $discount = $items->sum(fn (OrderItemDTO $i) => $i->discountAmount());
-        $taxRate = (float) $this->settings->get('invoice_tax_rate', 0);
+        $taxRate = (int) $this->settings->get('invoice_tax_rate', 0);
         $taxable = $subtotal - $discount;
-        $tax = (int) round($taxable * ($taxRate / 100));
+        $tax = intdiv(($taxable * $taxRate) + 50, 100);
         $total = $taxable + $tax;
 
         return compact('subtotal', 'discount', 'tax', 'total');

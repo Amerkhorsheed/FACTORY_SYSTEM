@@ -30,6 +30,7 @@ use App\Services\Products\ProductService;
 use App\StateMachines\OrderStateMachine;
 use App\StateMachines\ShipmentStateMachine;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -72,7 +73,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (! $this->app->isProduction()) {
+        /** @var Application $app */
+        $app = $this->app;
+
+        if (! $app->isProduction()) {
             Model::shouldBeStrict();
         }
     }

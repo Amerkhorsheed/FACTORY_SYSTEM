@@ -20,7 +20,7 @@ class ProductFactory extends Factory
     {
         return [
             'category_id' => ProductCategory::factory(),
-            'name' => fake()->word().' '.fake()->word(),
+            'name' => fake()->unique()->words(4, true),
             'unit' => fake()->randomElement(['كرتون', 'كيس', 'علبة', 'لتر']),
             'unit_price' => fake()->numberBetween(1_000, 100_000),
             'cost_price' => fake()->numberBetween(500, 50_000),

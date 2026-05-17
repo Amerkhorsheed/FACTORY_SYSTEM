@@ -123,7 +123,11 @@ class InvoiceController extends Controller
     {
         $this->authorize('deletePayment', $invoice);
 
-        $this->invoices->deletePayment($payment);
+        try {
+            $this->invoices->deletePayment($payment, $invoice);
+        } catch (\DomainException) {
+            abort(404);
+        }
 
         return redirect()
             ->route('invoices.show', $invoice)

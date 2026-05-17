@@ -24,7 +24,7 @@ class OrderItemFactory extends Factory
             'product_id' => Product::factory(),
             'quantity' => fake()->numberBetween(1, 50),
             'unit_price' => fake()->numberBetween(1_000, 50_000),
-            'discount_percent' => 0.0,
+            'discount_percent' => 0,
             'discount_amount' => 0,
             'line_total' => fake()->numberBetween(10_000, 500_000),
             'notes' => fake()->optional()->sentence(),
