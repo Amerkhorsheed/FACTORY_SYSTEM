@@ -270,7 +270,17 @@
 - [x] Replace remaining module placeholder Blade pages with shared layout patterns
 - [x] Add richer responsive CRUD screens for inventory, customers, orders, shipments, invoices, payments, expenses, and reports
 - [x] Optional polish: upgrade auth login and welcome pages to the final visual standard
-- [ ] Keep PDF-specific Blade output for Phase 09 production PDF work
+- [x] Keep PDF-specific Blade output for Phase 09 production PDF work
+
+## PHASE 09 - PDF GENERATION
+- [x] Rebuild PdfService around DomPDF with configured Arabic RTL output
+- [x] Store PDFs under private configured storage paths
+- [x] Persist invoice and manifest paths through service-owned transactions
+- [x] Add invoice print and customer statement PDF routes
+- [x] Replace invoice, shipment manifest, and customer statement PDF templates
+- [x] Remove obsolete PDF placeholder stubs
+- [x] Add PDF generation/download/auth feature tests
+- [x] Run full Phase 09 verification commands
 
 ## DONE
 - [x] Initial workspace discovery
@@ -295,3 +305,4 @@
 - [x] Phase 07 Module 07 admin completed
 - [x] Phase 08 frontend foundation and module view replacement completed
 - [x] Phase 08 auth/welcome public frontend polish completed
+- [x] Phase 09 PDF generation completed

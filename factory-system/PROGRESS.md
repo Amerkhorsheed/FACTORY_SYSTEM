@@ -3,7 +3,7 @@
 This file was compacted on 2026-05-16 to keep the project-managed progress log under the 400-line rule.
 
 ## Current Phase
-- Phase 08 - Frontend Enhancements (Layouts, Components, Portal)
+- Phase 10 - Notifications & Communication
 - Source requirements are indexed in `TASKS.md`, including DOCS parts 1 through 6.
 
 ## Session Log
@@ -27,6 +27,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 016 | 2026-05-16 | Frontend foundation: RTL shell, components, Tailwind/Alpine assets, customer portal, tests | 153/153 | Phase 08 foundation complete; 97 routes registered |
 | 017 | 2026-05-17 | Frontend module view replacement: inventory, customers, orders, shipments, invoices, payments, expenses, and reports | 153/153 | Non-PDF module placeholders replaced with shared RTL layout patterns |
 | 018 | 2026-05-17 | Frontend public polish: auth/welcome layout, translated copy, render tests, event/PDF verification fixes | 155/155 | Phase 08 frontend polish complete; 97 routes registered |
+| 019 | 2026-05-17 | PDF generation: private DomPDF service, Arabic invoice/manifest/statement output, routes, tests | 160/160 | Phase 09 complete; 99 routes registered |
 
 ## Module Status
 | Module | Status | % Done | Blockers |
@@ -46,7 +47,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 07.06 Payments & ERP | [x] | 100% | - |
 | 07.07 Admin | [x] | 100% | - |
 | 08 Frontend | [x] | 100% | PDF output is tracked separately in Phase 09 |
-| 09 PDF | [ ] | 0% | `PdfService` is currently an HTML stub |
+| 09 PDF | [x] | 100% | - |
 | 10 Notifications | [ ] | 0% | - |
 | 11 Deployment | [ ] | 0% | - |
 
@@ -68,6 +69,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Phase 08 Frontend foundation: shared RTL layout, navigation, components, Tailwind/PostCSS pipeline, Admin/ERP dashboard layout upgrade, customer portal screens, and tests completed.
 - Phase 08 Module views: non-PDF inventory, customer, order, shipment, invoice, payment, expense, and report pages replaced with shared RTL layout/component patterns.
 - Phase 08 Public polish: shared public RTL layout, upgraded login/welcome screens, translated public copy, and render tests completed.
+- Phase 09 PDF: production DomPDF service, Arabic invoice/manifest/statement templates, private PDF storage, stream/download routes, and PDF tests completed.
 
 ## Session 014 Audit Changes
 - Added `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md` to `TASKS.md`.
@@ -114,10 +116,18 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Disabled Laravel listener auto-discovery so only the deliberate `EventServiceProvider` map runs and legacy stock listeners no longer duplicate service-owned stock logic.
 - Fixed PDF view field mismatches found by full verification: shipment manifest uses `shipment_date`, and invoice PDF uses order item `line_total`.
 
+## Session 019 PDF Generation Changes
+- Rebuilt `PdfService` around DomPDF with configured fonts/options, private `private/pdfs` storage, reusable stream/download responses, and transaction-wrapped path persistence.
+- Added Arabic amount-in-words support for official invoice totals.
+- Added invoice print route, customer statement PDF route, and service-owned invoice/manifest/statement download methods.
+- Replaced invoice, shipment manifest, and customer statement PDF templates with professional Arabic RTL A4 layouts.
+- Removed obsolete `pdf.statement` and `pdf.manifest` placeholder stubs.
+- Added `PdfGenerationTest` covering invoice inline stream, invoice stored download, manifest stored download, customer statement download, and auth guard behavior.
+
 ## Latest Verification
-- `php artisan test` -> 155 passed, 401 assertions.
+- `php artisan test` -> 160 passed, 429 assertions.
 - `vendor\\bin\\pint --test` -> passed.
-- `php artisan route:list --except-vendor` -> 97 routes registered.
+- `php artisan route:list --except-vendor` -> 99 routes registered.
 - `npm run build` -> passed.
 - Authored project file count check -> no non-generated project-managed file exceeds 400 lines.
 - Generated `package-lock.json` exceeds 400 lines and is treated as an external lockfile artifact.
@@ -126,9 +136,9 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Local PHP is 8.2.12; blueprint target is PHP 8.3.
 - Local MySQL credentials are unavailable; tests use SQLite in-memory via `phpunit.xml`.
 - Redis is unavailable locally; `.env` uses file/sync fallbacks.
-- Phase 08 frontend work is complete; remaining PDF work is tracked separately in Phase 09.
-- Full PDF generation is upcoming; `PdfService` currently stores HTML output.
+- Phase 09 PDF generation is complete; notification delivery remains upcoming.
 
 ## Next Session Plan
-- Begin Phase 09 PDF generation, replacing the current partial HTML/PDF implementation with production output.
+- Begin Phase 10 Notifications & Communication.
+- Prioritize order status, shipment, payment, invoice, low-stock, and admin password notifications.
 - Keep page files under 400 lines and add feature coverage where behavior changes.

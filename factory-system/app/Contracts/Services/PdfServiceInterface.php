@@ -16,6 +16,14 @@ interface PdfServiceInterface
 
     public function generateStatement(Customer $customer, Carbon $from, Carbon $to): string;
 
+    public function streamInvoice(Invoice $invoice): Response;
+
+    public function downloadInvoice(Invoice $invoice): Response;
+
+    public function downloadManifest(Shipment $shipment): Response;
+
+    public function downloadStatement(Customer $customer, Carbon $from, Carbon $to): Response;
+
     /** @param array<string, mixed> $data */
     public function stream(string $view, array $data, string $filename = 'document.pdf'): Response;
 

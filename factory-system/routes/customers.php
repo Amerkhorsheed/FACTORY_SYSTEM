@@ -20,4 +20,7 @@ Route::middleware(['auth', 'active', 'portal', 'role:super_admin|accountant|ship
 
     Route::get('customers/{customer}/statement', [CustomerController::class, 'statement'])
         ->name('customers.statement');
+
+    Route::get('customers/{customer}/statement/pdf', [CustomerController::class, 'statementPdf'])
+        ->name('customers.statement.pdf');
 });

@@ -3,80 +3,76 @@
 <head>
     <meta charset="utf-8">
     <style>
-        * { font-family: 'dejavu sans', sans-serif; }
-        body { direction: rtl; font-size: 10pt; color: #111827; margin: 20px; }
-        .header { border-bottom: 3px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 20px; overflow: hidden; }
-        .company-name { font-size: 18pt; font-weight: bold; color: #1e3a8a; }
-        .title { font-size: 20pt; font-weight: bold; color: #1e3a8a; text-align: center; margin: 15px 0; }
-        .meta td { padding: 4px 8px; }
-        .meta-label { font-weight: bold; color: #374151; }
-        .orders { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .orders th { background: #1e3a8a; color: #fff; padding: 8px; text-align: right; }
-        .orders td { padding: 8px; border-bottom: 1px solid #d1d5db; text-align: right; }
-        .orders tr:nth-child(even) td { background: #f3f4f6; }
-        .summary { background: #eff6ff; padding: 15px; border-radius: 6px; margin-top: 20px; }
-        .footer { margin-top: 40px; text-align: center; color: #6b7280; font-size: 8pt; border-top: 1px solid #d1d5db; padding-top: 10px; }
-        .signature { margin-top: 50px; overflow: hidden; }
-        .sig-block { width: 45%; float: right; text-align: center; }
-        .sig-block:last-child { float: left; }
-        .sig-line { border-top: 1px solid #374151; margin-top: 50px; padding-top: 8px; }
+        * { box-sizing: border-box; font-family: 'dejavu sans', sans-serif; }
+        body { direction: rtl; color: #111827; font-size: 10pt; margin: 0; }
+        .page { padding: 16mm 12mm; }
+        .muted { color: #64748b; }
+        .ltr { direction: ltr; text-align: left; }
+        .header { border-bottom: 3px solid #1e3a8a; margin-bottom: 15px; padding-bottom: 10px; }
+        .brand { color: #1e3a8a; font-size: 18pt; font-weight: bold; }
+        .title { color: #1e3a8a; font-size: 19pt; font-weight: bold; text-align: left; }
+        .meta, .orders, .summary, .signatures { width: 100%; border-collapse: collapse; }
+        .meta td { border: 1px solid #e2e8f0; padding: 8px; vertical-align: top; }
+        .label { color: #475569; font-size: 8pt; }
+        .value { font-weight: bold; margin-top: 2px; }
+        .orders th { background: #1e3a8a; color: white; padding: 7px 5px; border: 1px solid #1e3a8a; font-size: 8.5pt; }
+        .orders td { padding: 7px 5px; border: 1px solid #e2e8f0; vertical-align: top; }
+        .orders tr:nth-child(even) td { background: #f8fafc; }
+        .summary td { width: 33.33%; background: #eff6ff; border: 1px solid #bfdbfe; padding: 9px; text-align: center; }
+        .summary .num { color: #1e3a8a; font-size: 14pt; font-weight: bold; }
+        .signatures { margin-top: 34px; }
+        .signatures td { width: 33.33%; text-align: center; padding-top: 26px; border-top: 1px solid #94a3b8; color: #475569; }
+        .footer { border-top: 1px solid #e2e8f0; margin-top: 18px; padding-top: 8px; text-align: center; font-size: 8pt; color: #64748b; }
     </style>
 </head>
 <body>
+@php
+    $money = fn ($amount) => number_format((int) $amount).' '.$settings['currency_label'];
+    $status = config("factory.shipment_statuses.{$shipment->status}", $shipment->status);
+    $ordersTotal = (int) $shipment->orders->sum('total_amount');
+    $itemsTotal = (int) $shipment->orders->sum(fn ($order) => $order->items->sum('quantity'));
+@endphp
+<div class="page">
     <div class="header">
-        <div class="company-name">{{ config('factory.name') }}</div>
-        <div style="color: #6b7280;">بيان شحنة</div>
+        <table style="width:100%; border-collapse:collapse;"><tr>
+            <td><div class="brand">{{ $settings['factory_name'] }}</div><div class="muted">{{ $settings['factory_address'] }}</div><div class="muted">{{ $settings['factory_phone'] }}</div></td>
+            <td style="text-align:left;"><div class="title">{{ __('pdf.manifest.manifest') }}</div><div class="value ltr">{{ $shipment->shipment_number }}</div></td>
+        </tr></table>
     </div>
 
-    <div class="title">بيان الشحنة {{ $shipment->shipment_number ?? '' }}</div>
-
     <table class="meta">
-        <tr><td class="meta-label">رقم الشحنة:</td><td>{{ $shipment->shipment_number }}</td><td class="meta-label">تاريخ الإرسال:</td><td>{{ $shipment->shipment_date?->format('Y-m-d') ?? '—' }}</td></tr>
-        <tr><td class="meta-label">الشاحنة:</td><td>{{ $shipment->truck?->plate_number ?? '—' }}</td><td class="meta-label">السائق:</td><td>{{ $shipment->driver?->name ?? '—' }}</td></tr>
-        <tr><td class="meta-label">الحالة:</td><td>{{ config("factory.shipment_statuses.{$shipment->status}", $shipment->status) }}</td><td class="meta-label">ملاحظات:</td><td>{{ $shipment->notes ?? '—' }}</td></tr>
+        <tr>
+            <td><div class="label">{{ __('pdf.manifest.shipment_number') }}</div><div class="value">{{ $shipment->shipment_number }}</div></td>
+            <td><div class="label">{{ __('pdf.manifest.shipment_date') }}</div><div class="value">{{ $shipment->shipment_date?->format('Y-m-d') }}</div></td>
+            <td><div class="label">{{ __('pdf.invoice.status') }}</div><div class="value">{{ $status }}</div></td>
+        </tr>
+        <tr>
+            <td><div class="label">{{ __('pdf.manifest.plate_number') }}</div><div class="value">{{ $shipment->truck?->plate_number ?? '—' }}</div></td>
+            <td><div class="label">{{ __('pdf.manifest.driver') }}</div><div class="value">{{ $shipment->driver?->name ?? '—' }}</div></td>
+            <td><div class="label">{{ __('pdf.manifest.driver_phone') }}</div><div class="value ltr">{{ $shipment->driver?->phone ?? '—' }}</div></td>
+        </tr>
     </table>
 
+    <table class="summary" style="margin:12px 0;"><tr>
+        <td><div class="label">{{ __('pdf.manifest.orders_count') }}</div><div class="num">{{ $shipment->orders->count() }}</div></td>
+        <td><div class="label">{{ __('pdf.manifest.products_count') }}</div><div class="num">{{ number_format($itemsTotal) }}</div></td>
+        <td><div class="label">{{ __('pdf.common.total') }}</div><div class="num">{{ $money($ordersTotal) }}</div></td>
+    </tr></table>
+
     <table class="orders">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>رقم الطلب</th>
-                <th>العميل</th>
-                <th>المنطقة</th>
-                <th>المبلغ</th>
-                <th>الحالة</th>
-            </tr>
-        </thead>
+        <thead><tr><th style="width:4%">#</th><th style="width:16%">{{ __('pdf.manifest.order_number') }}</th><th style="width:19%">{{ __('ui.fields.customer') }}</th><th>{{ __('pdf.manifest.address') }}</th><th style="width:13%">{{ __('pdf.manifest.phone') }}</th><th style="width:14%">{{ __('pdf.common.total') }}</th><th style="width:14%">{{ __('pdf.common.customer_signature') }}</th></tr></thead>
         <tbody>
-            @foreach ($shipment->orders ?? [] as $i => $order)
-            <tr>
-                <td>{{ $i + 1 }}</td>
-                <td>{{ $order->order_number }}</td>
-                <td>{{ $order->customer?->name ?? '—' }}</td>
-                <td>{{ $order->customer?->region ?? '—' }}</td>
-                <td>{{ number_format($order->total_amount) }} ل.س</td>
-                <td>{{ config("factory.order_statuses.{$order->status}", $order->status) }}</td>
-            </tr>
-            @endforeach
+        @forelse($shipment->orders as $order)
+            <tr><td class="ltr">{{ $loop->iteration }}</td><td>{{ $order->order_number }}</td><td>{{ $order->customer?->name ?? '—' }}</td><td>{{ $order->customer?->address ?? '—' }}</td><td class="ltr">{{ $order->customer?->phone ?? '—' }}</td><td class="ltr">{{ $money($order->total_amount) }}</td><td></td></tr>
+        @empty
+            <tr><td colspan="7" class="muted">{{ __('ui.messages.empty_title') }}</td></tr>
+        @endforelse
         </tbody>
     </table>
 
-    <div class="summary">
-        <strong>إجمالي الطلبات:</strong> {{ count($shipment->orders ?? []) }} ·
-        <strong>إجمالي المبلغ:</strong> {{ number_format(collect($shipment->orders ?? [])->sum('total_amount')) }} ل.س
-    </div>
-
-    <div class="signature">
-        <div class="sig-block">
-            <div class="sig-line">توقيع المسؤول</div>
-        </div>
-        <div class="sig-block">
-            <div class="sig-line">توقيع السائق</div>
-        </div>
-    </div>
-
-    <div class="footer">
-        {{ config('factory.name') }} · بيان شحنة · {{ now()->format('Y-m-d H:i') }}
-    </div>
+    @if($shipment->notes)<div style="margin-top:12px;"><strong>{{ __('pdf.common.notes') }}:</strong> {{ $shipment->notes }}</div>@endif
+    <table class="signatures"><tr><td>{{ __('pdf.manifest.driver') }}</td><td>{{ __('pdf.manifest.supervisor_signature') }}</td><td>{{ __('pdf.common.authorized_signature') }}</td></tr></table>
+    <div class="footer">{{ __('pdf.common.page_footer') }} · {{ __('pdf.common.generated_at') }}: {{ $settings['generated_at'] }}</div>
+</div>
 </body>
 </html>

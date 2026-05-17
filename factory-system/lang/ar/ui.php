@@ -8,6 +8,7 @@ return [
         'download' => 'تنزيل',
         'edit' => 'تعديل',
         'menu' => 'القائمة',
+        'print' => 'طباعة',
         'save' => 'حفظ',
         'search' => 'بحث',
         'show' => 'عرض',

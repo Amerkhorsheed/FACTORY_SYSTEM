@@ -12,6 +12,7 @@ return [
     'deactivated' => 'تم تعطيل العميل بنجاح.',
     'portal_access_updated' => 'تم تحديث صلاحية الدخول للبوابة بنجاح.',
     'statement' => 'كشف حساب العميل',
+    'statement_pdf' => 'تحميل كشف PDF',
     'portal_requires_email' => 'لا يمكن تفعيل البوابة بدون بريد إلكتروني.',
     'has_active_orders' => 'لا يمكن حذف العميل لوجود طلبيات نشطة مرتبطة به.',
 ];

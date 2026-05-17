@@ -138,14 +138,6 @@ class ShipmentController extends Controller
     {
         $this->authorize('viewManifest', $shipment);
 
-        if (! $shipment->manifest_path) {
-            $path = $this->pdfService->generateManifest($shipment);
-            $shipment->update(['manifest_path' => $path]);
-        }
-
-        return $this->pdfService->download(
-            $shipment->manifest_path,
-            "manifest-{$shipment->shipment_number}.html"
-        );
+        return $this->pdfService->downloadManifest($shipment);
     }
 }

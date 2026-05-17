@@ -66,6 +66,11 @@ class InvoicePolicy
             && in_array($invoice->status, ['issued', 'paid', 'partial'], true);
     }
 
+    public function print(User $user, Invoice $invoice): bool
+    {
+        return $this->view($user, $invoice);
+    }
+
     public function recordPayment(User $user, Invoice $invoice): bool
     {
         return $user->hasPermissionTo('payments.create')

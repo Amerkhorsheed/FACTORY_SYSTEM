@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customers;
 
+use App\Contracts\Services\PdfServiceInterface;
 use App\DTOs\Customers\CreateCustomerDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customers\StoreCustomerRequest;
@@ -12,6 +13,7 @@ use App\Services\Erp\ReportService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 /**
@@ -22,6 +24,7 @@ class CustomerController extends Controller
     public function __construct(
         private readonly CustomerService $service,
         private readonly ReportService $reports,
+        private readonly PdfServiceInterface $pdfService,
     ) {
         $this->authorizeResource(Customer::class, 'customer');
     }
@@ -124,5 +127,15 @@ class CustomerController extends Controller
         $statement = $this->reports->getCustomerStatement($customer, $from, $to);
 
         return view('customers.statement', compact('customer', 'statement', 'from', 'to'));
+    }
+
+    public function statementPdf(Request $request, Customer $customer): Response
+    {
+        $this->authorize('view', $customer);
+
+        $from = Carbon::parse($request->get('from', now()->startOfMonth()));
+        $to = Carbon::parse($request->get('to', now()->endOfMonth()));
+
+        return $this->pdfService->downloadStatement($customer, $from, $to);
     }
 }

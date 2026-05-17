@@ -24,6 +24,9 @@ Route::middleware(['auth', 'active', 'portal', 'role:super_admin|accountant|ship
     Route::delete('invoices/{invoice}/payments/{payment}', [InvoiceController::class, 'deletePayment'])
         ->name('invoices.payments.destroy');
 
+    Route::get('invoices/{invoice}/print', [InvoiceController::class, 'print'])
+        ->name('invoices.print');
+
     Route::get('invoices/{invoice}/download', [InvoiceController::class, 'download'])
         ->name('invoices.download');
 });

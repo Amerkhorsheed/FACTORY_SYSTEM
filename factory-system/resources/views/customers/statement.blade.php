@@ -4,7 +4,7 @@
 
 @section('content')
 @php($money = fn ($amount) => number_format((int) $amount).' '.__('ui.currency.syp'))
-<x-page-header :title="__('customers.statement')" :description="$customer->name" :back="route('customers.show', $customer)" />
+<x-page-header :title="__('customers.statement')" :description="$customer->name" :back="route('customers.show', $customer)"><x-btn :href="route('customers.statement.pdf', ['customer' => $customer, 'from' => $from->toDateString(), 'to' => $to->toDateString()])" variant="secondary">{{ __('customers.statement_pdf') }}</x-btn></x-page-header>
 <div class="mb-5 grid gap-4 md:grid-cols-2"><x-metric-card :label="__('portal.outstanding_balance')" :value="$money($statement['closing_balance'] ?? 0)" tone="red" /></div>
 <x-card :title="__('ui.modules.invoices')">
     @forelse($statement['invoices'] as $invoice)

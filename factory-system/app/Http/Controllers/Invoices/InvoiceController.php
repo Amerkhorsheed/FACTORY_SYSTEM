@@ -11,6 +11,7 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 /**
@@ -129,18 +130,17 @@ class InvoiceController extends Controller
             ->with('success', __('invoices.payment_deleted'));
     }
 
-    public function download(Invoice $invoice)
+    public function print(Invoice $invoice): Response
     {
         $this->authorize('view', $invoice);
 
-        if (! $invoice->pdf_path) {
-            $path = $this->pdfService->generateInvoice($invoice);
-            $invoice->update(['pdf_path' => $path]);
-        }
+        return $this->pdfService->streamInvoice($invoice);
+    }
 
-        return $this->pdfService->download(
-            $invoice->pdf_path,
-            "invoice-{$invoice->invoice_number}.html"
-        );
+    public function download(Invoice $invoice): Response
+    {
+        $this->authorize('view', $invoice);
+
+        return $this->pdfService->downloadInvoice($invoice);
     }
 }
