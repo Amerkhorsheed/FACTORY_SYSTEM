@@ -18,14 +18,16 @@ class OrderStatusChanged extends Notification implements ShouldQueue
     public function __construct(
         private readonly Order $order,
         private readonly string $newStatus,
-    ) {}
+    ) {
+        $this->onQueue('notifications')->afterCommit();
+    }
 
     /**
      * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return $notifiable->email ? ['database', 'mail'] : ['database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -33,14 +35,22 @@ class OrderStatusChanged extends Notification implements ShouldQueue
         $statusLabel = config("factory.order_statuses.{$this->newStatus}", $this->newStatus);
 
         return (new MailMessage)
-            ->subject(__('orders.status_notification_subject', ['number' => $this->order->order_number]))
-            ->greeting(__('orders.greeting', ['name' => $notifiable->name]))
-            ->line(__('orders.status_changed_to', [
+            ->subject(__('notifications.order_status.subject', [
                 'number' => $this->order->order_number,
                 'status' => $statusLabel,
             ]))
-            ->action(__('orders.view_order'), route('orders.show', $this->order))
-            ->salutation(__('orders.salutation'));
+            ->view('emails.order-status', [
+                'action_url' => $this->urlFor($notifiable),
+                'name' => $notifiable->name,
+                'order_number' => $this->order->order_number,
+                'status' => $statusLabel,
+            ]);
+    }
+
+    /** @return array<string, mixed> */
+    public function toDatabase(object $notifiable): array
+    {
+        return $this->payload($notifiable);
     }
 
     /**
@@ -48,14 +58,32 @@ class OrderStatusChanged extends Notification implements ShouldQueue
      */
     public function toArray(object $notifiable): array
     {
+        return $this->payload($notifiable);
+    }
+
+    /** @return array<string, mixed> */
+    private function payload(object $notifiable): array
+    {
+        $statusLabel = config("factory.order_statuses.{$this->newStatus}", $this->newStatus);
+
         return [
+            'type' => 'order_status_changed',
             'order_id' => $this->order->id,
             'order_number' => $this->order->order_number,
             'new_status' => $this->newStatus,
-            'message' => __('orders.status_changed_to', [
+            'status_label' => $statusLabel,
+            'message' => __('notifications.order_status.message', [
                 'number' => $this->order->order_number,
-                'status' => config("factory.order_statuses.{$this->newStatus}", $this->newStatus),
+                'status' => $statusLabel,
             ]),
+            'url' => $this->urlFor($notifiable),
         ];
+    }
+
+    private function urlFor(object $notifiable): string
+    {
+        return method_exists($notifiable, 'hasRole') && $notifiable->hasRole('customer')
+            ? route('portal.orders.show', $this->order)
+            : route('orders.show', $this->order);
     }
 }

@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Events\InvoiceIssued;
 use App\Events\Orders\OrderAccepted;
 use App\Events\Orders\OrderCancelled;
+use App\Events\Orders\OrderDelivered;
 use App\Events\Orders\OrderShipped;
 use App\Events\PaymentReceived;
 use App\Events\Stock\LowStockDetected;
 use App\Listeners\CreateInvoiceOnOrderAccepted;
+use App\Listeners\NotifyCustomerOnInvoiceIssued;
 use App\Listeners\NotifyCustomerOnOrderStatusChange;
 use App\Listeners\NotifyCustomerOnPaymentReceived;
 use App\Listeners\SendLowStockAlert;
@@ -50,9 +52,14 @@ class EventServiceProvider extends ServiceProvider
             NotifyCustomerOnOrderStatusChange::class,
         ],
 
+        OrderDelivered::class => [
+            NotifyCustomerOnOrderStatusChange::class,
+        ],
+
         // ─── Invoice Domain ─────────────────────────────────────
         InvoiceIssued::class => [
             UpdateCustomerBalanceOnInvoiceIssued::class,
+            NotifyCustomerOnInvoiceIssued::class,
         ],
 
         // ─── Payment Domain ─────────────────────────────────────

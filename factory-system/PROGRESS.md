@@ -3,7 +3,7 @@
 This file was compacted on 2026-05-16 to keep the project-managed progress log under the 400-line rule.
 
 ## Current Phase
-- Phase 10 - Notifications & Communication
+- Phase 11 - Deployment
 - Source requirements are indexed in `TASKS.md`, including DOCS parts 1 through 6.
 
 ## Session Log
@@ -28,6 +28,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 017 | 2026-05-17 | Frontend module view replacement: inventory, customers, orders, shipments, invoices, payments, expenses, and reports | 153/153 | Non-PDF module placeholders replaced with shared RTL layout patterns |
 | 018 | 2026-05-17 | Frontend public polish: auth/welcome layout, translated copy, render tests, event/PDF verification fixes | 155/155 | Phase 08 frontend polish complete; 97 routes registered |
 | 019 | 2026-05-17 | PDF generation: private DomPDF service, Arabic invoice/manifest/statement output, routes, tests | 160/160 | Phase 09 complete; 99 routes registered |
+| 020 | 2026-05-17 | Notifications: queued customer/staff alerts, digest commands, Livewire bell, Arabic mail templates, tests | 166/166 | Phase 10 complete; 99 routes and 3 scheduled commands registered |
 
 ## Module Status
 | Module | Status | % Done | Blockers |
@@ -48,7 +49,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 07.07 Admin | [x] | 100% | - |
 | 08 Frontend | [x] | 100% | PDF output is tracked separately in Phase 09 |
 | 09 PDF | [x] | 100% | - |
-| 10 Notifications | [ ] | 0% | - |
+| 10 Notifications | [x] | 100% | - |
 | 11 Deployment | [ ] | 0% | - |
 
 ## Completed Scope
@@ -70,6 +71,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Phase 08 Module views: non-PDF inventory, customer, order, shipment, invoice, payment, expense, and report pages replaced with shared RTL layout/component patterns.
 - Phase 08 Public polish: shared public RTL layout, upgraded login/welcome screens, translated public copy, and render tests completed.
 - Phase 09 PDF: production DomPDF service, Arabic invoice/manifest/statement templates, private PDF storage, stream/download routes, and PDF tests completed.
+- Phase 10 Notifications: queued database/mail notifications, customer/staff event wiring, digest commands, schedules, Livewire bell, Arabic mail templates, and tests completed.
 
 ## Session 014 Audit Changes
 - Added `../DOCS/AGENT_PROMPT_FACTORY_SYSTEM_PART6.md` to `TASKS.md`.
@@ -124,10 +126,20 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Removed obsolete `pdf.statement` and `pdf.manifest` placeholder stubs.
 - Added `PdfGenerationTest` covering invoice inline stream, invoice stored download, manifest stored download, customer statement download, and auth guard behavior.
 
+## Session 020 Notification Changes
+- Added `NotificationDispatchService` for staff overdue-invoice and low-stock digests using repositories and active role recipients.
+- Registered `NotifyCustomerOnInvoiceIssued`; queued customer notifications for order status, invoice issued, and payment received.
+- Updated low-stock and overdue alerts to send accountant/super-admin database and mail digests.
+- Renamed scheduled commands to `factory:overdue-alerts` and `factory:low-stock-check`, scheduled daily at 09:00 and 08:00.
+- Added Arabic `lang/ar/notifications.php`, low-stock and temporary-password email views, and translation-backed email copy.
+- Added Livewire notification bell polling, topbar integration, unread count, and mark-read/mark-all-read behavior.
+- Added `NotificationCommunicationTest` for event delivery, digest commands, and notification bell behavior.
+
 ## Latest Verification
-- `php artisan test` -> 160 passed, 429 assertions.
+- `php artisan test` -> 166 passed, 447 assertions.
 - `vendor\\bin\\pint --test` -> passed.
 - `php artisan route:list --except-vendor` -> 99 routes registered.
+- `php artisan schedule:list` -> 3 scheduled commands registered.
 - `npm run build` -> passed.
 - Authored project file count check -> no non-generated project-managed file exceeds 400 lines.
 - Generated `package-lock.json` exceeds 400 lines and is treated as an external lockfile artifact.
@@ -136,9 +148,9 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Local PHP is 8.2.12; blueprint target is PHP 8.3.
 - Local MySQL credentials are unavailable; tests use SQLite in-memory via `phpunit.xml`.
 - Redis is unavailable locally; `.env` uses file/sync fallbacks.
-- Phase 09 PDF generation is complete; notification delivery remains upcoming.
+- Phase 10 notification delivery is complete; deployment work remains upcoming.
 
 ## Next Session Plan
-- Begin Phase 10 Notifications & Communication.
-- Prioritize order status, shipment, payment, invoice, low-stock, and admin password notifications.
-- Keep page files under 400 lines and add feature coverage where behavior changes.
+- Begin Phase 11 Deployment.
+- Prioritize deployment files, environment hardening, backup/scheduler readiness, and production verification documentation.
+- Keep generated deployment artifacts out of project-managed 400-line checks where appropriate.

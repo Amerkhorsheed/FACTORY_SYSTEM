@@ -18,14 +18,16 @@ class InvoiceIssued extends Notification implements ShouldQueue
 
     public function __construct(
         private readonly Invoice $invoice,
-    ) {}
+    ) {
+        $this->onQueue('notifications')->afterCommit();
+    }
 
     /**
      * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return $notifiable->email ? ['database', 'mail'] : ['database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -33,14 +35,21 @@ class InvoiceIssued extends Notification implements ShouldQueue
         $total = Money::of($this->invoice->total_amount)->format();
 
         return (new MailMessage)
-            ->subject(__('invoices.issued_notification_subject', ['number' => $this->invoice->invoice_number]))
-            ->greeting(__('invoices.greeting', ['name' => $notifiable->name]))
-            ->line(__('invoices.issued_message', [
+            ->subject(__('notifications.invoice_issued.subject', [
                 'number' => $this->invoice->invoice_number,
-                'total' => $total,
             ]))
-            ->action(__('invoices.view_invoice'), route('invoices.show', $this->invoice))
-            ->salutation(__('invoices.salutation'));
+            ->view('emails.invoice-issued', [
+                'action_url' => $this->urlFor($notifiable),
+                'invoice_number' => $this->invoice->invoice_number,
+                'name' => $notifiable->name,
+                'total' => $total,
+            ]);
+    }
+
+    /** @return array<string, mixed> */
+    public function toDatabase(object $notifiable): array
+    {
+        return $this->payload($notifiable);
     }
 
     /**
@@ -48,14 +57,29 @@ class InvoiceIssued extends Notification implements ShouldQueue
      */
     public function toArray(object $notifiable): array
     {
+        return $this->payload($notifiable);
+    }
+
+    /** @return array<string, mixed> */
+    private function payload(object $notifiable): array
+    {
         return [
+            'type' => 'invoice_issued',
             'invoice_id' => $this->invoice->id,
             'invoice_number' => $this->invoice->invoice_number,
             'total_amount' => $this->invoice->total_amount,
-            'message' => __('invoices.issued_message', [
+            'message' => __('notifications.invoice_issued.message', [
+                'amount' => Money::of($this->invoice->total_amount)->format(),
                 'number' => $this->invoice->invoice_number,
-                'total' => Money::of($this->invoice->total_amount)->format(),
             ]),
+            'url' => $this->urlFor($notifiable),
         ];
+    }
+
+    private function urlFor(object $notifiable): string
+    {
+        return method_exists($notifiable, 'hasRole') && $notifiable->hasRole('customer')
+            ? route('portal.invoices.show', $this->invoice)
+            : route('invoices.show', $this->invoice);
     }
 }

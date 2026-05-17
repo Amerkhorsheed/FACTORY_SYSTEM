@@ -282,6 +282,15 @@
 - [x] Add PDF generation/download/auth feature tests
 - [x] Run full Phase 09 verification commands
 
+## PHASE 10 - NOTIFICATIONS & COMMUNICATION
+- [x] Wire order status, invoice issued, payment received, low-stock, overdue, and temporary-password notifications
+- [x] Ensure customer-facing and critical alerts use queued database/mail delivery
+- [x] Add staff digest service for overdue invoices and low stock products
+- [x] Register `factory:overdue-alerts` and `factory:low-stock-check` schedules
+- [x] Add Livewire notification bell polling and mark-read behavior to the topbar
+- [x] Add Arabic notification translations and email templates
+- [x] Add notification feature tests and run full Phase 10 verification commands
+
 ## DONE
 - [x] Initial workspace discovery
 - [x] Management files created
@@ -306,3 +315,4 @@
 - [x] Phase 08 frontend foundation and module view replacement completed
 - [x] Phase 08 auth/welcome public frontend polish completed
 - [x] Phase 09 PDF generation completed
+- [x] Phase 10 notifications and communication completed

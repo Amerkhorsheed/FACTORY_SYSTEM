@@ -14,6 +14,8 @@
         </div>
 
         <div class="flex items-center gap-3">
+            <livewire:notification-bell />
+
             <div class="hidden text-left sm:block">
                 <p class="text-sm font-bold text-slate-800">{{ auth()->user()->name }}</p>
                 <p class="text-xs text-slate-500" dir="ltr">{{ auth()->user()->email }}</p>

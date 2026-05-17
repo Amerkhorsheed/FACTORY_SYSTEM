@@ -13,16 +13,14 @@ use Illuminate\Support\Facades\Schedule;
 */
 
 // ── Daily at 9:00 AM — Send overdue invoice reminders ────────
-Schedule::command('factory:send-overdue-alerts')
+Schedule::command('factory:overdue-alerts')
     ->dailyAt('09:00')
-    ->withoutOverlapping()
-    ->onOneServer();
+    ->withoutOverlapping();
 
-// ── Every 6 hours — Check low stock levels ───────────────────
-Schedule::command('factory:check-low-stock')
-    ->everySixHours()
-    ->withoutOverlapping()
-    ->onOneServer();
+// ── Daily at 8:00 AM — Check low stock levels ─────────────────
+Schedule::command('factory:low-stock-check')
+    ->dailyAt('08:00')
+    ->withoutOverlapping();
 
 // ── Daily at 2:00 AM — Database backup ───────────────────────
 Schedule::command('factory:backup')

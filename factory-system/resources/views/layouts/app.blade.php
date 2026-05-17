@@ -8,6 +8,7 @@
     @unless(app()->environment('testing'))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endunless
+    @livewireStyles
 </head>
 <body class="font-cairo bg-slate-50 text-slate-900" dir="rtl" x-data>
     @include('layouts.partials.sidebar')
@@ -26,5 +27,6 @@
     </div>
 
     @stack('scripts')
+    @livewireScripts
 </body>
 </html>

@@ -24,8 +24,8 @@
         </div>
 
         <div class="footer">
-            <p>&copy; {{ date('Y') }} {{ config('factory.name', 'المعمل') }}. جميع الحقوق محفوظة.</p>
-            <p>هذه رسالة تلقائية، يرجى عدم الرد عليها.</p>
+            <p>&copy; {{ date('Y') }} {{ config('factory.name', 'المعمل') }}. {{ __('notifications.email.copyright') }}</p>
+            <p>{{ __('notifications.email.auto') }}</p>
         </div>
     </div>
 </body>

@@ -5,6 +5,8 @@ namespace App\Services\Distribution;
 use App\Contracts\Repositories\ShipmentRepositoryInterface;
 use App\Contracts\Services\ShipmentServiceInterface;
 use App\DTOs\Shipments\CreateShipmentDTO;
+use App\Events\Orders\OrderDelivered;
+use App\Events\Orders\OrderShipped;
 use App\Events\ShipmentDispatched;
 use App\Exceptions\InvalidStatusTransitionException;
 use App\Models\Order;
@@ -79,7 +81,12 @@ class ShipmentService implements ShipmentServiceInterface
 
             Truck::whereKey($shipment->truck_id)->update(['status' => 'on_trip']);
 
-            $shipment->orders()->where('status', 'ready')->update(['status' => 'shipped']);
+            $orders = $shipment->orders()->where('status', 'ready')->get();
+
+            foreach ($orders as $order) {
+                $order->update(['status' => 'shipped']);
+                event(new OrderShipped($order->fresh()));
+            }
 
             event(new ShipmentDispatched($shipment));
 
@@ -97,6 +104,8 @@ class ShipmentService implements ShipmentServiceInterface
             $order->status = 'delivered';
             $order->delivered_at = now();
             $order->save();
+
+            event(new OrderDelivered($order->fresh()));
 
             $shipment->refresh();
             if ($shipment->allOrdersResolved()) {

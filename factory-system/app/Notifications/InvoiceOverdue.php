@@ -2,23 +2,25 @@
 
 namespace App\Notifications;
 
-use App\Models\Invoice;
 use App\ValueObjects\Money;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Collection;
 
 /**
- * Remind customer about an overdue invoice.
+ * Send a staff digest for overdue invoices.
  */
 class InvoiceOverdue extends Notification implements ShouldQueue
 {
     use Queueable;
 
     public function __construct(
-        private readonly Invoice $invoice,
-    ) {}
+        private readonly Collection $invoices,
+    ) {
+        $this->onQueue('notifications')->afterCommit();
+    }
 
     /**
      * @return array<int, string>
@@ -30,18 +32,20 @@ class InvoiceOverdue extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $balance = Money::of($this->invoice->balance_due)->format();
-
         return (new MailMessage)
-            ->subject(__('invoices.overdue_notification_subject', ['number' => $this->invoice->invoice_number]))
-            ->greeting(__('invoices.greeting', ['name' => $notifiable->name]))
-            ->line(__('invoices.overdue_message', [
-                'number' => $this->invoice->invoice_number,
-                'balance' => $balance,
-                'due_date' => $this->invoice->due_date?->format('Y-m-d'),
-            ]))
-            ->action(__('invoices.view_invoice'), route('invoices.show', $this->invoice))
-            ->salutation(__('invoices.salutation'));
+            ->subject(__('notifications.invoice_overdue.subject', ['count' => $this->invoices->count()]))
+            ->view('emails.invoice-overdue', [
+                'action_url' => route('erp.reports.receivables'),
+                'invoices' => $this->invoices,
+                'name' => $notifiable->name,
+                'total_due' => Money::of($this->totalDue())->format(),
+            ]);
+    }
+
+    /** @return array<string, mixed> */
+    public function toDatabase(object $notifiable): array
+    {
+        return $this->payload();
     }
 
     /**
@@ -49,16 +53,26 @@ class InvoiceOverdue extends Notification implements ShouldQueue
      */
     public function toArray(object $notifiable): array
     {
+        return $this->payload();
+    }
+
+    /** @return array<string, mixed> */
+    private function payload(): array
+    {
         return [
-            'invoice_id' => $this->invoice->id,
-            'invoice_number' => $this->invoice->invoice_number,
-            'balance_due' => $this->invoice->balance_due,
-            'due_date' => $this->invoice->due_date?->toDateString(),
-            'message' => __('invoices.overdue_message', [
-                'number' => $this->invoice->invoice_number,
-                'balance' => Money::of($this->invoice->balance_due)->format(),
-                'due_date' => $this->invoice->due_date?->format('Y-m-d'),
+            'type' => 'invoice_overdue',
+            'count' => $this->invoices->count(),
+            'total_due' => $this->totalDue(),
+            'message' => __('notifications.invoice_overdue.message', [
+                'amount' => Money::of($this->totalDue())->format(),
+                'count' => $this->invoices->count(),
             ]),
+            'url' => route('erp.reports.receivables'),
         ];
+    }
+
+    private function totalDue(): int
+    {
+        return (int) $this->invoices->sum('balance_due');
     }
 }

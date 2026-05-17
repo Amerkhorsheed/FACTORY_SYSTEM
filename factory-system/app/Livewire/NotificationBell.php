@@ -3,11 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class NotificationBell extends Component
@@ -22,16 +21,23 @@ class NotificationBell extends Component
         $this->loadNotifications();
     }
 
-    #[On('echo:private-user.{user_id},.Illuminate\\\\Notifications\\\\Events\\\\BroadcastNotificationCreated')]
     public function loadNotifications(): void
     {
         /** @var User $user */
         $user = Auth::user();
 
-        if ($user) {
-            $this->unreadCount = $user->unreadNotifications()->count();
-            $this->notifications = $user->notifications()->take(5)->get();
+        if (! $user) {
+            $this->unreadCount = 0;
+            $this->notifications = collect();
+
+            return;
         }
+
+        $this->unreadCount = $user->unreadNotifications()->count();
+        $this->notifications = $user->notifications()
+            ->latest()
+            ->limit(10)
+            ->get();
     }
 
     public function markAsRead(string $id): void
@@ -44,9 +50,6 @@ class NotificationBell extends Component
         if ($notification) {
             $notification->markAsRead();
             $this->loadNotifications();
-
-            // Dispatch an event so the frontend can redirect if needed,
-            // or we could return a redirect directly if the notification has a link.
         }
     }
 

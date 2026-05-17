@@ -2,33 +2,35 @@
 
 namespace App\Console\Commands;
 
-use App\Events\Stock\LowStockDetected;
-use App\Models\Product;
+use App\Services\Notifications\NotificationDispatchService;
 use Illuminate\Console\Command;
 
 /**
- * Check all products for low stock levels and fire alerts.
- *
- * Scheduled: Every 6 hours.
+ * Send a daily low-stock digest to accounting staff.
  */
 class CheckLowStockLevels extends Command
 {
-    protected $signature = 'factory:check-low-stock';
+    protected $signature = 'factory:low-stock-check';
 
-    protected $description = 'فحص مستويات المخزون المنخفض';
+    protected $description = 'Check low stock products and send a digest alert';
+
+    public function __construct(
+        private readonly NotificationDispatchService $notifications,
+    ) {
+        parent::__construct();
+    }
 
     public function handle(): int
     {
-        $lowStock = Product::query()
-            ->where('is_active', true)
-            ->whereColumn('current_stock', '<=', 'low_stock_threshold')
-            ->get();
+        $result = $this->notifications->sendLowStockDigest();
 
-        foreach ($lowStock as $product) {
-            LowStockDetected::dispatch($product);
+        if ($result['products'] === 0) {
+            $this->info('All products are above threshold.');
+
+            return self::SUCCESS;
         }
 
-        $this->info("Found {$lowStock->count()} products below threshold.");
+        $this->info("Sent low-stock alert for {$result['products']} products to {$result['recipients']} users.");
 
         return self::SUCCESS;
     }

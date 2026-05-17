@@ -2,40 +2,35 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Invoice;
-use App\Notifications\InvoiceOverdue;
+use App\Services\Notifications\NotificationDispatchService;
 use Illuminate\Console\Command;
 
 /**
- * Send overdue invoice reminders to customers.
- *
- * Scheduled: Daily at 9:00 AM (Asia/Damascus).
+ * Send overdue invoice digest alerts to accounting staff.
  */
 class SendOverdueInvoiceAlerts extends Command
 {
-    protected $signature = 'factory:send-overdue-alerts';
+    protected $signature = 'factory:overdue-alerts';
 
-    protected $description = 'إرسال تنبيهات الفواتير المتأخرة';
+    protected $description = 'Send overdue invoice alerts to accounting staff';
+
+    public function __construct(
+        private readonly NotificationDispatchService $notifications,
+    ) {
+        parent::__construct();
+    }
 
     public function handle(): int
     {
-        $overdue = Invoice::query()
-            ->where('status', 'issued')
-            ->where('due_date', '<', now())
-            ->where('balance_due', '>', 0)
-            ->with('customer.user')
-            ->get();
+        $result = $this->notifications->sendOverdueInvoiceDigest();
 
-        $count = 0;
+        if ($result['invoices'] === 0) {
+            $this->info('No overdue invoices found.');
 
-        foreach ($overdue as $invoice) {
-            if ($invoice->customer?->user) {
-                $invoice->customer->user->notify(new InvoiceOverdue($invoice));
-                $count++;
-            }
+            return self::SUCCESS;
         }
 
-        $this->info("Sent {$count} overdue invoice alerts.");
+        $this->info("Notified {$result['recipients']} users about {$result['invoices']} overdue invoices.");
 
         return self::SUCCESS;
     }

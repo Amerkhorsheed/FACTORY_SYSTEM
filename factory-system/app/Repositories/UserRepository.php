@@ -62,4 +62,13 @@ class UserRepository extends BaseRepository
             ->orderBy('name')
             ->get();
     }
+
+    /** @param array<int, string> $roles */
+    public function activeWithRoles(array $roles): Collection
+    {
+        return User::role($roles)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+    }
 }

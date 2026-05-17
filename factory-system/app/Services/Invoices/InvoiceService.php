@@ -6,6 +6,8 @@ use App\Contracts\Repositories\InvoiceRepositoryInterface;
 use App\Contracts\Services\CustomerServiceInterface;
 use App\Contracts\Services\InvoiceServiceInterface;
 use App\DTOs\Invoices\RecordPaymentDTO;
+use App\Events\InvoiceIssued;
+use App\Events\PaymentReceived;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Payment;
@@ -55,9 +57,11 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
     public function issue(Invoice $invoice): Invoice
     {
         return $this->transaction(function () use ($invoice) {
-            $this->invoices->update($invoice, ['status' => 'issued']);
+            $issued = $this->invoices->update($invoice, ['status' => 'issued']);
 
-            return $invoice->fresh();
+            event(new InvoiceIssued($issued));
+
+            return $issued->fresh();
         });
     }
 
@@ -116,6 +120,8 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
             ]);
 
             $this->customers->recalculateBalance($invoice->customer);
+
+            event(new PaymentReceived($payment->fresh()));
 
             return $payment->fresh();
         });
