@@ -26,6 +26,75 @@
     </x-card>
 </div>
 
+{{-- Visual Timeline --}}
+<x-card :title="__('portal.order_tracking')" class="mt-6">
+    <div class="relative">
+        @if($timeline['isCancelled'])
+            <div class="mb-4 rounded-lg bg-rose-50 p-4 text-rose-700">
+                <p class="font-semibold">{{ __('portal.order_cancelled') }}</p>
+                @if($timeline['cancelReason'])
+                    <p class="mt-1 text-sm">{{ $timeline['cancelReason'] }}</p>
+                @endif
+            </div>
+        @elseif($timeline['isReturned'])
+            <div class="mb-4 rounded-lg bg-amber-50 p-4 text-amber-700">
+                <p class="font-semibold">{{ __('portal.order_returned') }}</p>
+            </div>
+        @endif
+
+        <div class="flex justify-between">
+            @foreach($timeline['steps'] as $index => $step)
+                <?php
+                    $stepKey = $step['key'];
+                    $stepIndex = array_search($stepKey, $timeline['statusOrder']);
+                    $isCompleted = $timeline['isCancelled'] || $timeline['isReturned'] ? false : ($timeline['currentIndex'] !== false && $stepIndex <= $timeline['currentIndex']);
+                    $isCurrent = ! $timeline['isCancelled'] && ! $timeline['isReturned'] && $timeline['currentIndex'] !== false && $stepIndex === $timeline['currentIndex'];
+
+                    if ($isCompleted) {
+                        $circleClass = 'bg-emerald-500 text-white ring-4 ring-emerald-100';
+                    } elseif ($isCurrent) {
+                        $circleClass = 'bg-primary-600 text-white ring-4 ring-primary-200 animate-pulse';
+                    } else {
+                        $circleClass = 'bg-gray-200 text-gray-400';
+                    }
+                ?>
+
+                <div class="flex flex-1 flex-col items-center">
+                    {{-- Step Circle --}}
+                    <div class="relative z-10 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-500 {{ $circleClass }}">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $step['icon'] }}"/>
+                        </svg>
+                    </div>
+
+                    {{-- Step Label --}}
+                    <p class="mt-2 text-center text-xs font-medium {{ $isCompleted || $isCurrent ? 'text-gray-900' : 'text-gray-400' }}">
+                        {{ __('portal.status_'.$stepKey) }}
+                    </p>
+
+                    {{-- Timestamp --}}
+                    @if($isCompleted && $stepKey !== 'pending')
+                        <p class="mt-0.5 text-center text-[10px] text-gray-400">
+                            <?php
+                                $dateFields = ['accepted' => 'accepted_at', 'shipped' => 'shipped_at', 'delivered' => 'delivered_at'];
+                                $dateField = $dateFields[$stepKey] ?? null;
+                            ?>
+                            {{ $dateField && $order->$dateField ? $order->$dateField->format('Y-m-d') : '' }}
+                        </p>
+                    @endif
+
+                    {{-- Connector Line (except last) --}}
+                    @if($index < count($timeline['steps']) - 1)
+                        <div class="absolute top-5 hidden h-0.5 w-full lg:block" style="left: {{ (($index + 0.5) / count($timeline['steps'])) * 100 }}%; width: {{ (1 / count($timeline['steps'])) * 100 }}%;">
+                            <div class="h-full rounded-full {{ $isCompleted ? 'bg-emerald-500' : 'bg-gray-200' }}"></div>
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
+</x-card>
+
 <x-card :title="__('portal.product')" class="mt-6">
     <div class="table-scroll">
         <table class="table">

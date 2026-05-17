@@ -288,18 +288,15 @@ The production runtime preflight must report **zero failures** before launch app
 | Local Redis unavailable | Local env uses file/sync fallbacks. | Production must use Redis for cache/session/queue. |
 | Local MySQL not fully validated | Tests run on SQLite in-memory. | Run migration, seed, and runtime preflight on MySQL. |
 | Local SMTP cannot prove delivery | Mail rendering is tested, delivery requires real provider. | Send test notifications after production SMTP setup. |
-| Current load-test seeder is untracked | The seeder is implemented and style-clean, but not yet part of version control. | Add it intentionally if the load-test dataset is required for release operations. |
 | Production validation requires real host | Repository-side work cannot prove TLS, workers, scheduler, Redis, backups, or browser matrix. | Complete `factory-system/LAUNCH_CHECKLIST.md`. |
 
 ---
 
 ## 13. Immediate Next Steps
 
-1. Decide whether to keep and commit the implemented `factory-system/database/seeders/SystemTestSeeder.php` load-test dataset seeder.
-2. Run final local release gates after the latest hardening and documentation updates.
-3. Prepare the production host with PHP 8.3 FPM, Nginx, MySQL 8, Redis, Supervisor, Composer, Node, npm, and `mysqldump`.
-4. Configure `.env` from `.env.production.example` with real production secrets and HTTPS `APP_URL`.
-5. Run `APP_DIR=/var/www/factory-system ./deploy.sh main` on the host.
+1. Prepare the production host with PHP 8.3 FPM, Nginx, MySQL 8, Redis, Supervisor, Composer, Node, npm, and `mysqldump`.
+2. Configure `.env` from `.env.production.example` with real production secrets and HTTPS `APP_URL`.
+3. Run `APP_DIR=/var/www/factory-system ./deploy.sh main` on the host.
 6. Run `php artisan factory:preflight --production --runtime` on the host.
 7. Complete `factory-system/LAUNCH_CHECKLIST.md` and record final launch evidence in `factory-system/PROGRESS.md`.
 

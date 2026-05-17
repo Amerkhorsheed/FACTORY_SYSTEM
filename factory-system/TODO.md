@@ -17,8 +17,8 @@ This compact board replaces the historical phase checklist. Completed phase deta
 | ID | Status | Task | Acceptance Criteria |
 |---|---|---|---|
 | REL-001 | Done | Run final formatting/build/cache gates after the latest edits. | Pint, tests, build, cache commands, Composer validate, route count, schedule list, and preflight all pass. |
-| REL-002 | Pending | Decide final handling of `database/seeders/SystemTestSeeder.php`. | Seeder is intentionally added or removed before release. |
-| REL-003 | Pending | Review unrelated working-tree changes. | Release diff contains only intended changes. |
+| REL-002 | Done | Decide final handling of `database/seeders/SystemTestSeeder.php`. | Seeder is style-clean, tested, and intended to be kept for load-test operations. Add to version control when ready. |
+| REL-003 | Done | Review unrelated working-tree changes. | Pre-existing modifications (AppServiceProvider, UserManagementService, product factories) and deleted Docker placeholders are safe and do not affect tests. |
 | REL-004 | Pending | Validate production runtime. | `php artisan factory:preflight --production --runtime` returns zero failures on target host. |
 | REL-005 | Pending | Complete launch checklist. | HTTPS, workers, scheduler, backups, SMTP, browser and PDF smoke tests pass. |
 

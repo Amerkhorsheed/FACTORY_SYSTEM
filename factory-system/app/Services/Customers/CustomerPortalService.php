@@ -3,6 +3,7 @@
 namespace App\Services\Customers;
 
 use App\DTOs\Orders\CreateOrderDTO;
+use App\Events\Orders\OrderPlacedByCustomer;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
@@ -57,6 +58,53 @@ class CustomerPortalService extends BaseService
     public function availableProducts(): Collection
     {
         return $this->portal->availableProducts();
+    }
+
+    public function getProductById(int $id): ?Product
+    {
+        return Product::active()->where('id', $id)->first();
+    }
+
+    /**
+     * Create an order from a validated cart array.
+     *
+     * @param  array<string, mixed>  $data
+     *
+     * @throws ValidationException
+     */
+    public function createOrderFromCart(Customer $customer, array $data, User $actor): Order
+    {
+        $items = collect($data['items'] ?? []);
+        $totalAmount = $items->sum(fn ($item) => $item['unit_price'] * $item['quantity']);
+
+        if (! $customer->canAcceptOrder($totalAmount)) {
+            throw ValidationException::withMessages([
+                'cart' => __('portal.insufficient_credit'),
+            ]);
+        }
+
+        return $this->transaction(function () use ($customer, $data, $actor, $items) {
+            $preparedItems = $items->map(fn ($item) => [
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'discount_percent' => 0,
+                'notes' => $item['notes'] ?? null,
+            ])->all();
+
+            $order = $this->orders->create(CreateOrderDTO::fromArray([
+                'customer_id' => $customer->id,
+                'order_date' => today()->toDateString(),
+                'requested_delivery_date' => $data['requested_delivery_date'] ?? null,
+                'notes' => $data['notes'] ?? null,
+                'created_by' => $actor->id,
+                'items' => $preparedItems,
+            ]));
+
+            OrderPlacedByCustomer::dispatch($order);
+
+            return $order;
+        });
     }
 
     /** @param array<string, mixed> $data */

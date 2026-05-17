@@ -6,10 +6,12 @@ use App\Events\InvoiceIssued;
 use App\Events\Orders\OrderAccepted;
 use App\Events\Orders\OrderCancelled;
 use App\Events\Orders\OrderDelivered;
+use App\Events\Orders\OrderPlacedByCustomer;
 use App\Events\Orders\OrderShipped;
 use App\Events\PaymentReceived;
 use App\Events\Stock\LowStockDetected;
 use App\Listeners\CreateInvoiceOnOrderAccepted;
+use App\Listeners\NotifyAdminsOfNewPortalOrder;
 use App\Listeners\NotifyCustomerOnInvoiceIssued;
 use App\Listeners\NotifyCustomerOnOrderStatusChange;
 use App\Listeners\NotifyCustomerOnPaymentReceived;
@@ -54,6 +56,10 @@ class EventServiceProvider extends ServiceProvider
 
         OrderDelivered::class => [
             NotifyCustomerOnOrderStatusChange::class,
+        ],
+
+        OrderPlacedByCustomer::class => [
+            NotifyAdminsOfNewPortalOrder::class,
         ],
 
         // ─── Invoice Domain ─────────────────────────────────────

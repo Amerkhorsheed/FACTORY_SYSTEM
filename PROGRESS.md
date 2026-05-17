@@ -68,6 +68,8 @@
 | 024 | 2026-05-17 | Added production Nginx site template and preflight coverage. | Deployment tests |
 | 025 | 2026-05-17 | Synced root TASKS, implemented load-test seeder cleanup, restored Pint gate. | Pint passed, 171 tests passed |
 | 026 | 2026-05-17 | Hardened payment ownership, order updates, shipment delivery, money percentages, backup execution, and preflight checks. | 180 tests passed |
+| 027 | 2026-05-17 | Compacted root DECISIONS.md and SKILLS.md under 400-line limit; finalized local release gates and worktree review. | All gates passed |
+| 028 | 2026-05-18 | Implemented Customer Portal v2.0: interactive Livewire cart, real-time credit validation, visual order timeline, admin notifications, and 8 new tests. | 188 tests passed |
 
 ---
 
@@ -98,6 +100,37 @@
 
 ---
 
+## Completed In Session 027
+
+| File Area | Change |
+|---|---|
+| `DECISIONS.md` | Compacted from 654 to 123 lines; removed verbose context, code blocks, and alternatives tables while preserving all 16 ADRs. |
+| `SKILLS.md` | Compacted from 494 to 106 lines; removed ASCII diagrams and detailed code examples while preserving pattern index, SOLID mapping, and exception registry. |
+| Local release gates | Re-ran Pint, full tests, npm build, cache commands, Composer validate, route count, schedule list, and preflight — all passed. |
+| Worktree review | Unrelated changes (deleted Docker placeholders, pre-existing factory/provider edits) confirmed safe. `SystemTestSeeder.php` decision: keep for load-test operations. |
+
+---
+
+## Completed In Session 028
+
+| File Area | Change |
+|---|---|
+| `implementation_plan.md` | Wrote enterprise-grade Customer Portal v2.0 plan (387 lines) covering architecture, UI/UX, security, testing, and risk assessment. |
+| `app/Livewire/Portal/OrderCart.php` | Created interactive Livewire cart component with multi-item support, real-time totals, credit validation, and stock checks. |
+| `resources/views/livewire/portal/order-cart.blade.php` | Built premium two-panel UI: product grid with search/filter, sticky cart with credit meter, quantity steppers, and mobile responsive design. |
+| `app/Services/Customers/CustomerPortalService.php` | Added `getProductById()` and `createOrderFromCart()` with credit validation and event dispatching. |
+| `app/Events/Orders/OrderPlacedByCustomer.php` | New event fired when customers place orders via the portal. |
+| `app/Listeners/NotifyAdminsOfNewPortalOrder.php` | Notifies super_admin and accountant users of new portal orders. |
+| `app/Notifications/AdminNewPortalOrderNotification.php` | Database + mail notification for admin alert on portal orders. |
+| `app/Models/User.php` | Added `scopeActive()` for consistent active user filtering. |
+| `resources/views/portal/orders/show.blade.php` | Added visual timeline component showing order lifecycle (Pending → Accepted → Preparing → Shipped → Delivered) with status badges and timestamps. |
+| `app/Http/Controllers/Customers/CustomerPortalController.php` | Updated `showOrder()` to build timeline data; `createOrder()` now renders Livewire component. |
+| `lang/ar/portal.php` | Added 20+ new Arabic translations for cart, credit, tracking, and notifications. |
+| `lang/ar/notifications.php` | Added `portal_order` notification translations. |
+| `tests/Feature/PortalOrderCartTest.php` | 8 focused tests covering catalog display, cart operations, credit blocking, stock blocking, multi-item checkout, search filter, removal, and quantity increment. |
+
+---
+
 ## Known Constraints
 
 | Constraint | Impact | Resolution |
@@ -112,11 +145,8 @@
 
 ## Next Steps
 
-1. Run the final formatting, frontend build, cache, and preflight gates after documentation sync.
-2. Decide whether to keep and commit `factory-system/database/seeders/SystemTestSeeder.php`.
-3. Resolve or confirm the current unrelated working-tree changes before release sign-off.
-4. Provision PHP 8.3 FPM, Nginx, MySQL 8, Redis, Supervisor, Composer, Node, npm, and `mysqldump` on the target host.
-5. Configure production `.env` from `.env.production.example`.
-6. Run `APP_DIR=/var/www/factory-system ./deploy.sh main`.
-7. Run `php artisan factory:preflight --production --runtime` on the host.
-8. Complete `factory-system/LAUNCH_CHECKLIST.md`.
+1. Provision PHP 8.3 FPM, Nginx, MySQL 8, Redis, Supervisor, Composer, Node, npm, and `mysqldump` on the target host.
+2. Configure production `.env` from `.env.production.example`.
+3. Run `APP_DIR=/var/www/factory-system ./deploy.sh main`.
+4. Run `php artisan factory:preflight --production --runtime` on the host.
+5. Complete `factory-system/LAUNCH_CHECKLIST.md`.

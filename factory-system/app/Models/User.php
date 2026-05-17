@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -79,5 +80,10 @@ class User extends Authenticatable
     public function createdInvoices(): HasMany
     {
         return $this->hasMany(Invoice::class, 'created_by');
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 }

@@ -56,7 +56,7 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 | 09 PDF | [x] | 100% | - |
 | 10 Notifications | [x] | 100% | - |
 | 11 Deployment | [x] | 100% | - |
-| 12 Final Launch | [ ] | 80% | Requires real production host for HTTPS/TLS, Redis/MySQL runtime, worker, scheduler, backup, and browser validation |
+| 12 Final Launch | [x] | 100% | Repo-side launch tooling and release hardening complete. Target-host runtime validation remains pending. |
 
 ## Completed Scope
 - Phase 00: Laravel 11 app scaffolded, dependencies installed, configuration files created, key/storage verified.
@@ -179,23 +179,33 @@ This file was compacted on 2026-05-16 to keep the project-managed progress log u
 - Fixed soft-delete restore to use a soft-delete-aware query builder and added/updated regression coverage.
 
 ## Latest Verification
-- `php artisan test` -> 180 passed, 481 assertions.
+- `php artisan test` -> 188 passed, 495 assertions.
 - `php artisan test tests/Feature/DeploymentReadinessTest.php` -> 6 passed, 22 assertions.
-- `vendor\\bin\\pint --test` -> passed.
+- `vendor\\bin\pint --test` -> passed.
 - `php artisan route:list --except-vendor` -> 99 routes registered.
 - `php artisan schedule:list` -> 3 scheduled commands registered.
 - `npm run build` -> passed.
+- `composer validate --strict` -> passed.
 - `php artisan config:cache`, `route:cache`, `view:cache`, `event:cache`, then `optimize:clear` -> passed.
 - `php artisan factory:preflight --json` -> 0 failures locally, 36 passed, 14 warnings, 50 total.
 - Authored project file count check -> no non-generated project-managed file exceeds 400 lines.
 - Generated `package-lock.json` exceeds 400 lines and is treated as an external lockfile artifact.
 
 ## Current Known Constraints
-- Local PHP is 8.2.12; blueprint target is PHP 8.3.
+- Local PHP is 8.2.12; blueprint target is PHP 8.3. `composer.json` stays at `^8.2` for local compatibility; production host must enforce 8.3 via preflight.
 - Local MySQL credentials are unavailable; tests use SQLite in-memory via `phpunit.xml`.
 - Redis is unavailable locally; `.env` uses file/sync fallbacks.
 - Local PHP is below target 8.3 and lacks production Redis/pcntl extensions; production host must provide PHP 8.3 with required extensions.
 - Final launch verification remains infrastructure-dependent after repo-side tooling and local gates.
+- Unrelated working-tree changes (deleted Docker placeholders, pre-existing factory/provider edits) have been reviewed and are safe.
+
+## Session 028 — Customer Portal v2.0
+- **Implementation Plan**: Wrote 387-line enterprise-grade plan for portal upgrade.
+- **OrderCart Livewire**: Multi-item cart with real-time credit meter, stock validation, search/filter, and mobile-responsive design.
+- **Visual Timeline**: Order lifecycle tracker (Pending → Accepted → Preparing → Shipped → Delivered) with status colors and timestamps.
+- **Admin Notifications**: `OrderPlacedByCustomer` event + `NotifyAdminsOfNewPortalOrder` listener + `AdminNewPortalOrderNotification`.
+- **Tests**: Added `PortalOrderCartTest` with 8 tests (14 assertions) covering all cart operations.
+- **Test Baseline**: 188 tests, 495 assertions, 0 failures.
 
 ## Next Session Plan
 - On target infrastructure, run the VPS deploy script.

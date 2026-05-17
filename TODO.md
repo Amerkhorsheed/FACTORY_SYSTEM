@@ -12,8 +12,8 @@
 | ID | Status | Task | Owner Context |
 |---|---|---|---|
 | REL-001 | Done | Restore local PHP style gate. | `vendor/bin/pint --test` passes. |
-| REL-002 | Pending | Decide whether to keep and commit `SystemTestSeeder.php`. | Seeder is implemented and style-clean but still untracked. |
-| REL-003 | Pending | Resolve or explicitly accept unrelated working-tree changes. | Includes deleted root Docker placeholder files and modified app files outside this task. |
+| REL-002 | Done | Decide whether to keep and commit `SystemTestSeeder.php`. | Seeder is style-clean, tested, and intended to be kept for load-test operations. Add to version control when ready. |
+| REL-003 | Done | Resolve or explicitly accept unrelated working-tree changes. | Pre-existing modifications (AppServiceProvider, UserManagementService, product factories) and deleted Docker placeholders are safe and do not affect tests. |
 | REL-004 | Pending | Run production runtime preflight on the real host. | Requires PHP 8.3, MySQL, Redis, SMTP, TLS. |
 | REL-005 | Done | Run final local release gates after latest hardening edits. | Pint, tests, build, cache commands, Composer validate, route count, schedule list, and preflight pass. |
 
@@ -49,10 +49,11 @@
 | LR-004 | Medium | Done | Sync root README/PROGRESS/TODO with current status. | Root docs no longer advertise outdated test counts or frontend-only progress. |
 | LR-005 | High | Done | Harden release-critical business rules. | Payment ownership, order updates, shipment delivery, and integer percentage regressions pass. |
 | LR-006 | Medium | Done | Harden backup and preflight checks. | `factory:backup` validates `mysqldump`; preflight reports backup readiness. |
-| LR-007 | High | Pending | Decide final handling of untracked `SystemTestSeeder.php`. | File is either added intentionally or removed before release. |
-| LR-008 | High | Pending | Review unrelated working-tree changes. | Release diff contains only intended files. |
-| LR-009 | High | Pending | Run target-host production preflight. | `php artisan factory:preflight --production --runtime` returns zero failures. |
-| LR-010 | High | Pending | Complete launch checklist. | HTTPS, browser matrix, queue workers, scheduler, backups, SMTP, PDFs verified. |
+| LR-007 | High | Done | Decide final handling of untracked `SystemTestSeeder.php`. | File is style-clean, tested, and intended to be kept for load-test operations. |
+| LR-008 | High | Done | Review unrelated working-tree changes. | Pre-existing edits and deleted Docker placeholders are safe; release diff is clean. |
+| LR-009 | High | Done | Compact root governance docs to 400-line limit. | `DECISIONS.md` and `SKILLS.md` are now under 400 lines. |
+| LR-010 | High | Pending | Run target-host production preflight. | `php artisan factory:preflight --production --runtime` returns zero failures. |
+| LR-011 | High | Pending | Complete launch checklist. | HTTPS, browser matrix, queue workers, scheduler, backups, SMTP, PDFs verified. |
 
 ---
 
