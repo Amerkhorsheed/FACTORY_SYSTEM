@@ -31,7 +31,7 @@
     <div class="title">بيان الشحنة {{ $shipment->shipment_number ?? '' }}</div>
 
     <table class="meta">
-        <tr><td class="meta-label">رقم الشحنة:</td><td>{{ $shipment->shipment_number }}</td><td class="meta-label">تاريخ الإرسال:</td><td>{{ $shipment->dispatch_date?->format('Y-m-d') ?? '—' }}</td></tr>
+        <tr><td class="meta-label">رقم الشحنة:</td><td>{{ $shipment->shipment_number }}</td><td class="meta-label">تاريخ الإرسال:</td><td>{{ $shipment->shipment_date?->format('Y-m-d') ?? '—' }}</td></tr>
         <tr><td class="meta-label">الشاحنة:</td><td>{{ $shipment->truck?->plate_number ?? '—' }}</td><td class="meta-label">السائق:</td><td>{{ $shipment->driver?->name ?? '—' }}</td></tr>
         <tr><td class="meta-label">الحالة:</td><td>{{ config("factory.shipment_statuses.{$shipment->status}", $shipment->status) }}</td><td class="meta-label">ملاحظات:</td><td>{{ $shipment->notes ?? '—' }}</td></tr>
     </table>

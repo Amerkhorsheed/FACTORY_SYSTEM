@@ -9,10 +9,8 @@ use App\Events\Orders\OrderShipped;
 use App\Events\PaymentReceived;
 use App\Events\Stock\LowStockDetected;
 use App\Listeners\CreateInvoiceOnOrderAccepted;
-use App\Listeners\DeductStockOnOrderAccepted;
 use App\Listeners\NotifyCustomerOnOrderStatusChange;
 use App\Listeners\NotifyCustomerOnPaymentReceived;
-use App\Listeners\ReturnStockOnOrderCancelled;
 use App\Listeners\SendLowStockAlert;
 use App\Listeners\UpdateCustomerBalanceOnInvoiceIssued;
 use App\Models\Invoice;
@@ -40,13 +38,11 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         // ─── Order Domain ───────────────────────────────────────
         OrderAccepted::class => [
-            DeductStockOnOrderAccepted::class,
             CreateInvoiceOnOrderAccepted::class,
             NotifyCustomerOnOrderStatusChange::class,
         ],
 
         OrderCancelled::class => [
-            ReturnStockOnOrderCancelled::class,
             NotifyCustomerOnOrderStatusChange::class,
         ],
 

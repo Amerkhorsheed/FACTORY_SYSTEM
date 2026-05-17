@@ -63,7 +63,7 @@ class PdfService implements PdfServiceInterface
             ->whereBetween('issue_date', [$from, $to])
             ->whereNotIn('status', ['void'])
             ->get()
-            ->map(fn($inv) => [
+            ->map(fn ($inv) => [
                 'date' => $inv->issue_date?->format('Y-m-d'),
                 'type' => 'فاتورة مبيعات',
                 'reference' => $inv->invoice_number,
@@ -77,7 +77,7 @@ class PdfService implements PdfServiceInterface
             ->pluck('payments')
             ->flatten()
             ->whereBetween('payment_date', [$from, $to])
-            ->map(fn($pay) => [
+            ->map(fn ($pay) => [
                 'date' => $pay->payment_date->format('Y-m-d'),
                 'type' => 'دفعة مستلمة',
                 'reference' => $pay->transaction_id,
@@ -107,7 +107,7 @@ class PdfService implements PdfServiceInterface
     /**
      * Stream a dynamically generated PDF to the browser.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function stream(string $view, array $data, string $filename = 'document.pdf'): Response
     {

@@ -269,7 +269,7 @@
 - [x] Add frontend/portal feature tests
 - [x] Replace remaining module placeholder Blade pages with shared layout patterns
 - [x] Add richer responsive CRUD screens for inventory, customers, orders, shipments, invoices, payments, expenses, and reports
-- [ ] Optional polish: upgrade auth login and welcome pages to the final visual standard
+- [x] Optional polish: upgrade auth login and welcome pages to the final visual standard
 - [ ] Keep PDF-specific Blade output for Phase 09 production PDF work
 
 ## DONE
@@ -294,3 +294,4 @@
 - [x] Phase 07 Module 06 payments and ERP completed
 - [x] Phase 07 Module 07 admin completed
 - [x] Phase 08 frontend foundation and module view replacement completed
+- [x] Phase 08 auth/welcome public frontend polish completed

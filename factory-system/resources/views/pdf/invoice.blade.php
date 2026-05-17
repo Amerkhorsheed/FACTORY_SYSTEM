@@ -73,7 +73,7 @@
                 <td>{{ $item->product?->name ?? '—' }}</td>
                 <td>{{ number_format($item->quantity) }}</td>
                 <td>{{ number_format($item->unit_price) }} ل.س</td>
-                <td>{{ number_format($item->total_price) }} ل.س</td>
+                <td>{{ number_format($item->line_total) }} ل.س</td>
             </tr>
             @endforeach
         </tbody>
