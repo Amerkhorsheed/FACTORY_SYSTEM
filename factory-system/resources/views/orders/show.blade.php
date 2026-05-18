@@ -30,7 +30,7 @@
 
     <x-card :title="__('ui.modules.invoices')">
         @if($order->invoice)
-            <a class="font-bold text-brand-700" href="{{ route('invoices.show', $order->invoice) }}">{{ $order->invoice->invoice_number }}</a>
+            <a class="action-link" href="{{ route('invoices.show', $order->invoice) }}" aria-label="{{ __('ui.actions.show') }} {{ $order->invoice->invoice_number }}">{{ $order->invoice->invoice_number }}</a>
             <p class="mt-2"><x-status-badge :status="$order->invoice->status" /></p>
             <p class="mt-2 text-sm font-bold tabular-nums">{{ $money($order->invoice->balance_due) }}</p>
         @else

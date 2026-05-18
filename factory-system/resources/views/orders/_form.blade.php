@@ -12,7 +12,7 @@
 <x-card x-data="{ items: @js($initialItems) }">
     <div class="grid gap-4 md:grid-cols-3">
         <x-form-select name="customer_id" :label="__('ui.fields.customer')" required data-tom-select>
-            <option value="">{{ __('ui.actions.search') }}</option>
+            <option value="">{{ __('ui.labels.choose') }}</option>
             @foreach($customers as $customer)
                 <option value="{{ $customer->id }}" @selected((int) old('customer_id', $order->customer_id ?? 0) === $customer->id)>{{ $customer->code }} - {{ $customer->name }}</option>
             @endforeach
@@ -32,7 +32,7 @@
                 <div>
                     <label class="form-label">{{ __('portal.product') }} <span class="text-red-600">*</span></label>
                     <select class="form-input" :name="`items[${index}][product_id]`" x-model="item.product_id" required>
-                        <option value="">{{ __('ui.actions.search') }}</option>
+                        <option value="">{{ __('ui.labels.choose') }}</option>
                         @foreach($products as $product)
                             <option value="{{ $product->id }}">{{ $product->code }} - {{ $product->name }} ({{ $product->stock_quantity }})</option>
                         @endforeach

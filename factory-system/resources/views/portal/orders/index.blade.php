@@ -11,15 +11,25 @@
 <div class="table-wrapper">
     <div class="table-scroll">
         <table class="table">
-            <thead><tr><th>{{ __('portal.order_number') }}</th><th>{{ __('portal.order_date') }}</th><th>{{ __('portal.status') }}</th><th>{{ __('portal.total') }}</th><th></th></tr></thead>
+            <thead>
+                <tr>
+                    <th scope="col">{{ __('portal.order_number') }}</th>
+                    <th scope="col">{{ __('portal.order_date') }}</th>
+                    <th scope="col">{{ __('portal.status') }}</th>
+                    <th scope="col">{{ __('portal.total') }}</th>
+                    <th scope="col" class="table-actions">{{ __('ui.labels.actions') }}</th>
+                </tr>
+            </thead>
             <tbody>
             @forelse($orders as $order)
                 <tr>
-                    <td class="font-bold">{{ $order->order_number }}</td>
+                    <td class="font-bold text-slate-900">{{ $order->order_number }}</td>
                     <td>{{ $order->order_date?->format('Y-m-d') }}</td>
                     <td><x-status-badge :status="$order->status" /></td>
                     <td class="font-bold tabular-nums">{{ $money($order->total_amount) }}</td>
-                    <td><a class="text-sm font-bold text-brand-700" href="{{ route('portal.orders.show', $order) }}">{{ __('ui.actions.show') }}</a></td>
+                    <td class="table-actions">
+                        <a class="action-link" href="{{ route('portal.orders.show', $order) }}" aria-label="{{ __('ui.actions.show') }} {{ $order->order_number }}">{{ __('ui.actions.show') }}</a>
+                    </td>
                 </tr>
             @empty
                 <tr><td colspan="5"><x-empty-state /></td></tr>

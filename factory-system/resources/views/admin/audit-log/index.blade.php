@@ -6,29 +6,39 @@
 <x-page-header :title="__('admin.audit_log')" />
 
 <x-card>
-    <form method="GET" action="{{ route('admin.audit-log.index') }}" class="mb-5 grid gap-3 md:grid-cols-4">
-        <x-form-select name="log_name" label="Log">
-            <option value="">{{ __('ui.actions.search') }}</option>
+    <x-filter-panel :action="route('admin.audit-log.index')" :reset="route('admin.audit-log.index')">
+        <x-form-select name="log_name" :label="__('admin.log')">
+            <option value="">{{ __('ui.labels.all') }}</option>
             @foreach($logNames as $logName)
                 <option value="{{ $logName }}" @selected(request('log_name') === $logName)>{{ $logName }}</option>
             @endforeach
         </x-form-select>
-        <x-form-select name="event" label="Event">
-            <option value="">{{ __('ui.actions.search') }}</option>
+        <x-form-select name="event" :label="__('admin.event')">
+            <option value="">{{ __('ui.labels.all') }}</option>
             @foreach($events as $event)
                 <option value="{{ $event }}" @selected(request('event') === $event)>{{ $event }}</option>
             @endforeach
         </x-form-select>
-        <div class="flex items-end"><x-btn type="submit">{{ __('ui.actions.search') }}</x-btn></div>
-    </form>
+    </x-filter-panel>
 
     <div class="table-scroll"><table class="table">
-        <thead><tr><th>ID</th><th>Log</th><th>Event</th><th>Description</th><th>Date</th></tr></thead>
+        <thead>
+            <tr>
+                <th scope="col">{{ __('admin.id') }}</th>
+                <th scope="col">{{ __('admin.log') }}</th>
+                <th scope="col">{{ __('admin.event') }}</th>
+                <th scope="col">{{ __('admin.description') }}</th>
+                <th scope="col">{{ __('admin.date') }}</th>
+            </tr>
+        </thead>
         <tbody>
         @forelse($logs as $log)
             <tr>
-                <td><a class="font-bold text-brand-700" href="{{ route('admin.audit-log.show', $log) }}">{{ $log->id }}</a></td>
-                <td>{{ $log->log_name }}</td><td>{{ $log->event }}</td><td>{{ $log->description }}</td><td>{{ $log->created_at }}</td>
+                <td><a class="action-link" href="{{ route('admin.audit-log.show', $log) }}" aria-label="{{ __('ui.actions.show') }} {{ $log->id }}">{{ $log->id }}</a></td>
+                <td>{{ $log->log_name }}</td>
+                <td>{{ $log->event }}</td>
+                <td>{{ $log->description }}</td>
+                <td>{{ $log->created_at }}</td>
             </tr>
         @empty
             <tr><td colspan="5"><x-empty-state /></td></tr>

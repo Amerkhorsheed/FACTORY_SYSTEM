@@ -25,7 +25,7 @@
 <x-card :title="__('invoices.payments')" class="mt-6">
     @forelse($invoice->payments as $payment)
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 py-3 last:border-0">
-            <a href="{{ route('payments.show', $payment) }}" class="font-bold text-brand-700">{{ $payment->payment_number }}</a>
+            <a href="{{ route('payments.show', $payment) }}" class="action-link" aria-label="{{ __('ui.actions.show') }} {{ $payment->payment_number }}">{{ $payment->payment_number }}</a>
             <span class="tabular-nums">{{ $money($payment->amount) }}</span>
             @can('deletePayment', $invoice)
                 <form method="POST" action="{{ route('invoices.payments.destroy', [$invoice, $payment]) }}">

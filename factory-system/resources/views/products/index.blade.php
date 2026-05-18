@@ -15,27 +15,38 @@
 </div>
 
 <x-card>
-    <form method="GET" action="{{ route('products.index') }}" class="mb-5 grid gap-3 md:grid-cols-4">
-        <x-form-input name="search" :label="__('ui.actions.search')" :value="request('search')" />
+    <x-filter-panel :action="route('products.index')" :reset="route('products.index')">
+        <x-form-input name="search" :label="__('ui.actions.search')" :value="request('search')" placeholder="{{ __('ui.fields.name') }} / {{ __('ui.fields.code') }}" />
         <x-form-select name="category_id" :label="__('ui.fields.category')">
-            <option value="">{{ __('ui.actions.search') }}</option>
+            <option value="">{{ __('ui.labels.all') }}</option>
             @foreach($categories as $category)
                 <option value="{{ $category->id }}" @selected((string) request('category_id') === (string) $category->id)>{{ $category->name }}</option>
             @endforeach
         </x-form-select>
-        <div class="flex items-end"><x-btn type="submit">{{ __('ui.actions.search') }}</x-btn></div>
-    </form>
+    </x-filter-panel>
+
     <div class="table-scroll"><table class="table">
-        <thead><tr><th>{{ __('ui.fields.code') }}</th><th>{{ __('ui.fields.name') }}</th><th>{{ __('ui.fields.category') }}</th><th>{{ __('ui.fields.quantity') }}</th><th>{{ __('ui.fields.unit_price') }}</th><th></th></tr></thead>
+        <thead>
+            <tr>
+                <th scope="col">{{ __('ui.fields.code') }}</th>
+                <th scope="col">{{ __('ui.fields.name') }}</th>
+                <th scope="col">{{ __('ui.fields.category') }}</th>
+                <th scope="col">{{ __('ui.fields.quantity') }}</th>
+                <th scope="col">{{ __('ui.fields.unit_price') }}</th>
+                <th scope="col" class="table-actions">{{ __('ui.labels.actions') }}</th>
+            </tr>
+        </thead>
         <tbody>
         @forelse($products as $product)
             <tr>
                 <td class="font-mono text-xs">{{ $product->code }}</td>
-                <td class="font-bold">{{ $product->name }}</td>
+                <td class="font-bold text-slate-900">{{ $product->name }}</td>
                 <td>{{ $product->category?->name }}</td>
                 <td class="font-bold tabular-nums">{{ $product->stock_quantity }} {{ $product->unit }}</td>
                 <td class="tabular-nums">{{ $money($product->unit_price) }}</td>
-                <td><a href="{{ route('products.show', $product) }}" class="font-bold text-brand-700">{{ __('ui.actions.show') }}</a></td>
+                <td class="table-actions">
+                    <a href="{{ route('products.show', $product) }}" class="action-link" aria-label="{{ __('ui.actions.show') }} {{ $product->name }}">{{ __('ui.actions.show') }}</a>
+                </td>
             </tr>
         @empty
             <tr><td colspan="6"><x-empty-state /></td></tr>

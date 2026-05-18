@@ -44,11 +44,19 @@
 
 <x-card :title="__('shipments.orders')" class="mt-6">
     <div class="table-scroll"><table class="table">
-        <thead><tr><th>{{ __('portal.order_number') }}</th><th>{{ __('ui.fields.customer') }}</th><th>{{ __('ui.fields.status') }}</th><th>{{ __('ui.fields.total') }}</th><th></th></tr></thead>
+        <thead>
+            <tr>
+                <th scope="col">{{ __('portal.order_number') }}</th>
+                <th scope="col">{{ __('ui.fields.customer') }}</th>
+                <th scope="col">{{ __('ui.fields.status') }}</th>
+                <th scope="col">{{ __('ui.fields.total') }}</th>
+                <th scope="col" class="table-actions">{{ __('ui.labels.actions') }}</th>
+            </tr>
+        </thead>
         <tbody>
         @forelse($shipment->orders as $order)
             <tr>
-                <td><a class="font-bold text-brand-700" href="{{ route('orders.show', $order) }}">{{ $order->order_number }}</a></td>
+                <td><a class="action-link" href="{{ route('orders.show', $order) }}" aria-label="{{ __('ui.actions.show') }} {{ $order->order_number }}">{{ $order->order_number }}</a></td>
                 <td>{{ $order->customer?->name }}</td>
                 <td><x-status-badge :status="$order->status" /></td>
                 <td>{{ $money($order->total_amount) }}</td>
