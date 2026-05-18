@@ -19,7 +19,11 @@ class ShipmentStatusController extends Controller
     {
         $this->authorize('cancel', $shipment);
 
-        $reason = $request->input('reason');
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:500'],
+        ]);
+
+        $reason = $validated['reason'];
         $this->shipmentService->cancel($shipment, $reason);
 
         return back()->with('success', __('shipments.cancelled'));

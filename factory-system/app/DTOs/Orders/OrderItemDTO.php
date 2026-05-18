@@ -25,7 +25,7 @@ final class OrderItemDTO
         return new self(
             productId: (int) $data['product_id'],
             quantity: (int) $data['quantity'],
-            unitPrice: (int) $data['unit_price'],
+            unitPrice: (int) ($data['unit_price'] ?? 0),
             discountBasisPoints: self::parseDiscountBasisPoints($data['discount_percent'] ?? 0),
             notes: $data['notes'] ?? null,
         );

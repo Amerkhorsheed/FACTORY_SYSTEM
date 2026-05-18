@@ -46,6 +46,7 @@ class Order extends Model
         'shipped_by',
         'shipped_at',
         'delivered_at',
+        'delivered_by',
         'created_by',
     ];
 
@@ -95,6 +96,11 @@ class Order extends Model
     public function shippedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'shipped_by');
+    }
+
+    public function deliveredByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'delivered_by');
     }
 
     public function createdByUser(): BelongsTo

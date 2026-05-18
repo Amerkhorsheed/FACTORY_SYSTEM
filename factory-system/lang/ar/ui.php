@@ -5,6 +5,7 @@ return [
         'back' => 'رجوع',
         'cancel' => 'إلغاء',
         'create' => 'إضافة',
+        'delete' => 'حذف',
         'download' => 'تنزيل',
         'edit' => 'تعديل',
         'menu' => 'القائمة',

@@ -32,13 +32,13 @@ class CalculateOrderTotalsPipe
             );
         });
 
-        return new CreateOrderDTO(
+        return $next(new CreateOrderDTO(
             customerId: $dto->customerId,
             orderDate: $dto->orderDate,
             items: $enrichedItems,
             requestedDeliveryDate: $dto->requestedDeliveryDate,
             notes: $dto->notes,
             createdBy: $dto->createdBy,
-        );
+        ));
     }
 }

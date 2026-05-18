@@ -30,9 +30,26 @@ class StockService extends BaseService
      */
     public function moveStock(Product $product, string $type, int $quantity, array $meta = []): StockMovement
     {
+        if ($quantity <= 0) {
+            throw new \InvalidArgumentException('Stock movement quantity must be greater than zero.');
+        }
+
         return $this->transaction(function () use ($product, $type, $quantity, $meta) {
+            $product = Product::query()
+                ->whereKey($product->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
             $before = $product->stock_quantity;
             $after = $this->calculateNewStock($before, $type, $quantity);
+
+            if ($after < 0) {
+                throw new InsufficientStockException(__('orders.insufficient_stock', [
+                    'product' => $product->name,
+                    'available' => $before,
+                    'requested' => $quantity,
+                ]));
+            }
 
             $movement = $this->movements->create([
                 'product_id' => $product->id,
@@ -60,11 +77,34 @@ class StockService extends BaseService
      */
     public function adjustStock(Product $product, int $newQuantity, string $reason): StockMovement
     {
-        $diff = $newQuantity - $product->stock_quantity;
+        if ($newQuantity < 0) {
+            throw new \InvalidArgumentException('Stock quantity cannot be negative.');
+        }
 
-        return $this->moveStock($product, 'adjustment', $diff, [
-            'notes' => $reason,
-        ]);
+        return $this->transaction(function () use ($product, $newQuantity, $reason) {
+            $product = Product::query()
+                ->whereKey($product->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $before = $product->stock_quantity;
+            $quantity = abs($newQuantity - $before);
+
+            $movement = $this->movements->create([
+                'product_id' => $product->id,
+                'type' => 'adjustment',
+                'quantity' => $quantity,
+                'quantity_before' => $before,
+                'quantity_after' => $newQuantity,
+                'notes' => $reason,
+                'created_by' => Auth::id(),
+            ]);
+
+            $product->update(['stock_quantity' => $newQuantity]);
+            $this->checkLowStockThreshold($product, $before, $newQuantity);
+
+            return $movement;
+        });
     }
 
     public function getLowStockProducts(): Collection

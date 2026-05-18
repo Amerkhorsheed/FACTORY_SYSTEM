@@ -5,7 +5,9 @@
 @section('content')
 @php($money = fn ($amount) => number_format((int) $amount).' '.__('ui.currency.syp'))
 <x-page-header :title="__('ui.modules.customers')" :description="__('customers.customers_description')">
-    <x-btn :href="route('customers.create')">{{ __('ui.actions.create') }}</x-btn>
+    @can('create', App\Models\Customer::class)
+        <x-btn :href="route('customers.create')">{{ __('ui.actions.create') }}</x-btn>
+    @endcan
 </x-page-header>
 <div class="mb-5 grid gap-4 md:grid-cols-3">
     <x-metric-card :label="__('portal.total_orders')" :value="$kpis['total'] ?? 0" />

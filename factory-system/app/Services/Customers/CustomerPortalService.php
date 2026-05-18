@@ -3,6 +3,7 @@
 namespace App\Services\Customers;
 
 use App\DTOs\Orders\CreateOrderDTO;
+use App\DTOs\Orders\OrderItemDTO;
 use App\Events\Orders\OrderPlacedByCustomer;
 use App\Models\Customer;
 use App\Models\Invoice;
@@ -11,6 +12,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Repositories\CustomerPortalRepository;
 use App\Services\BaseService;
+use App\Services\Orders\OrderFinancialsService;
 use App\Services\Orders\OrderService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,6 +23,7 @@ class CustomerPortalService extends BaseService
     public function __construct(
         private readonly CustomerPortalRepository $portal,
         private readonly OrderService $orders,
+        private readonly OrderFinancialsService $financials,
     ) {}
 
     public function customerForUser(User $user): Customer
@@ -84,12 +87,14 @@ class CustomerPortalService extends BaseService
         $items = collect($data['items'] ?? []);
         $productIds = $items->pluck('product_id')->map(fn ($id) => (int) $id)->all();
         $products = $this->portal->productsByIds($productIds);
+        $requestedQuantities = $items
+            ->groupBy(fn (array $item) => (int) $item['product_id'])
+            ->map(fn ($group) => $group->sum(fn (array $item) => (int) ($item['quantity'] ?? 1)));
 
         $preparedItems = [];
-        $totalAmount = 0;
 
-        foreach ($items as $item) {
-            $product = $products->get((int) $item['product_id']);
+        foreach ($requestedQuantities as $productId => $quantity) {
+            $product = $products->get((int) $productId);
 
             if (! $product) {
                 throw ValidationException::withMessages([
@@ -97,16 +102,18 @@ class CustomerPortalService extends BaseService
                 ]);
             }
 
-            $quantity = (int) ($item['quantity'] ?? 1);
-
             if ($product->stock_quantity < $quantity) {
                 throw ValidationException::withMessages([
                     'items' => __('portal.insufficient_stock', ['product' => $product->name]),
                 ]);
             }
+        }
 
+        foreach ($items as $item) {
+            $product = $products->get((int) $item['product_id']);
+
+            $quantity = (int) ($item['quantity'] ?? 1);
             $unitPrice = $product->unit_price;
-            $totalAmount += $unitPrice * $quantity;
 
             $preparedItems[] = [
                 'product_id' => $product->id,
@@ -116,6 +123,10 @@ class CustomerPortalService extends BaseService
                 'notes' => $item['notes'] ?? null,
             ];
         }
+
+        $totalAmount = $this->financials->calculateOrderValue(
+            collect($preparedItems)->map(fn (array $item) => OrderItemDTO::fromArray($item))
+        );
 
         if (! $customer->canAcceptOrder($totalAmount)) {
             throw ValidationException::withMessages([

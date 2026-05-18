@@ -53,7 +53,7 @@
                     if ($isCompleted) {
                         $circleClass = 'bg-emerald-500 text-white ring-4 ring-emerald-100';
                     } elseif ($isCurrent) {
-                        $circleClass = 'bg-primary-600 text-white ring-4 ring-primary-200 animate-pulse';
+                        $circleClass = 'bg-brand-600 text-white ring-4 ring-brand-200 animate-pulse';
                     } else {
                         $circleClass = 'bg-gray-200 text-gray-400';
                     }

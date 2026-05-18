@@ -4,7 +4,11 @@
 
 @section('content')
 @php($money = fn ($amount) => number_format((int) $amount).' '.__('ui.currency.syp'))
-<x-page-header :title="__('ui.modules.orders')" :description="__('orders.orders_description')"><x-btn :href="route('orders.create')">{{ __('orders.create') }}</x-btn></x-page-header>
+<x-page-header :title="__('ui.modules.orders')" :description="__('orders.orders_description')">
+    @can('create', App\Models\Order::class)
+        <x-btn :href="route('orders.create')">{{ __('orders.create') }}</x-btn>
+    @endcan
+</x-page-header>
 <x-card>
     <form method="GET" action="{{ route('orders.index') }}" class="mb-5 grid gap-3 md:grid-cols-5">
         <x-form-input name="search" :label="__('ui.actions.search')" :value="request('search')" />

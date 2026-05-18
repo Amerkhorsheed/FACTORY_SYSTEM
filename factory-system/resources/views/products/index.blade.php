@@ -5,7 +5,9 @@
 @section('content')
 @php($money = fn ($amount) => number_format((int) $amount).' '.__('ui.currency.syp'))
 <x-page-header :title="__('ui.modules.inventory')" :description="__('products.catalog_description')">
-    <x-btn :href="route('products.create')">{{ __('ui.actions.create') }}</x-btn>
+    @can('create', App\Models\Product::class)
+        <x-btn :href="route('products.create')">{{ __('ui.actions.create') }}</x-btn>
+    @endcan
 </x-page-header>
 
 <div class="mb-5 grid gap-4 md:grid-cols-3">

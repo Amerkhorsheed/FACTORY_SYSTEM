@@ -33,6 +33,16 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
     public function createFromOrder(Order $order): Invoice
     {
         return $this->transaction(function () use ($order) {
+            $order = Order::query()
+                ->with('invoice')
+                ->whereKey($order->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($order->invoice) {
+                return $order->invoice->fresh();
+            }
+
             $invoice = $this->invoices->create([
                 'order_id' => $order->id,
                 'customer_id' => $order->customer_id,
@@ -57,13 +67,22 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
     public function syncFromOrder(Order $order): ?Invoice
     {
         return $this->transaction(function () use ($order) {
-            $order->loadMissing('invoice');
+            $order = Order::query()
+                ->with('invoice.customer')
+                ->whereKey($order->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
 
             if (! $order->invoice) {
                 return null;
             }
 
-            $invoice = $order->invoice;
+            $invoice = Invoice::query()
+                ->with('customer')
+                ->whereKey($order->invoice->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
             if ($invoice->paid_amount > 0 || in_array($invoice->status, ['paid', 'void'], true)) {
                 throw new \DomainException(__('invoices.cannot_sync_paid_order'));
             }
@@ -94,6 +113,15 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
     public function issue(Invoice $invoice): Invoice
     {
         return $this->transaction(function () use ($invoice) {
+            $invoice = Invoice::query()
+                ->whereKey($invoice->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($invoice->status !== 'draft') {
+                throw new \DomainException(__('invoices.cannot_issue'));
+            }
+
             $issued = $this->invoices->update($invoice, ['status' => 'issued']);
 
             event(new InvoiceIssued($issued));
@@ -105,6 +133,12 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
     public function void(Invoice $invoice, string $reason): Invoice
     {
         return $this->transaction(function () use ($invoice, $reason) {
+            $invoice = Invoice::query()
+                ->with('customer')
+                ->whereKey($invoice->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
             if (! $invoice->canBeVoided()) {
                 throw new \DomainException(__('invoices.cannot_void'));
             }
@@ -125,7 +159,15 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
     public function recordPayment(RecordPaymentDTO $dto): Payment
     {
         return $this->transaction(function () use ($dto) {
-            $invoice = $this->invoices->findByIdOrFail($dto->invoiceId);
+            $invoice = Invoice::query()
+                ->with('customer')
+                ->whereKey($dto->invoiceId)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($invoice->customer_id !== $dto->customerId) {
+                throw new \DomainException(__('invoices.payment_customer_mismatch'));
+            }
 
             if (in_array($invoice->status, ['paid', 'void', 'draft'], true)) {
                 throw new \DomainException(__('invoices.cannot_record_payment'));
@@ -167,11 +209,20 @@ class InvoiceService extends BaseService implements InvoiceServiceInterface
     public function deletePayment(Payment $payment, ?Invoice $invoice = null): void
     {
         $this->transaction(function () use ($payment, $invoice) {
-            if ($invoice && $payment->invoice_id !== $invoice->id) {
+            $payment = Payment::query()
+                ->whereKey($payment->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $invoice = Invoice::query()
+                ->with('customer')
+                ->whereKey($invoice?->getKey() ?? $payment->invoice_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($payment->invoice_id !== $invoice->id) {
                 throw new \DomainException(__('invoices.payment_not_found'));
             }
-
-            $invoice = $payment->invoice;
 
             $payment->delete();
 

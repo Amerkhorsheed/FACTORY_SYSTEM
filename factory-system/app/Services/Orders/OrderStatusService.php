@@ -35,16 +35,20 @@ class OrderStatusService extends BaseService
      */
     public function accept(Order $order, User $actor): Order
     {
-        $this->stateMachine->transition($order->status, 'accepted');
-
         return $this->transaction(function () use ($order, $actor) {
-            $order->load('items.product');
+            $order = $this->lockOrder($order, ['items.product', 'invoice']);
+            $this->stateMachine->transition($order->status, 'accepted');
 
-            foreach ($order->items as $item) {
+            if ($order->invoice) {
+                throw new \DomainException(__('invoices.already_exists'));
+            }
+
+            foreach ($order->items->groupBy('product_id') as $items) {
+                $item = $items->first();
                 $this->stock->moveStock(
                     $item->product,
                     'out',
-                    $item->quantity,
+                    $items->sum('quantity'),
                     [
                         'reference_type' => 'order',
                         'reference_id' => $order->id,
@@ -74,9 +78,12 @@ class OrderStatusService extends BaseService
      */
     public function markPreparing(Order $order): Order
     {
-        $this->stateMachine->transition($order->status, 'preparing');
+        return $this->transaction(function () use ($order) {
+            $order = $this->lockOrder($order);
+            $this->stateMachine->transition($order->status, 'preparing');
 
-        return $this->orders->update($order, ['status' => 'preparing']);
+            return $this->orders->update($order, ['status' => 'preparing']);
+        });
     }
 
     /**
@@ -86,9 +93,12 @@ class OrderStatusService extends BaseService
      */
     public function markReady(Order $order): Order
     {
-        $this->stateMachine->transition($order->status, 'ready');
+        return $this->transaction(function () use ($order) {
+            $order = $this->lockOrder($order);
+            $this->stateMachine->transition($order->status, 'ready');
 
-        return $this->orders->update($order, ['status' => 'ready']);
+            return $this->orders->update($order, ['status' => 'ready']);
+        });
     }
 
     /**
@@ -99,9 +109,10 @@ class OrderStatusService extends BaseService
      */
     public function confirmDelivery(Order $order, User $actor): Order
     {
-        $this->stateMachine->transition($order->status, 'delivered');
-
         return $this->transaction(function () use ($order, $actor) {
+            $order = $this->lockOrder($order, ['invoice']);
+            $this->stateMachine->transition($order->status, 'delivered');
+
             if ($order->invoice && $order->invoice->status === 'draft') {
                 $this->invoices->issue($order->invoice);
             }
@@ -109,7 +120,7 @@ class OrderStatusService extends BaseService
             $updated = $this->orders->update($order, [
                 'status' => 'delivered',
                 'delivered_at' => Carbon::now(),
-                'shipped_by' => $actor->id,
+                'delivered_by' => $actor->id,
             ]);
 
             event(new OrderDelivered($updated));
@@ -126,23 +137,27 @@ class OrderStatusService extends BaseService
      */
     public function cancel(Order $order, string $reason, User $actor): Order
     {
-        $this->stateMachine->transition($order->status, 'cancelled');
-
         return $this->transaction(function () use ($order, $reason) {
-            $order->load('items.product');
+            $order = $this->lockOrder($order, ['items.product', 'invoice']);
+            $this->stateMachine->transition($order->status, 'cancelled');
+
+            if ($order->invoice && ! $order->invoice->canBeVoided()) {
+                throw new \DomainException(__('invoices.cannot_void'));
+            }
 
             if (in_array($order->status, ['accepted', 'preparing', 'ready'], true)) {
-                foreach ($order->items as $item) {
+                foreach ($order->items->groupBy('product_id') as $items) {
+                    $item = $items->first();
                     $this->stock->moveStock(
                         $item->product,
                         'return',
-                        $item->quantity,
+                        $items->sum('quantity'),
                         ['reference_type' => 'order', 'reference_id' => $order->id]
                     );
                 }
             }
 
-            if ($order->invoice && $order->invoice->status === 'draft') {
+            if ($order->invoice) {
                 $this->invoices->void($order->invoice, __('invoices.voided_due_to_cancellation'));
             }
 
@@ -165,16 +180,21 @@ class OrderStatusService extends BaseService
      */
     public function recordReturn(Order $order, string $notes): Order
     {
-        $this->stateMachine->transition($order->status, 'returned');
-
         return $this->transaction(function () use ($order, $notes) {
-            $order->load('items.product');
+            $order = $this->lockOrder($order, ['items.product']);
+            $this->stateMachine->transition($order->status, 'returned');
 
             foreach ($order->items as $item) {
+                $returnQuantity = max(0, $item->quantity - $item->returned_qty);
+
+                if ($returnQuantity === 0) {
+                    continue;
+                }
+
                 $this->stock->moveStock(
                     $item->product,
                     'return',
-                    $item->quantity - $item->returned_qty,
+                    $returnQuantity,
                     ['reference_type' => 'order', 'reference_id' => $order->id]
                 );
             }
@@ -185,5 +205,15 @@ class OrderStatusService extends BaseService
                 'return_notes' => $notes,
             ]);
         });
+    }
+
+    /** @param array<int, string> $relations */
+    private function lockOrder(Order $order, array $relations = []): Order
+    {
+        return Order::query()
+            ->with($relations)
+            ->whereKey($order->getKey())
+            ->lockForUpdate()
+            ->firstOrFail();
     }
 }

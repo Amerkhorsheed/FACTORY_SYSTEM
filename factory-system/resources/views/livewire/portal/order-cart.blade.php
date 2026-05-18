@@ -19,13 +19,13 @@
                         type="text"
                         wire:model.live.debounce.300ms="searchQuery"
                         placeholder="{{ __('portal.search_products') }}"
-                        class="w-full rounded-lg border-gray-300 ps-10 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                        class="w-full rounded-lg border-gray-300 ps-10 shadow-sm focus:border-brand-500 focus:ring-brand-500"
                     />
                 </div>
                 @if(count($categories) > 1)
                     <select
                         wire:model.live="selectedCategory"
-                        class="rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                        class="rounded-lg border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500"
                     >
                         <option value="">{{ __('portal.all_categories') }}</option>
                         @foreach($categories as $id => $name)
@@ -57,7 +57,7 @@
                     <p class="mt-1 text-sm text-gray-500">{{ $product->category?->name }}</p>
 
                     <div class="mt-3 flex items-center justify-between">
-                        <span class="text-lg font-bold text-primary-600">{{ $money($product->unit_price) }}</span>
+                        <span class="text-lg font-bold text-brand-600">{{ $money($product->unit_price) }}</span>
                         @if($product->stock_quantity > 0)
                             <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">
                                 {{ __('portal.in_stock', ['qty' => $product->stock_quantity]) }}
@@ -73,7 +73,7 @@
                         type="button"
                         wire:click="addProduct({{ $product->id }})"
                         @disabled($product->stock_quantity <= 0)
-                        class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         {{ __('portal.add_to_cart') }}
@@ -202,7 +202,7 @@
                         type="date"
                         wire:model="requestedDeliveryDate"
                         min="{{ today()->toDateString() }}"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500"
                     />
                 </div>
                 <div>
@@ -210,7 +210,7 @@
                     <textarea
                         wire:model="notes"
                         rows="3"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500"
                         placeholder="{{ __('portal.notes_placeholder') }}"
                     ></textarea>
                 </div>
@@ -223,7 +223,7 @@
             wire:click="checkout"
             wire:loading.attr="disabled"
             @disabled(! $this->canCheckout)
-            class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-6 py-4 text-base font-bold text-white shadow-lg transition-all hover:bg-primary-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none"
+            class="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 py-4 text-base font-bold text-white shadow-lg transition-all hover:bg-brand-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none"
         >
             <svg class="h-5 w-5" wire:loading.remove wire:target="checkout" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <svg class="h-5 w-5 animate-spin" wire:loading wire:target="checkout" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -235,7 +235,7 @@
     <button
         type="button"
         @click="showCart = !showCart"
-        class="fixed bottom-4 end-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary-600 text-white shadow-xl lg:hidden"
+        class="fixed bottom-4 end-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-xl lg:hidden"
     >
         <div class="relative">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>

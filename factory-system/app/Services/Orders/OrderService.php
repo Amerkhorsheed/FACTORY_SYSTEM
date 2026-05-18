@@ -63,9 +63,9 @@ class OrderService extends BaseService implements OrderServiceInterface
             $dto = $this->pipeline
                 ->send($dto)
                 ->through([
+                    CalculateOrderTotalsPipe::class,
                     ValidateCustomerCreditPipe::class,
                     ValidateStockAvailabilityPipe::class,
-                    CalculateOrderTotalsPipe::class,
                 ])
                 ->thenReturn();
 
@@ -146,7 +146,7 @@ class OrderService extends BaseService implements OrderServiceInterface
      */
     public function delete(Order $order): void
     {
-        if (in_array($order->status, ['shipped', 'delivered'], true)) {
+        if (! in_array($order->status, ['pending', 'cancelled'], true)) {
             throw new \DomainException(__('orders.cannot_delete_shipped'));
         }
 
@@ -227,15 +227,19 @@ class OrderService extends BaseService implements OrderServiceInterface
 
         $errors = [];
 
-        foreach ($dto->items as $item) {
-            $product = $this->products->findByIdOrFail($item->productId);
-            $available = $product->stock_quantity + (int) ($currentReserved[$item->productId] ?? 0);
+        $requested = $dto->items
+            ->groupBy(fn (OrderItemDTO $item) => $item->productId)
+            ->map(fn (Collection $items) => $items->sum(fn (OrderItemDTO $item) => $item->quantity));
 
-            if ($available < $item->quantity) {
+        foreach ($requested as $productId => $quantity) {
+            $product = $this->products->findByIdOrFail((int) $productId);
+            $available = $product->stock_quantity + (int) ($currentReserved[$productId] ?? 0);
+
+            if ($available < $quantity) {
                 $errors[] = __('orders.insufficient_stock', [
                     'product' => $product->name,
                     'available' => $available,
-                    'requested' => $item->quantity,
+                    'requested' => $quantity,
                 ]);
             }
         }

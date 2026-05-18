@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - main
       - '*.x'
   pull_request:
   schedule:
@@ -23,6 +24,10 @@ jobs:
 
     name: PHP ${{ matrix.php }}
 
+    defaults:
+      run:
+        working-directory: factory-system
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,6 +44,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: factory-system/package-lock.json
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress

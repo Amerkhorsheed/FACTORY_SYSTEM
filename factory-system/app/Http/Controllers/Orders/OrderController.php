@@ -6,7 +6,9 @@ use App\DTOs\Orders\CreateOrderDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Orders\StoreOrderRequest;
 use App\Http\Requests\Orders\UpdateOrderRequest;
+use App\Models\Customer;
 use App\Models\Order;
+use App\Models\Product;
 use App\Services\Orders\OrderService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +36,7 @@ class OrderController extends Controller
 
     public function create(): View
     {
-        return view('orders.create');
+        return view('orders.create', $this->formData());
     }
 
     public function store(StoreOrderRequest $request): RedirectResponse
@@ -65,7 +67,7 @@ class OrderController extends Controller
 
         $order->load(['items.product', 'customer']);
 
-        return view('orders.edit', compact('order'));
+        return view('orders.edit', array_merge(['order' => $order], $this->formData()));
     }
 
     public function update(UpdateOrderRequest $request, Order $order): RedirectResponse
@@ -101,5 +103,14 @@ class OrderController extends Controller
         $orders = $this->orders->daily($date);
 
         return view('orders.daily', compact('orders', 'date'));
+    }
+
+    /** @return array<string, mixed> */
+    private function formData(): array
+    {
+        return [
+            'customers' => Customer::active()->orderBy('name')->get(['id', 'name', 'code']),
+            'products' => Product::active()->orderBy('name')->get(['id', 'name', 'code', 'unit_price', 'stock_quantity']),
+        ];
     }
 }

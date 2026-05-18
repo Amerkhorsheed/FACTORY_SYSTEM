@@ -50,17 +50,53 @@ class ShipmentService implements ShipmentServiceInterface
     public function attachOrders(Shipment $shipment, array $orderIds): void
     {
         DB::transaction(function () use ($shipment, $orderIds) {
-            Order::whereIn('id', $orderIds)
+            $shipment = Shipment::query()
+                ->whereKey($shipment->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (! in_array($shipment->status, ['planned', 'loading'], true)) {
+                throw new InvalidStatusTransitionException('Orders can only be attached to planned or loading shipments.');
+            }
+
+            $orderIds = array_values(array_unique(array_map('intval', $orderIds)));
+            if ($orderIds === []) {
+                throw new \InvalidArgumentException('At least one order must be selected.');
+            }
+
+            $orders = Order::query()
+                ->whereIn('id', $orderIds)
                 ->whereNull('shipment_id')
-                ->update(['shipment_id' => $shipment->id]);
+                ->where('status', 'ready')
+                ->lockForUpdate()
+                ->get();
+
+            if ($orders->count() !== count($orderIds)) {
+                throw new InvalidStatusTransitionException('Only ready, unassigned orders can be attached to a shipment.');
+            }
+
+            Order::whereKey($orders->modelKeys())->update(['shipment_id' => $shipment->id]);
         });
     }
 
     public function detachOrder(Shipment $shipment, Order $order): void
     {
         DB::transaction(function () use ($shipment, $order) {
+            $shipment = Shipment::query()
+                ->whereKey($shipment->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+            $order = Order::query()
+                ->whereKey($order->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
             if ($order->shipment_id !== $shipment->id) {
                 throw new \InvalidArgumentException('Order does not belong to this shipment.');
+            }
+
+            if (! in_array($shipment->status, ['planned', 'loading'], true) || $order->status !== 'ready') {
+                throw new InvalidStatusTransitionException('Only ready orders on planned or loading shipments can be detached.');
             }
 
             $order->shipment_id = null;
@@ -71,10 +107,24 @@ class ShipmentService implements ShipmentServiceInterface
     public function dispatch(Shipment $shipment): Shipment
     {
         return DB::transaction(function () use ($shipment) {
+            $shipment = Shipment::query()
+                ->with('orders')
+                ->whereKey($shipment->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
             $this->stateMachine->transition($shipment->status, 'dispatched');
 
             if (! $shipment->canBeDispatched()) {
                 throw new InvalidStatusTransitionException('Shipment cannot be dispatched. No ready orders found.');
+            }
+
+            $truck = Truck::query()
+                ->whereKey($shipment->truck_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (! $truck->isAvailable()) {
+                throw new InvalidStatusTransitionException('Shipment truck is not available.');
             }
 
             $shipment->update([
@@ -82,13 +132,17 @@ class ShipmentService implements ShipmentServiceInterface
                 'departure_time' => now(),
             ]);
 
-            Truck::whereKey($shipment->truck_id)->update(['status' => 'on_trip']);
+            $truck->update(['status' => 'on_trip']);
 
-            $orders = $shipment->orders()->where('status', 'ready')->get();
+            $orders = $shipment->orders()->where('status', 'ready')->lockForUpdate()->get();
 
             foreach ($orders as $order) {
                 $this->orderStateMachine->transition($order->status, 'shipped');
-                $order->update(['status' => 'shipped']);
+                $order->update([
+                    'status' => 'shipped',
+                    'shipped_at' => now(),
+                    'shipped_by' => auth()->id(),
+                ]);
                 event(new OrderShipped($order->fresh()));
             }
 
@@ -101,6 +155,15 @@ class ShipmentService implements ShipmentServiceInterface
     public function markOrderDelivered(Shipment $shipment, Order $order): void
     {
         DB::transaction(function () use ($shipment, $order) {
+            $shipment = Shipment::query()
+                ->whereKey($shipment->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+            $order = Order::query()
+                ->whereKey($order->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
             if ($order->shipment_id !== $shipment->id) {
                 throw new \InvalidArgumentException('Order does not belong to this shipment.');
             }
@@ -130,6 +193,10 @@ class ShipmentService implements ShipmentServiceInterface
     public function complete(Shipment $shipment): Shipment
     {
         return DB::transaction(function () use ($shipment) {
+            $shipment = Shipment::query()
+                ->whereKey($shipment->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
             $this->stateMachine->transition($shipment->status, 'completed');
 
             $shipment->update([
@@ -146,7 +213,31 @@ class ShipmentService implements ShipmentServiceInterface
     public function cancel(Shipment $shipment, string $reason): Shipment
     {
         return DB::transaction(function () use ($shipment, $reason) {
+            $shipment = Shipment::query()
+                ->with('orders')
+                ->whereKey($shipment->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
             $this->stateMachine->transition($shipment->status, 'cancelled');
+
+            if ($shipment->orders()->whereIn('status', ['delivered', 'returned'])->exists()) {
+                throw new InvalidStatusTransitionException('Shipment cannot be cancelled after an order is delivered or returned.');
+            }
+
+            $shipment->orders()
+                ->where('status', 'shipped')
+                ->lockForUpdate()
+                ->update([
+                    'status' => 'ready',
+                    'shipment_id' => null,
+                    'shipped_at' => null,
+                    'shipped_by' => null,
+                ]);
+
+            $shipment->orders()
+                ->where('status', 'ready')
+                ->lockForUpdate()
+                ->update(['shipment_id' => null]);
 
             $shipment->update([
                 'status' => 'cancelled',

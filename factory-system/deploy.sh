@@ -77,9 +77,9 @@ artisan factory:preflight "${PREFLIGHT_ARGS[@]}"
 log "9/10 Restarting workers and scheduler"
 artisan queue:restart
 if command -v supervisorctl >/dev/null 2>&1; then
-    supervisorctl reread || true
-    supervisorctl update || true
-    supervisorctl restart "$SUPERVISOR_GROUP" || true
+    supervisorctl reread
+    supervisorctl update
+    supervisorctl restart "$SUPERVISOR_GROUP"
 fi
 
 log "10/10 Fixing permissions and disabling maintenance"

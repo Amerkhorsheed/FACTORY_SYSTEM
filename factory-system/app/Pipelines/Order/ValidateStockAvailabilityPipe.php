@@ -23,16 +23,19 @@ class ValidateStockAvailabilityPipe
     public function handle(CreateOrderDTO $dto, Closure $next): CreateOrderDTO
     {
         $errors = [];
+        $requested = $dto->items
+            ->groupBy(fn ($item) => $item->productId)
+            ->map(fn ($items) => $items->sum(fn ($item) => $item->quantity));
 
-        foreach ($dto->items as $item) {
+        foreach ($requested as $productId => $quantity) {
             /** @var Product $product */
-            $product = $this->products->findByIdOrFail($item->productId);
+            $product = $this->products->findByIdOrFail((int) $productId);
 
-            if ($product->stock_quantity < $item->quantity) {
+            if ($product->stock_quantity < $quantity) {
                 $errors[] = __('orders.insufficient_stock', [
                     'product' => $product->name,
                     'available' => $product->stock_quantity,
-                    'requested' => $item->quantity,
+                    'requested' => $quantity,
                 ]);
             }
         }
